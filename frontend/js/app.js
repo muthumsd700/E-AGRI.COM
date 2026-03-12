@@ -581,50 +581,56 @@
       writeJSON(FARMER_PROFILE_KEY, { ...ext, ...profile });
     },
 
-    // ---------- Order Management (MongoDB API) ----------
+    // ---------- Order Management (Local Storage) ----------
     async placeOrder(cartItems, deliveryAddress, paymentMethod) {
-      const token = getAuthToken();
-      if (!token) throw new Error('Not authenticated');
+      const user = this.getUser();
+      if (!user) throw new Error('Not authenticated');
       
-      const res = await fetch(API_BASE + '/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': token,
-        },
-        body: JSON.stringify({
-          items: cartItems.map(i => ({
-            product: i.id,
-            name: i.name,
-            quantity: i.quantity,
-            price: i.price,
-            image: i.image,
-            farmer: i.farmerId // Ensure farmerId is sent
-          })),
-          shippingAddress: deliveryAddress,
-          paymentMethod: paymentMethod || 'cod'
-        }),
+      let totalAmount = 0;
+      const items = cartItems.map(i => {
+        totalAmount += (parseFloat(i.price) || 0) * (parseInt(i.quantity, 10) || 1);
+        return {
+          name: i.name,
+          quantity: i.quantity,
+          price: i.price,
+          image: i.image,
+          farmerId: i.farmerId || i.farmer
+        };
       });
       
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to place order');
+      const orderData = {
+        _id: "ORD" + Date.now(),
+        consumerId: user.id || user._id,
+        createdAt: new Date().toISOString(),
+        status: "confirmed",
+        items: items,
+        totalAmount: totalAmount,
+        shippingAddress: deliveryAddress,
+        paymentMethod: paymentMethod || 'cod'
+      };
       
+      this.saveOrder(orderData);
       this.clearCart();
-      return data;
+      return orderData;
+    },
+
+    saveOrder(orderData) {
+      const user = this.getUser();
+      if (!user) return false;
+      const orders = readJSON('eagriOrders', []);
+      orders.push(orderData);
+      writeJSON('eagriOrders', orders);
+      return true;
     },
 
     async getConsumerOrders() {
-      const token = getAuthToken();
-      if (!token) return [];
-      try {
-        const res = await fetch(API_BASE + '/api/orders/my', {
-          headers: { 'x-auth-token': token },
-        });
-        if (!res.ok) return [];
-        return await res.json();
-      } catch (_) {
-        return [];
-      }
+      const user = this.getUser();
+      if (!user) return [];
+      const userId = user.id || user._id;
+      const orders = readJSON('eagriOrders', []);
+      return orders
+        .filter(o => o.consumerId === userId)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     },
 
     async getFarmerOrders() {

@@ -748,7 +748,7 @@
 
                            return `<tr>
                                <td>${date}</td>
-                               <td class="font-medium text-primary">${o._id.slice(-6).toUpperCase()}</td>
+                               <td class="font-medium text-primary">${String(o._id).slice(-6).toUpperCase()}</td>
                                <td>${items}</td>
                                <td>Farmer</td>
                                <td class="font-bold text-primary">₹${o.totalAmount}</td>
@@ -782,7 +782,7 @@
                            return `<div class="card">
                                <div class="flex justify-between items-start mb-4">
                                    <div>
-                                       <h4 class="font-semibold text-primary">Order #${o._id.slice(-6).toUpperCase()}</h4>
+                                       <h4 class="font-semibold text-primary">Order #${String(o._id).slice(-6).toUpperCase()}</h4>
                                        <p class="text-xs text-text-secondary">Placed on ${new Date(o.createdAt).toLocaleDateString()}</p>
                                    </div>
                                    <div class="text-right">
