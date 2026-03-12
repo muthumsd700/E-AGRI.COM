@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse fresh agricultural products from Indian farmers - E-Agri Commerce">
+    <title>Product Catalog - E-Agri Commerce</title>
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body class="bg-background">
+    <header class="sticky top-0 z-navigation bg-surface/95 backdrop-blur-sm border-b border-border shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <a href="home_landing.html" class="flex items-center gap-3">
+                    <svg class="w-12 h-12" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="24" cy="24" r="22" fill="#2D5016" />
+                        <path d="M24 8C24 8 16 12 16 20C16 24 18 28 24 32C30 28 32 24 32 20C32 12 24 8 24 8Z"
+                            fill="#FF9933" />
+                        <circle cx="24" cy="22" r="3" fill="#FFFFFF" />
+                        <path d="M20 32L24 40L28 32" stroke="#8B4513" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <div>
+                        <h1 class="text-xl font-heading font-bold text-primary">E-Agri Commerce</h1>
+                        <p class="text-xs text-text-secondary">Farm to Table Direct</p>
+                    </div>
+                </a>
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="home_landing.html"
+                        class="text-text-secondary hover:text-primary transition-colors">Home</a>
+                    <a href="product_catalog.html" class="text-primary font-medium" data-i18n="nav_products">Products</a>
+                    <a href="farmer_dashboard.html" class="text-text-secondary hover:text-primary transition-colors"
+                        data-role="farmer">Farmer Dashboard</a>
+                    <a href="consumer_dashboard.html" class="text-text-secondary hover:text-primary transition-colors"
+                        data-role="consumer">Consumer Dashboard</a>
+                    <a href="settings.html"
+                        class="text-text-secondary hover:text-primary transition-colors">Settings</a>
+                    <a href="login.html" class="btn btn-outline px-4 py-2 h-auto auth-login-btn" data-i18n="nav_login">Login</a>
+                    <div class="auth-user-info items-center gap-3" style="display:none;">
+                       
+                    </div>
+                    <a href="shopping_cart.html" class="relative">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span id="cart-count-desktop"
+                            class="absolute -top-2 -right-2 bg-secondary text-on-secondary text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </a>
+                </div>
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-surface-elevated"
+                    aria-label="Menu">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden pb-4 border-t border-border mt-2">
+                <div class="flex flex-col gap-3 pt-4">
+                    <a href="home_landing.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10">Home</a>
+                    <a href="product_catalog.html"
+                        class="text-primary font-medium py-2 px-3 rounded-lg bg-primary/10">Products</a>
+                    <a href="farmer_dashboard.html" class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10"
+                        data-role="farmer">Farmer Dashboard</a>
+                    <a href="consumer_dashboard.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10"
+                        data-role="consumer">Consumer Dashboard</a>
+                    <a href="settings.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10">Settings</a>
+                    <a href="login.html" class="btn btn-outline py-2 px-4 mx-3 text-center auth-login-btn" data-i18n="nav_login">Login</a>
+                    <div class="auth-user-info py-2 px-3" style="display:none;">
+                        <span class="text-sm text-text-secondary">Welcome, <strong
+                                class="auth-user-name text-primary"></strong></span>
+                        <button
+                            class="auth-logout-btn btn btn-outline py-2 px-4 mx-3 text-center text-sm">Logout</button>
+                    </div>
+                    <a href="shopping_cart.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 flex items-center gap-2">Cart
+                        (<span id="cart-count-mobile">0</span>)</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h1 class="text-3xl sm:text-4xl font-heading font-bold text-primary mb-2">All Products</h1>
+            <p class="text-lg text-text-secondary mb-6">Fresh produce from our farmers. Search, filter, and add to cart.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                <div class="flex-1">
+                    <label for="product-search" class="sr-only">Search products by name</label>
+                    <input type="text" id="product-search" class="input w-full"
+                        placeholder="Search products by name...">
+                </div>
+                <div class="sm:w-40">
+                    <label for="category-filter" class="sr-only">Filter by category</label>
+                    <select id="category-filter" class="input w-full">
+                        <option value="">All Categories</option>
+                        <option value="Vegetables">Vegetables</option>
+                        <option value="Fruits">Fruits</option>
+                        <option value="Grains">Grains</option>
+                        <option value="Dairy">Dairy</option>
+                        <option value="General">General</option>
+                    </select>
+                </div>
+                <div class="sm:w-44">
+                    <label for="sort-by" class="sr-only">Sort products</label>
+                    <select id="sort-by" class="input w-full">
+                        <option value="">Sort: Featured</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="products-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+
+        <div id="empty-state" class="hidden text-center py-16">
+            <p class="text-text-secondary mb-4">No products available yet.</p>
+        </div>
+    </main>
+
+    <footer class="bg-primary-900 text-on-primary py-8 border-t border-primary-800 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-sm text-on-primary/70">© 2026 E-Agri Commerce. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        (function () {
+            var FALLBACK = 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=400';
+            var grid = document.getElementById('products-grid');
+            var empty = document.getElementById('empty-state');
+
+            function esc(s) {
+                return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            }
+
+            async function getFilteredProducts() {
+                // Now async
+                var all = window.EAgri ? await window.EAgri.getProducts() : [];
+                var searchEl = document.getElementById('product-search');
+                var catEl = document.getElementById('category-filter');
+                var sortEl = document.getElementById('sort-by');
+
+                var search = (searchEl && searchEl.value) || '';
+                var cat = (catEl && catEl.value) || '';
+                var sort = (sortEl && sortEl.value) || '';
+                var q = search.toLowerCase().trim();
+
+                var list = all.filter(function (p) {
+                    if (q && (p.name || '').toLowerCase().indexOf(q) < 0) return false;
+                    if (cat && (p.category || '').toLowerCase() !== cat.toLowerCase()) return false;
+                    return true;
+                });
+
+                if (sort === 'price-asc') {
+                    list.sort(function (a, b) { return (parseFloat(a.price) || 0) - (parseFloat(b.price) || 0); });
+                } else if (sort === 'price-desc') {
+                    list.sort(function (a, b) { return (parseFloat(b.price) || 0) - (parseFloat(a.price) || 0); });
+                }
+                return list;
+            }
+
+            async function render() {
+                if (grid) grid.innerHTML = '<div class="col-span-full text-center py-12 text-text-secondary">Loading products...</div>';
+                
+                var products = await getFilteredProducts();
+                if (products.length === 0) {
+                    grid.innerHTML = '<div class="col-span-full text-center py-12 text-text-secondary">No products match your search. Try different filters.</div>';
+                    grid.classList.remove('hidden');
+                    if (empty) empty.classList.add('hidden');
+                    return;
+                }
+                if (empty) empty.classList.add('hidden');
+                grid.classList.remove('hidden');
+                grid.innerHTML = products.map(function (p) {
+                    var detailUrl = 'product_details.html?id=' + encodeURIComponent(p.id);
+                    var badge = p.badge ? '<div class="absolute top-3 right-3 bg-success text-on-success text-xs font-bold px-3 py-1 rounded-full">' + esc(p.badge) + '</div>' : '';
+                    return '<div class="card group cursor-pointer product-card" data-url="' + esc(detailUrl) + '" data-product-id="' + esc(p.id) + '" tabindex="0">' +
+                        '<div class="relative overflow-hidden rounded-xl mb-4">' +
+                        '<img src="' + esc(p.image) + '" alt="' + esc(p.name) + '" class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src=\'' + FALLBACK + '\';this.onerror=null;">' + badge + '</div>' +
+                        '<h3 class="text-xl font-heading font-semibold text-primary mb-2">' + esc(p.name) + '</h3>' +
+                        '<p class="text-text-secondary text-sm mb-3">' + esc(p.description) + '</p>' +
+                        '<div class="flex items-center justify-between mb-4">' +
+                        '<p class="text-2xl font-bold text-primary">₹' + esc(p.price) + '<span class="text-base font-normal text-text-secondary">/kg</span></p>' +
+                        '<span class="text-sm text-text-tertiary">Stock: ' + esc(p.stock) + ' kg</span></div>' +
+                        '<div class="flex items-center justify-between gap-2 text-sm text-text-tertiary mb-4 p-2 bg-surface-elevated rounded-lg">' +
+                        '<span><strong>Farmer:</strong> ' + esc(p.farmer) + ', ' + esc(p.farmerLocation) + '</span></div>' +
+                        '<button type="button" class="btn btn-primary w-full add-to-cart-btn" data-product-id="' + esc(p.id) + '">Add to Cart</button>' +
+                        '</div>';
+                }).join('');
+
+                // Use the products list for click handlers to ensure correct farmerId
+                grid.querySelectorAll('.add-to-cart-btn').forEach(function (btn) {
+                    btn.onclick = function(e) {
+                         e.preventDefault();
+                         e.stopPropagation();
+                         var id = btn.dataset.productId;
+                         var p = products.find(function (x) { return x.id === id; });
+                         if (p && window.EAgri) {
+                             window.EAgri.addToCart(p, 1);
+                             if (window.EAgri.toast) window.EAgri.toast('Added to cart.', 'success');
+                         }
+                    };
+                });
+            }
+
+            grid.addEventListener('click', function (e) {
+                var card = e.target.closest('.product-card');
+                if (card && card.dataset.url && !e.target.closest('.add-to-cart-btn')) {
+                    window.location.href = card.dataset.url;
+                }
+            });
+
+            grid.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    var card = e.target.closest('.product-card');
+                    if (card && card.dataset.url && !e.target.closest('.add-to-cart-btn')) {
+                        e.preventDefault();
+                        window.location.href = card.dataset.url;
+                    }
+                }
+            });
+
+            render();
+            var searchEl = document.getElementById('product-search');
+            var filterEl = document.getElementById('category-filter');
+            var sortEl = document.getElementById('sort-by');
+            if (searchEl) searchEl.addEventListener('input', render);
+            if (filterEl) filterEl.addEventListener('change', render);
+            if (sortEl) sortEl.addEventListener('change', render);
+            
+            if (window.EAgri) {
+                window.EAgri.initCartBadges();
+                window.EAgri.initMobileMenu();
+            }
+        })();
+    </script>
+</body>
+
+</html>
+
+
+

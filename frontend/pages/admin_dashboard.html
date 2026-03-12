@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Admin Dashboard - Monitor users, products, and orders on the E-Agri Commerce Platform">
+    <title>Admin Dashboard - E-Agri Commerce</title>
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body class="bg-background">
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-navigation bg-surface/95 backdrop-blur-sm border-b border-border shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex items-center gap-3">
+                    <svg class="w-12 h-12" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="24" cy="24" r="22" fill="#2D5016" />
+                        <path d="M24 8C24 8 16 12 16 20C16 24 18 28 24 32C30 28 32 24 32 20C32 12 24 8 24 8Z"
+                            fill="#FF9933" />
+                        <circle cx="24" cy="22" r="3" fill="#FFFFFF" />
+                        <path d="M20 32L24 40L28 32" stroke="#8B4513" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <div>
+                        <h1 class="text-xl font-heading font-bold text-primary">E-Agri Commerce</h1>
+                        <p class="text-xs text-text-secondary">Admin Operations</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="home_landing.html"
+                        class="text-text-secondary hover:text-primary transition-colors">Home</a>
+                    <a href="product_catalog.html"
+                        class="text-text-secondary hover:text-primary transition-colors">Products</a>
+                    <a href="farmer_dashboard.html" class="text-text-secondary hover:text-primary transition-colors"
+                        data-role="farmer">Farmer Dashboard</a>
+                    <a href="consumer_dashboard.html" class="text-text-secondary hover:text-primary transition-colors"
+                        data-role="consumer">Consumer Dashboard</a>
+                    <a href="admin_dashboard.html"
+                        class="text-primary font-medium border-b-2 border-primary pb-1"
+                        data-role="admin">Admin Dashboard</a>
+                    <a href="settings.html"
+                        class="text-text-secondary hover:text-primary transition-colors">Settings</a>
+                    <a href="login.html" class="btn btn-outline px-4 h-auto auth-login-btn" data-i18n="nav_login">Login</a>
+                    <div class="auth-user-info items-center gap-3" style="display:none;">
+                        <span class="text-sm text-text-secondary">Welcome, <strong
+                                class="auth-user-name text-primary"></strong></span>
+                        <button class="auth-logout-btn btn btn-outline px-3 py-1 h-auto text-sm" data-i18n="nav_logout">Logout</button>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn"
+                    class="md:hidden p-2 rounded-lg hover:bg-surface-elevated transition-colors"
+                    aria-label="Toggle mobile menu">
+                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_117a4830d-1764671721354.png"
+                        alt="Menu icon" class="w-7 h-7"
+                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                </button>
+            </div>
+
+            <!-- Mobile Navigation Menu -->
+            <div id="mobile-menu" class="hidden md:hidden pb-4 border-t border-border mt-2">
+                <div class="flex flex-col gap-3 pt-4">
+                    <a href="home_landing.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors">Home</a>
+                    <a href="product_catalog.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors">Products</a>
+                    <a href="farmer_dashboard.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors"
+                        data-role="farmer">Farmer Dashboard</a>
+                    <a href="consumer_dashboard.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors"
+                        data-role="consumer">Consumer Dashboard</a>
+                    <a href="admin_dashboard.html"
+                        class="text-primary font-medium py-2 px-3 rounded-lg bg-primary/10"
+                        data-role="admin">Admin Dashboard</a>
+                    <a href="settings.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors">Settings</a>
+                    <a href="login.html" class="btn btn-outline py-2 px-4 mx-3 text-center auth-login-btn" data-i18n="nav_login">Login</a>
+                    <div class="auth-user-info py-2 px-3" style="display:none;">
+                        <span class="text-sm text-text-secondary">Welcome, <strong
+                                class="auth-user-name text-primary"></strong></span>
+                        <button
+                            class="auth-logout-btn btn btn-outline py-2 px-4 mx-3 text-center text-sm">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Admin Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Overview / Summary -->
+        <section class="mb-8">
+            <div
+                class="card bg-gradient-to-br from-primary to-primary-800 text-on-primary relative overflow-hidden mb-6">
+                <div class="absolute inset-0 opacity-10 pointer-events-none">
+                    <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <pattern id="admin-pattern" x="0" y="0" width="60" height="60"
+                                patternUnits="userSpaceOnUse">
+                                <circle cx="30" cy="30" r="1.5" fill="white" />
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#admin-pattern)" />
+                    </svg>
+                </div>
+
+                <div class="relative flex flex-col lg:flex-row justify-between gap-6 items-start lg:items-center">
+                    <div class="space-y-3">
+                        <h2 class="text-3xl font-heading font-bold">Admin Operations Dashboard</h2>
+                        <p class="text-on-primary/85 text-sm max-w-2xl">
+                            Monitor users, products, and orders across the E-Agri Commerce platform. Use this panel to
+                            quickly spot issues and take action.
+                        </p>
+                        <p id="admin-summary-status" class="text-xs text-on-primary/80"></p>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 min-w-0">
+                        <div class="bg-on-primary/10 rounded-xl p-4 text-center">
+                            <p id="summary-total-users" class="text-3xl font-heading font-bold mb-1">–</p>
+                            <p class="text-xs text-on-primary/80">Total Users</p>
+                        </div>
+                        <div class="bg-on-primary/10 rounded-xl p-4 text-center">
+                            <p id="summary-total-products" class="text-3xl font-heading font-bold mb-1">–</p>
+                            <p class="text-xs text-on-primary/80">Total Products</p>
+                        </div>
+                        <div class="bg-on-primary/10 rounded-xl p-4 text-center">
+                            <p id="summary-total-orders" class="text-3xl font-heading font-bold mb-1">–</p>
+                            <p class="text-xs text-on-primary/80">Total Orders</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secondary summary cards -->
+            <div class="grid sm:grid-cols-3 gap-4 mb-8">
+                <div class="card card-compact bg-success-light/20 border-success/30">
+                    <p class="text-sm text-text-tertiary mb-1">Active Farmers</p>
+                    <p id="summary-active-farmers" class="text-2xl font-heading font-bold text-success-dark">–</p>
+                </div>
+                <div class="card card-compact bg-info-light/20 border-info/30">
+                    <p class="text-sm text-text-tertiary mb-1">Active Consumers</p>
+                    <p id="summary-active-consumers" class="text-2xl font-heading font-bold text-info-dark">–</p>
+                </div>
+                <div class="card card-compact bg-warning-light/20 border-warning/30">
+                    <p class="text-sm text-text-tertiary mb-1">Products Inactive</p>
+                    <p id="summary-inactive-products" class="text-2xl font-heading font-bold text-warning-dark">–</p>
+                </div>
+            </div>
+
+            <!-- Recent activity -->
+            <div class="grid lg:grid-cols-2 gap-6 mb-10">
+                <div class="card">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-heading font-semibold text-primary">Recent Orders</h3>
+                        <button id="refresh-summary-btn" class="btn btn-outline btn-sm">Refresh</button>
+                    </div>
+                    <ul id="recent-orders-list" class="space-y-3 text-sm text-text-secondary">
+                        <li class="text-text-tertiary text-sm">Loading recent orders…</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 class="text-xl font-heading font-semibold text-primary mb-4">Recent Signups</h3>
+                    <ul id="recent-users-list" class="space-y-3 text-sm text-text-secondary">
+                        <li class="text-text-tertiary text-sm">Loading recent signups…</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabs for Users / Products -->
+        <section class="mb-6">
+            <div class="border-b border-border">
+                <div class="flex gap-2 overflow-x-auto custom-scrollbar">
+                    <button
+                        class="tab-btn active px-6 py-3 font-medium text-primary border-b-2 border-primary whitespace-nowrap"
+                        data-admin-tab="users">
+                        Users
+                    </button>
+                    <button
+                        class="tab-btn px-6 py-3 font-medium text-text-secondary hover:text-primary border-b-2 border-transparent whitespace-nowrap"
+                        data-admin-tab="products">
+                        Products
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Users moderation -->
+        <section id="admin-users-section" class="tab-content">
+            <div class="card mb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <h2 class="text-2xl font-heading font-semibold text-primary">Users</h2>
+                        <p class="text-sm text-text-secondary">View and manage farmers, consumers, and admins.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-3">
+                        <select id="user-role-filter" class="input sm:w-40">
+                            <option value="">All roles</option>
+                            <option value="farmer">Farmers</option>
+                            <option value="consumer">Consumers</option>
+                            <option value="admin">Admins</option>
+                        </select>
+                        <select id="user-status-filter" class="input sm:w-40">
+                            <option value="">All statuses</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <button id="refresh-users-btn" class="btn btn-outline btn-sm">Refresh Users</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="table min-w-full text-sm">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-users-body">
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-text-tertiary">
+                                    Loading users…
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products moderation -->
+        <section id="admin-products-section" class="tab-content hidden">
+            <div class="card mb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <h2 class="text-2xl font-heading font-semibold text-primary">Products</h2>
+                        <p class="text-sm text-text-secondary">Review listed products and toggle availability.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-3">
+                        <select id="product-status-filter" class="input sm:w-40">
+                            <option value="">All statuses</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <button id="refresh-products-btn" class="btn btn-outline btn-sm">Refresh Products</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="table min-w-full text-sm">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Farmer</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-products-body">
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-text-tertiary">
+                                    Loading products…
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-primary-900 text-on-primary py-12 border-t border-primary-800 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg class="w-10 h-10" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="24" cy="24" r="22" fill="#FF9933" />
+                            <path d="M24 8C24 8 16 12 16 20C16 24 18 28 24 32C30 28 32 24 32 20C32 12 24 8 24 8Z"
+                                fill="#2D5016" />
+                            <circle cx="24" cy="22" r="3" fill="#FFFFFF" />
+                        </svg>
+                        <div>
+                            <h3 class="font-heading font-bold text-lg">E-Agri Commerce</h3>
+                            <p class="text-xs text-on-primary/70">Farm to Table Direct</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-on-primary/80 leading-relaxed">
+                        Empowering Indian farmers and connecting them directly with consumers for a sustainable
+                        agricultural future.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-heading font-semibold text-lg mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="home_landing.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Home</a></li>
+                        <li><a href="product_catalog.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Products</a>
+                        </li>
+                        <li data-role="farmer"><a href="farmer_dashboard.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Farmer
+                                Dashboard</a></li>
+                        <li data-role="consumer"><a href="consumer_dashboard.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Consumer
+                                Dashboard</a></li>
+                        <li data-role="admin"><a href="admin_dashboard.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Admin
+                                Dashboard</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h4 class="font-heading font-semibold text-lg mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Help
+                                Center</a></li>
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Contact Us</a>
+                        </li>
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">FAQs</a></li>
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Terms &
+                                Conditions</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="font-heading font-semibold text-lg mb-4">Contact</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1175352d5-1767644430280.png"
+                                alt="Email icon" class="w-5 h-5 mt-0.5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-sm text-on-primary/80">support@eagricommerce.in</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_13361d1fe-1768398985241.png"
+                                alt="Phone icon" class="w-5 h-5 mt-0.5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-sm text-on-primary/80">+91 1800-123-4567</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_11407ebac-1766822096581.png"
+                                alt="Location icon" class="w-5 h-5 mt-0.5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-sm text-on-primary/80">Tiruchirappalli,Tamil Nadu, India</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="pt-8 border-t border-primary-800 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-on-primary/70">© 2026 E-Agri Commerce Platform. All Rights Reserved.</p>
+                <div class="flex items-center gap-4">
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="Facebook">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1b9a5f070-1766967796860.png"
+                            alt="Facebook social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="Twitter">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_11caec31f-1764660939199.png"
+                            alt="Twitter social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="Instagram">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1f9c7aecf-1764660938700.png"
+                            alt="Instagram social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="LinkedIn">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1904267c6-1768733084246.png"
+                            alt="LinkedIn social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin.js"></script>
+</body>
+
+</html>
+
+
+
+

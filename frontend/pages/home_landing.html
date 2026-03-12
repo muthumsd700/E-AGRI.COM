@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="E-Agri Commerce Platform - Connecting Indian farmers directly with consumers for fresh agricultural produce">
+    <title>E-Agri Commerce Platform - Home</title>
+    <link rel="stylesheet" href="../css/main.css">
+
+</head>
+
+<body class="bg-background">
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-navigation bg-surface/95 backdrop-blur-sm border-b border-border shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex items-center gap-3">
+                    <svg class="w-12 h-12" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="24" cy="24" r="22" fill="#2D5016" />
+                        <path d="M24 8C24 8 16 12 16 20C16 24 18 28 24 32C30 28 32 24 32 20C32 12 24 8 24 8Z"
+                            fill="#FF9933" />
+                        <circle cx="24" cy="22" r="3" fill="#FFFFFF" />
+                        <path d="M20 32L24 40L28 32" stroke="#8B4513" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <div>
+                        <h1 class="text-xl font-heading font-bold text-primary">E-Agri Commerce</h1>
+                        <p class="text-xs text-text-secondary">Farm to Table Direct</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="home_landing.html"
+                        class="text-primary font-medium hover:text-primary-700 transition-colors">Home</a>
+                    <a href="product_catalog.html"
+                        class="text-text-secondary hover:text-primary transition-colors">Products</a>
+                    <a href="farmer_dashboard.html" class="text-text-secondary hover:text-primary transition-colors"
+                        data-role="farmer">Farmer Dashboard</a>
+                    <a href="consumer_dashboard.html" class="text-text-secondary hover:text-primary transition-colors"
+                        data-role="consumer">Consumer Dashboard</a>
+                    <a href="settings.html"
+                        class="text-text-secondary hover:text-primary transition-colors">Settings</a>
+                    <a href="login.html" class="btn btn-outline px-4 py-2 h-auto auth-login-btn" data-i18n="nav_login">Login</a>
+                    <div class="auth-user-info hidden items-center gap-3" style="display:none;">
+                        <span class="text-sm text-text-secondary">Welcome, <strong
+                                class="auth-user-name text-primary"></strong></span>
+                        <button class="auth-logout-btn btn btn-outline px-3 py-1 h-auto text-sm" data-i18n="nav_logout">Logout</button>
+                    </div>
+                    <a href="shopping_cart.html" class="relative">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span id="cart-count-desktop"
+                            class="absolute -top-2 -right-2 bg-secondary text-on-secondary text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn"
+                    class="md:hidden p-2 rounded-lg hover:bg-surface-elevated transition-colors"
+                    aria-label="Toggle mobile menu">
+                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_117a4830d-1764671721354.png"
+                        alt="Menu icon" class="w-7 h-7"
+                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                </button>
+            </div>
+
+            <!-- Mobile Navigation Menu -->
+            <div id="mobile-menu" class="hidden md:hidden pb-4 border-t border-border mt-2">
+                <div class="flex flex-col gap-3 pt-4">
+                    <a href="home_landing.html"
+                        class="text-primary font-medium py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors">Home</a>
+                    <a href="product_catalog.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors">Products</a>
+                    <a href="farmer_dashboard.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors"
+                        data-role="farmer">Farmer Dashboard</a>
+                    <a href="consumer_dashboard.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors"
+                        data-role="consumer">Consumer Dashboard</a>
+                    <a href="settings.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors">Settings</a>
+                    <a href="login.html" class="btn btn-outline py-2 px-4 mx-3 text-center auth-login-btn" data-i18n="nav_login">Login</a>
+                    <div class="auth-user-info py-2 px-3" style="display:none;">
+                        <span class="text-sm text-text-secondary">Welcome, <strong
+                                class="auth-user-name text-primary"></strong></span>
+                        <button
+                            class="auth-logout-btn btn btn-outline py-2 px-4 mx-3 text-center text-sm">Logout</button>
+                    </div>
+                    <a href="shopping_cart.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-2">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1e9800c8c-1764650951315.png"
+                            alt="Shopping cart icon" class="w-5 h-5"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                        Shopping Cart (<span id="cart-count-mobile">0</span>)
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-br from-primary-50 via-background to-secondary-50 overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-5">
+            <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <pattern id="farm-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+                        <circle cx="25" cy="25" r="2" fill="#2D5016" />
+                        <circle cx="75" cy="75" r="2" fill="#FF9933" />
+                        <path d="M50 20 L50 80" stroke="#8B4513" stroke-width="1" opacity="0.3" />
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#farm-pattern)" />
+            </svg>
+        </div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Hero Content -->
+                <div class="text-center lg:text-left space-y-8">
+                    <div
+                        class="inline-flex items-center gap-2 bg-success-light/20 text-success-dark px-4 py-2 rounded-full text-sm font-medium">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1d36a5063-1769011877843.png"
+                            alt="Verified icon" class="w-5 h-5"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                        Trusted by 50,000+ Indian Farmers
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-primary leading-tight">
+                        Direct Farm to Your Table
+                    </h1>
+
+                    <p class="text-lg sm:text-xl text-text-secondary leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                        Connecting Indian farmers directly with consumers. Get fresh agricultural produce at fair prices
+                        while supporting our farming community. No middlemen, just honest trade.
+                    </p>
+
+                    <!-- Trust Indicators -->
+                    <div class="flex flex-wrap gap-6 justify-center lg:justify-start text-sm text-text-tertiary">
+                        <div class="flex items-center gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1ca731d90-1769184332226.png"
+                                alt="Security shield icon" class="w-5 h-5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            Secure Payments
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1f1fa5cd6-1766987196023.png"
+                                alt="Fast delivery truck icon" class="w-5 h-5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            Fast Delivery
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1ecd315fa-1769184332580.png"
+                                alt="Fresh produce leaf icon" class="w-5 h-5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            100% Fresh
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Image -->
+                <div class="relative">
+                    <div
+                        class="relative rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-500">
+                        <img src="https://images.unsplash.com/flagged/photo-1576106035594-69a5d049173f"
+                            alt="Indian farmer in traditional attire standing in lush green agricultural field with fresh crops"
+                            class="w-full h-[500px] object-cover" loading="lazy"
+                            onerror="this.src='https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                        <div class="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent"></div>
+                    </div>
+
+                    <!-- Floating Stats Card -->
+                    <div
+                        class="absolute -bottom-6 -left-6 bg-surface rounded-xl shadow-xl p-6 border border-border hidden lg:block">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-success/10 p-3 rounded-lg">
+                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_154d4b5cb-1767776472202.png"
+                                    alt="User group icon" class="w-8 h-8"
+                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            </div>
+                            <div>
+                                <p class="text-2xl font-bold text-primary">50,000+</p>
+                                <p class="text-sm text-text-secondary">Active Users</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-surface">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-heading font-bold text-primary mb-4">Why Choose E-Agri Commerce?
+                </h2>
+                <p class="text-lg text-text-secondary max-w-3xl mx-auto">Revolutionizing agricultural trade in India by
+                    connecting farmers and consumers directly</p>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1: Direct Trade -->
+                <div class="card group hover:border-primary/30 transition-all">
+                    <div
+                        class="bg-primary/10 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1bc38b58f-1768337361481.png"
+                            alt="Handshake icon representing direct trade" class="w-10 h-10"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </div>
+                    <h3 class="text-2xl font-heading font-semibold text-primary mb-4">Direct Trade</h3>
+                    <p class="text-text-secondary leading-relaxed mb-6">
+                        Eliminate middlemen and connect directly with farmers. Get authentic farm-fresh produce while
+                        ensuring farmers receive fair compensation for their hard work.
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10b57d829-1766517645947.png"
+                                alt="Check mark icon" class="w-5 h-5 mt-0.5 flex-shrink-0"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-text-secondary">No commission charges</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10b57d829-1766517645947.png"
+                                alt="Check mark icon" class="w-5 h-5 mt-0.5 flex-shrink-0"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-text-secondary">Transparent pricing</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10b57d829-1766517645947.png"
+                                alt="Check mark icon" class="w-5 h-5 mt-0.5 flex-shrink-0"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-text-secondary">Direct farmer contact</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Feature 2: Fair Pricing -->
+                <div class="card group hover:border-secondary/30 transition-all">
+                    <div
+                        class="bg-secondary/10 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:bg-secondary/20 transition-colors">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_16b145b95-1767074208212.png"
+                            alt="Indian Rupee currency icon" class="w-10 h-10"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </div>
+                    <h3 class="text-2xl font-heading font-semibold text-primary mb-4">Fair Pricing</h3>
+                    <p class="text-text-secondary leading-relaxed mb-6">
+                        Farmers set their own prices based on quality and market conditions. Consumers get competitive
+                        rates without inflated middleman markups.
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10b57d829-1766517645947.png"
+                                alt="Check mark icon" class="w-5 h-5 mt-0.5 flex-shrink-0"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-text-secondary">Market-based rates</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10b57d829-1766517645947.png"
+                                alt="Check mark icon" class="w-5 h-5 mt-0.5 flex-shrink-0"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-text-secondary">Better farmer income</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10b57d829-1766517645947.png"
+                                alt="Check mark icon" class="w-5 h-5 mt-0.5 flex-shrink-0"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-text-secondary">Lower consumer costs</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Feature 3: Fresh Delivery -->
+                <div class="card group hover:border-accent/30 transition-all">
+                    <div
+                        class="bg-accent/10 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:bg-accent/20 transition-colors">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_17d3cc191-1767192374344.png"
+                            alt="Delivery truck icon" class="w-10 h-10"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </div>
+                    <h3 class="text-2xl font-heading font-semibold text-primary mb-4">Fresh Delivery</h3>
+                    <p class="text-text-secondary leading-relaxed mb-6">
+                        Farm-to-table delivery ensuring maximum freshness. Track your orders in real-time and receive
+                        produce within 24-48 hours of harvest.
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10b57d829-1766517645947.png"
+                                alt="Check mark icon" class="w-5 h-5 mt-0.5 flex-shrink-0"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-text-secondary">24-48 hour delivery</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10b57d829-1766517645947.png"
+                                alt="Check mark icon" class="w-5 h-5 mt-0.5 flex-shrink-0"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-text-secondary">Real-time tracking</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10b57d829-1766517645947.png"
+                                alt="Check mark icon" class="w-5 h-5 mt-0.5 flex-shrink-0"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-text-secondary">Quality guarantee</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="py-20 bg-gradient-to-br from-primary to-primary-800 text-on-primary relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-10">
+            <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <pattern id="stats-pattern" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+                        <circle cx="40" cy="40" r="1.5" fill="white" />
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#stats-pattern)" />
+            </svg>
+        </div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-heading font-bold mb-4">Our Growing Community</h2>
+                <p class="text-lg text-on-primary/80 max-w-2xl mx-auto">Building India's largest direct agricultural
+                    marketplace</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Stat 1: Farmers -->
+                <div class="text-center group">
+                    <div
+                        class="bg-on-primary/10 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-on-primary/20 transition-colors">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1e4778fd8-1768188611508.png"
+                            alt="Farmer group icon" class="w-12 h-12"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </div>
+                    <p class="text-5xl font-heading font-bold mb-2">50,000+</p>
+                    <p class="text-xl text-on-primary/90">Registered Farmers</p>
+                    <p class="text-sm text-on-primary/70 mt-2">Across 28 Indian states</p>
+                </div>
+
+                <!-- Stat 2: Consumers -->
+                <div class="text-center group">
+                    <div
+                        class="bg-on-primary/10 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-on-primary/20 transition-colors">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1e9800c8c-1764650951315.png"
+                            alt="Shopping cart icon" class="w-12 h-12"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </div>
+                    <p class="text-5xl font-heading font-bold mb-2">1,20,000+</p>
+                    <p class="text-xl text-on-primary/90">Active Consumers</p>
+                    <p class="text-sm text-on-primary/70 mt-2">Monthly active buyers</p>
+                </div>
+
+                <!-- Stat 3: Villages -->
+                <div class="text-center group">
+                    <div
+                        class="bg-on-primary/10 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-on-primary/20 transition-colors">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_16e7465ec-1769184329237.png"
+                            alt="Village homes icon" class="w-12 h-12"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </div>
+                    <p class="text-5xl font-heading font-bold mb-2">8,500+</p>
+                    <p class="text-xl text-on-primary/90">Connected Villages</p>
+                    <p class="text-sm text-on-primary/70 mt-2">Rural communities empowered</p>
+                </div>
+
+                <!-- Stat 4: Transactions -->
+                <div class="text-center group">
+                    <div
+                        class="bg-on-primary/10 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-on-primary/20 transition-colors">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1364064e0-1767603177126.png"
+                            alt="Growth chart icon" class="w-12 h-12"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </div>
+                    <p class="text-5xl font-heading font-bold mb-2">₹25 Cr+</p>
+                    <p class="text-xl text-on-primary/90">Total Transactions</p>
+                    <p class="text-sm text-on-primary/70 mt-2">Direct farmer earnings</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Preview Section -->
+    <section class="py-20 bg-background">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-12">
+                <div>
+                    <h2 class="text-3xl sm:text-4xl font-heading font-bold text-primary mb-2">Popular Products</h2>
+                    <p class="text-lg text-text-secondary">Fresh from our farmers' fields</p>
+                </div>
+                <a href="product_catalog.html" class="btn btn-outline">
+                    View All Products
+                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1291fe4cd-1767542533390.png"
+                        alt="Right arrow icon" class="w-5 h-5 ml-2"
+                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                </a>
+            </div>
+
+            <!-- Products Grid (populated by farmer products only) -->
+            <div id="home-products-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            <div id="home-products-empty"
+                class="hidden text-center py-12 px-4 bg-surface rounded-xl border border-border">
+                <p class="text-text-secondary mb-4">No products listed yet. Farmers, add your fresh produce from the
+                    Farmer Dashboard.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-primary-900 text-on-primary py-12 border-t border-primary-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg class="w-10 h-10" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="24" cy="24" r="22" fill="#FF9933" />
+                            <path d="M24 8C24 8 16 12 16 20C16 24 18 28 24 32C30 28 32 24 32 20C32 12 24 8 24 8Z"
+                                fill="#2D5016" />
+                            <circle cx="24" cy="22" r="3" fill="#FFFFFF" />
+                        </svg>
+                        <div>
+                            <h3 class="font-heading font-bold text-lg">E-Agri Commerce</h3>
+                            <p class="text-xs text-on-primary/70">Farm to Table Direct</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-on-primary/80 leading-relaxed">
+                        Empowering Indian farmers and connecting them directly with consumers for a sustainable
+                        agricultural future.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-heading font-semibold text-lg mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="home_landing.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Home</a></li>
+                        <li><a href="product_catalog.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Products</a>
+                        </li>
+                        <li data-role="farmer"><a href="farmer_dashboard.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Farmer
+                                Dashboard</a></li>
+                        <li data-role="consumer"><a href="consumer_dashboard.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Consumer
+                                Dashboard</a></li>
+                        <li><a href="settings.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Settings</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h4 class="font-heading font-semibold text-lg mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Help
+                                Center</a></li>
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Contact Us</a>
+                        </li>
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">FAQs</a></li>
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Terms &
+                                Conditions</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="font-heading font-semibold text-lg mb-4">Contact</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1175352d5-1767644430280.png"
+                                alt="Email icon" class="w-5 h-5 mt-0.5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-sm text-on-primary/80">support@eagricommerce.in</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_13361d1fe-1768398985241.png"
+                                alt="Phone icon" class="w-5 h-5 mt-0.5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-sm text-on-primary/80">+91 1800-123-4567</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_11407ebac-1766822096581.png"
+                                alt="Location icon" class="w-5 h-5 mt-0.5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-sm text-on-primary/80">Tiruchirappalli,Tamil Nadu, India</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="pt-8 border-t border-primary-800 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-on-primary/70">© 2026 E-Agri Commerce Platform. All Rights Reserved.</p>
+                <div class="flex items-center gap-4">
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="Facebook">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1b9a5f070-1766967796860.png"
+                            alt="Facebook social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="Twitter">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_11caec31f-1764660939199.png"
+                            alt="Twitter social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="Instagram">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1f9c7aecf-1764660938700.png"
+                            alt="Instagram social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="LinkedIn">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1904267c6-1768733084246.png"
+                            alt="LinkedIn social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            var EAgri = window.EAgri;
+            if (EAgri) {
+                EAgri.initCartBadges();
+                EAgri.initMobileMenu();
+            }
+
+            var FALLBACK_IMG = "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=400&auto=format&fit=crop";
+            var grid = document.getElementById("home-products-grid");
+            var emptyEl = document.getElementById("home-products-empty");
+
+            function esc(s) {
+                if (s == null) return "";
+                return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+            }
+
+            // Show loading state
+            if (grid) {
+                grid.innerHTML = '<div class="col-span-4 text-center py-8 text-text-secondary"><p>🌾 Loading fresh products from our farmers...</p></div>';
+            }
+
+            async function renderProducts() {
+                try {
+                    var products = EAgri ? await EAgri.getProducts() : [];
+                    if (products.length === 0) {
+                        if (grid) grid.innerHTML = "";
+                        if (emptyEl) { emptyEl.classList.remove("hidden"); }
+                        return;
+                    }
+                    if (emptyEl) emptyEl.classList.add("hidden");
+                    var html = products.map(function (p) {
+                        var img = p.image || FALLBACK_IMG;
+                        var badge = p.badge ? '<div class="absolute top-3 right-3 bg-success text-on-success text-xs font-bold px-3 py-1 rounded-full">' + esc(p.badge) + "</div>" : "";
+                        var f = p.farmer || "Farmer";
+                        var loc = p.farmerLocation || "";
+                        return '<div class="card group cursor-pointer product-card" data-url="product_details.html?id=' + esc(p.id) + '" data-product-id="' + esc(p.id) + '" tabindex="0" role="link" aria-label="View ' + esc(p.name) + ' details">' +
+                            '<div class="relative overflow-hidden rounded-xl mb-4">' +
+                            '<img src="' + esc(img) + '" alt="' + esc(p.name) + '" class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" onerror="this.src=\'' + esc(FALLBACK_IMG) + '\';this.onerror=null;">' + badge +
+                            "</div>" +
+                            '<h3 class="text-xl font-heading font-semibold text-primary mb-2">' + esc(p.name) + "</h3>" +
+                            '<p class="text-text-secondary text-sm mb-3">' + esc(p.description || p.category || "") + "</p>" +
+                            '<div class="flex items-center justify-between mb-4">' +
+                            '<p class="text-2xl font-bold text-primary">₹' + esc(p.price) + '<span class="text-base font-normal text-text-secondary">/kg</span></p>' +
+                            "</div>" +
+                            '<div class="flex items-center gap-2 text-sm text-text-tertiary mb-4">' +
+                            '<img src="https://images.unsplash.com/photo-1715244416645-443ba80d566e" alt="Farmer" class="w-4 h-4 rounded-full object-cover" onerror="this.style.display=\'none\'">' +
+                            "<span>" + esc(f) + (loc ? ", " + esc(loc) : "") + "</span>" +
+                            "</div>" +
+                            '<button class="btn btn-primary w-full add-to-cart-btn" data-product-id="' + esc(p.id) + '">' +
+                            '<img src="https://img.rocket.new/generatedImages/rocket_gen_img_1ccc01a18-1767411610341.png" alt="Add to cart" class="w-5 h-5 mr-2" onerror="this.style.display=\'none\'">' +
+                            "Add to Cart</button></div>";
+                    }).join("");
+                    if (grid) grid.innerHTML = html;
+
+                    grid.querySelectorAll(".add-to-cart-btn").forEach(function (btn) {
+                        btn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            var id = btn.dataset.productId;
+                            var p = products.find(function (x) { return (x.id || x._id) === id; });
+                            if (p && EAgri) EAgri.addToCart(p, 1);
+                        });
+                    });
+
+                    grid.querySelectorAll(".product-card").forEach(function (card) {
+                        var url = card.dataset.url;
+                        if (!url) return;
+                        card.addEventListener("click", function (e) {
+                            if (!e.target.closest(".add-to-cart-btn")) window.location.href = url;
+                        });
+                        card.addEventListener("keydown", function (e) {
+                            if ((e.key === "Enter" || e.key === " ") && !e.target.closest(".add-to-cart-btn")) {
+                                e.preventDefault();
+                                window.location.href = url;
+                            }
+                        });
+                    });
+                } catch (err) {
+                    if (grid) grid.innerHTML = '<div class="col-span-4 text-center py-8 text-text-secondary"><p>Could not load products. Please check that the server is running.</p></div>';
+                }
+            }
+
+            await renderProducts();
+
+            document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+                a.addEventListener("click", function (e) {
+                    var t = document.querySelector(this.getAttribute("href"));
+                    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: "smooth", block: "start" }); }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
+
+
+

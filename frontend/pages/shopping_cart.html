@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Shopping Cart - Review your selected agricultural products and proceed to checkout">
+    <title>Shopping Cart - E-Agri Commerce Platform</title>
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body class="bg-background">
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-navigation bg-surface/95 backdrop-blur-sm border-b border-border shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex items-center gap-3">
+                    <svg class="w-12 h-12" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="24" cy="24" r="22" fill="#2D5016" />
+                        <path d="M24 8C24 8 16 12 16 20C16 24 18 28 24 32C30 28 32 24 32 20C32 12 24 8 24 8Z"
+                            fill="#FF9933" />
+                        <circle cx="24" cy="22" r="3" fill="#FFFFFF" />
+                        <path d="M20 32L24 40L28 32" stroke="#8B4513" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <div>
+                        <h1 class="text-xl font-heading font-bold text-primary">E-Agri Commerce</h1>
+                        <p class="text-xs text-text-secondary">Farm to Table Direct</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="home_landing.html"
+                        class="text-text-secondary hover:text-primary transition-colors">Home</a>
+                    <a href="product_catalog.html"
+                        class="text-text-secondary hover:text-primary transition-colors">Products</a>
+                    <a href="farmer_dashboard.html" class="text-text-secondary hover:text-primary transition-colors" data-role="farmer">
+                        Farmer Dashboard</a>
+                    <a href="consumer_dashboard.html" class="text-text-secondary hover:text-primary transition-colors" data-role="consumer">
+                        Consumer Dashboard</a>
+                    <a href="settings.html"
+                        class="text-text-secondary hover:text-primary transition-colors">Settings</a>
+                    <a href="login.html" class="btn btn-outline px-4 py-2 h-auto auth-login-btn" data-i18n="nav_login">Login</a>
+                    <div class="auth-user-info items-center gap-3" style="display:none;">
+                        <span class="text-sm text-text-secondary">Welcome, <strong
+                                class="auth-user-name text-primary"></strong></span>
+                        <button class="auth-logout-btn btn btn-outline px-3 py-1 h-auto text-sm" data-i18n="nav_logout">Logout</button>
+                    </div>
+                     <a href="shopping_cart.html" class="relative">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span id="cart-count-desktop"
+                            class="absolute -top-2 -right-2 bg-secondary text-on-secondary text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn"
+                    class="md:hidden p-2 rounded-lg hover:bg-surface-elevated transition-colors"
+                    aria-label="Toggle mobile menu">
+                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1cd13edc4-1768269410245.png"
+                        alt="Menu icon for mobile navigation" class="w-7 h-7"
+                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                </button>
+            </div>
+
+            <!-- Mobile Navigation Menu -->
+            <div id="mobile-menu" class="hidden md:hidden pb-4 border-t border-border mt-2">
+                <div class="flex flex-col gap-3 pt-4">
+                    <a href="home_landing.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors">Home</a>
+                    <a href="product_catalog.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors">Products</a>
+                    <a href="farmer_dashboard.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors" data-role="farmer">
+                        Farmer Dashboard</a>
+                    <a href="consumer_dashboard.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors" data-role="consumer">
+                        Consumer Dashboard</a>
+                    <a href="settings.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors">Settings</a>
+                    <a href="login.html" class="btn btn-outline py-2 px-4 mx-3 text-center auth-login-btn" data-i18n="nav_login">Login</a>
+                    <div class="auth-user-info py-2 px-3" style="display:none;">
+                        <span class="text-sm text-text-secondary">Welcome, <strong
+                                class="auth-user-name text-primary"></strong></span>
+                        <button
+                            class="auth-logout-btn btn btn-outline py-2 px-4 mx-3 text-center text-sm">Logout</button>
+                    </div>
+                    <a href="shopping_cart.html"
+                        class="text-primary font-medium py-2 px-3 rounded-lg bg-primary/10 flex items-center gap-2">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1e9800c8c-1764650951315.png"
+                            alt="Shopping cart icon" class="w-5 h-5"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                        Shopping Cart
+                        <span id="cart-count-mobile"
+                            class="ml-auto bg-secondary text-on-secondary text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Breadcrumb Navigation -->
+    <section class="bg-surface border-b border-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center gap-2 text-sm">
+                <a href="home_landing.html" class="text-text-secondary hover:text-primary transition-colors" data-i18n="nav_home">Home</a>
+                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_15fb9a386-1768027314909.png"
+                    alt="Breadcrumb separator" class="w-4 h-4"
+                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                <span class="text-primary font-medium">Shopping Cart</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl sm:text-4xl font-heading font-bold text-primary mb-2">Shopping Cart</h1>
+            <p class="text-lg text-text-secondary">Review your selected products and proceed to checkout</p>
+        </div>
+
+        <!-- Cart Content Grid -->
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Cart Items Section (Left - 2 columns) -->
+            <div class="lg:col-span-2">
+                <!-- Cart Items Container (populated by app.js) -->
+                <div id="cart-items-container" class="space-y-4"></div>
+
+                <!-- Empty Cart State (Hidden by default) -->
+                <div id="empty-cart-state" class="hidden">
+                    <div class="card text-center py-16">
+                        <div class="mb-6">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1c0cc03c2-1767700496130.png"
+                                alt="Empty shopping cart illustration" class="w-32 h-32 mx-auto opacity-50"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                        </div>
+                        <h2 class="text-2xl font-heading font-bold text-primary mb-3">Your Cart is Empty</h2>
+                        <p class="text-text-secondary mb-8 max-w-md mx-auto">
+                            Start adding fresh agricultural products from our trusted farmers to your cart
+                        </p>
+                        <a href="product_catalog.html" class="btn btn-primary inline-flex">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_16f1fb4d8-1766874081065.png"
+                                alt="Shopping icon" class="w-5 h-5 mr-2"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            Browse Products
+                        </a>
+
+
+                    </div>
+                </div>
+
+                <!-- Continue Shopping Button -->
+                <div class="mt-6">
+                    <a href="product_catalog.html" class="btn btn-outline w-full sm:w-auto">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1ca787191-1766814956371.png"
+                            alt="Back arrow icon" class="w-5 h-5 mr-2"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                        Continue Shopping
+                    </a>
+                </div>
+            </div>
+
+            <!-- Order Summary Section (Right - 1 column) -->
+            <div class="lg:col-span-1">
+                <div class="card sticky top-24">
+                    <h2 class="text-2xl font-heading font-bold text-primary mb-6">Order Summary</h2>
+
+                    <!-- Cart Persistence Info -->
+                    <div class="bg-info/10 border border-info/30 rounded-lg p-4 mb-6">
+                        <div class="flex items-start gap-3">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_11f5df0ae-1767626778469.png"
+                                alt="Information icon" class="w-5 h-5 mt-0.5 flex-shrink-0"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <div>
+                                <p class="text-sm font-medium text-info-dark mb-1">Cart Saved</p>
+                                <p id="cart-saved-time" class="text-xs text-text-secondary">Last updated: Just now</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Address -->
+                    <div class="mb-6">
+                        <label for="delivery-address" class="block text-sm font-medium text-primary mb-2">Delivery
+                            Address</label>
+                        <textarea id="delivery-address" class="input w-full" rows="3"
+                            placeholder="Enter your complete delivery address"></textarea>
+                    </div>
+
+                    <!-- Price Breakdown -->
+                    <div class="space-y-4 mb-6 pb-6 border-b border-border">
+                        <div class="flex items-center justify-between">
+                            <span class="text-text-secondary">Subtotal (<span id="total-items">3</span> items)</span>
+                            <span class="font-semibold text-primary" id="subtotal-amount">₹589</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-text-secondary">Delivery Fee</span>
+                            <span class="font-semibold text-primary" id="delivery-fee">₹50</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-text-secondary">GST (5%)</span>
+                            <span class="font-semibold text-primary" id="gst-amount">₹29</span>
+                        </div>
+                        <div class="flex items-center justify-between text-success">
+                            <span class="flex items-center gap-2">
+                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1bcedfce1-1766844615345.png"
+                                    alt="Discount tag icon" class="w-4 h-4"
+                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                                Bulk Discount
+                            </span>
+                            <span class="font-semibold" id="discount-amount">-₹21</span>
+                        </div>
+                    </div>
+
+                    <!-- Total Amount -->
+                    <div class="flex items-center justify-between mb-6 pb-6 border-b border-border">
+                        <span class="text-xl font-heading font-bold text-primary">Total Amount</span>
+                        <span class="text-2xl font-heading font-bold text-primary" id="total-amount">₹647</span>
+                    </div>
+
+
+                    <!-- Payment Method Select on next page -->
+
+                    <!-- Checkout Button -->
+                    <button id="checkout-btn" class="btn btn-primary w-full mb-4">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_185f3fd27-1767015509544.png"
+                            alt="Secure checkout lock icon" class="w-5 h-5 mr-2"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                        Proceed to Checkout
+                    </button>
+
+                    <!-- Trust Indicators -->
+                    <div class="space-y-3 text-sm text-text-tertiary">
+                        <div class="flex items-center gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1ca731d90-1769184332226.png"
+                                alt="Security shield icon" class="w-5 h-5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span>100% Secure Payments</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1f1fa5cd6-1766987196023.png"
+                                alt="Fast delivery truck icon" class="w-5 h-5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span>Fast & Fresh Delivery</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1ecd315fa-1769184332580.png"
+                                alt="Fresh produce leaf icon" class="w-5 h-5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span>Farm Fresh Guarantee</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Promotional Banner -->
+        <section class="mt-12 bg-gradient-to-r from-primary to-primary-700 rounded-2xl p-8 text-on-primary">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-4">
+                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1ea727416-1764699435010.png"
+                        alt="Gift box icon for promotional offer" class="w-12 h-12"
+                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    <div>
+                        <h3 class="text-xl font-heading font-bold mb-1">Special Offer!</h3>
+                        <p class="text-on-primary/90">Get 10% off on orders above ₹1,000</p>
+                    </div>
+                </div>
+                <div class="bg-secondary text-on-secondary px-6 py-3 rounded-xl font-bold text-lg">
+                    Use Code: FARM10
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-primary-900 text-on-primary py-12 border-t border-primary-800 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg class="w-10 h-10" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="24" cy="24" r="22" fill="#FF9933" />
+                            <path d="M24 8C24 8 16 12 16 20C16 24 18 28 24 32C30 28 32 24 32 20C32 12 24 8 24 8Z"
+                                fill="#2D5016" />
+                            <circle cx="24" cy="22" r="3" fill="#FFFFFF" />
+                        </svg>
+                        <div>
+                            <h3 class="font-heading font-bold text-lg">E-Agri Commerce</h3>
+                            <p class="text-xs text-on-primary/70">Farm to Table Direct</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-on-primary/80 leading-relaxed">
+                        Empowering Indian farmers and connecting them directly with consumers for a sustainable
+                        agricultural future.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-heading font-semibold text-lg mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="home_landing.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Home</a></li>
+                        <li><a href="product_catalog.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Products</a>
+                        </li>
+                        <li data-role="farmer"><a href="farmer_dashboard.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Farmer
+                                Dashboard</a></li>
+                        <li data-role="consumer"><a href="consumer_dashboard.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Consumer
+                                Dashboard</a></li>
+                        <li><a href="settings.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Settings</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h4 class="font-heading font-semibold text-lg mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Help
+                                Center</a></li>
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Contact Us</a>
+                        </li>
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">FAQs</a></li>
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Terms &
+                                Conditions</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="font-heading font-semibold text-lg mb-4">Contact</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1175352d5-1767644430280.png"
+                                alt="Email icon" class="w-5 h-5 mt-0.5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-sm text-on-primary/80">support@eagricommerce.in</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_13361d1fe-1768398985241.png"
+                                alt="Phone icon" class="w-5 h-5 mt-0.5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-sm text-on-primary/80">+91 1800-123-4567</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_11407ebac-1766822096581.png"
+                                alt="Location icon" class="w-5 h-5 mt-0.5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-sm text-on-primary/80">Tiruchirappalli,Tamil Nadu, India</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="pt-8 border-t border-primary-800 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-on-primary/70">© 2026 E-Agri Commerce Platform. All Rights Reserved.</p>
+                <div class="flex items-center gap-4">
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="Facebook">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1b9a5f070-1766967796860.png"
+                            alt="Facebook social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="Twitter">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_11caec31f-1764660939199.png"
+                            alt="Twitter social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="Instagram">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1f9c7aecf-1764660938700.png"
+                            alt="Instagram social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="LinkedIn">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1904267c6-1768733084246.png"
+                            alt="LinkedIn social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/settings.js"></script>
+    <script>
+        (function () {
+            var FALLBACK = 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=400';
+            var container = document.getElementById('cart-items-container');
+            var emptyState = document.getElementById('empty-cart-state');
+            var checkoutBtn = document.getElementById('checkout-btn');
+
+            function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+            function render() {
+                var cart = window.EAgri ? window.EAgri.getCart() : [];
+                if (cart.length === 0) {
+                    if (container) container.classList.add('hidden');
+                    if (emptyState) emptyState.classList.remove('hidden');
+                    updateTotals(0, 0);
+                    return;
+                }
+                if (emptyState) emptyState.classList.add('hidden');
+                if (container) container.classList.remove('hidden');
+
+                container.innerHTML = cart.map(function (i) {
+                    var total = (i.price || 0) * (i.quantity || 1);
+                    return '<div class="card cart-item" data-product-id="' + esc(i.id) + '" data-price="' + esc(i.price) + '" data-stock="' + (i.stock || 999) + '">' +
+                        '<div class="flex flex-col sm:flex-row gap-6">' +
+                        '<div class="relative overflow-hidden rounded-xl w-full sm:w-40 h-40 flex-shrink-0">' +
+                        '<img src="' + esc(i.image) + '" alt="' + esc(i.name) + '" class="w-full h-full object-cover" onerror="this.src=\'' + FALLBACK + '\';this.onerror=null;">' +
+                        '</div><div class="flex-1 flex flex-col justify-between">' +
+                        '<div><div class="flex items-start justify-between gap-4 mb-2"><div><h3 class="text-xl font-heading font-semibold text-primary mb-1">' + esc(i.name) + '</h3></div>' +
+                        '<button type="button" class="remove-item p-2 hover:bg-error/10 rounded-lg" aria-label="Remove">✕</button></div>' +
+                        '<div class="flex items-center gap-2 text-sm text-text-tertiary mb-3"><span>' + esc(i.farmer) + '</span></div>' +
+                        '<div class="flex items-center gap-2 text-sm text-success mb-3"><span>Delivery in 24-48 hours</span></div></div>' +
+                        '<div class="flex items-center justify-between gap-4 pt-4 border-t border-border">' +
+                        '<div class="flex items-center gap-3">' +
+                        '<button type="button" class="quantity-decrease w-10 h-10 rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-on-primary flex items-center justify-center font-bold">−</button>' +
+                        '<input type="number" class="quantity-input w-16 h-10 text-center border-2 border-border rounded-lg font-semibold text-primary" value="' + (i.quantity || 1) + '" min="1" max="' + (i.stock || 999) + '">' +
+                        '<button type="button" class="quantity-increase w-10 h-10 rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-on-primary flex items-center justify-center font-bold">+</button>' +
+                        '<span class="text-xs text-text-tertiary ml-2">kg</span></div>' +
+                        '<div class="text-right"><p class="text-2xl font-bold text-primary item-total">₹' + total + '</p></div></div></div></div></div>';
+                }).join('');
+            }
+
+            function updateTotals(subtotal, totalItems) {
+                var delivery = subtotal > 500 ? 0 : 50;
+                var gst = Math.round(subtotal * 0.05);
+                var discount = subtotal > 400 ? 21 : 0;
+                var total = subtotal + delivery + gst - discount;
+                var el = function (id) { return document.getElementById(id); };
+                if (el('total-items')) el('total-items').textContent = totalItems;
+                if (el('subtotal-amount')) el('subtotal-amount').textContent = '₹' + subtotal;
+                if (el('delivery-fee')) el('delivery-fee').textContent = delivery === 0 ? 'FREE' : '₹' + delivery;
+                if (el('gst-amount')) el('gst-amount').textContent = '₹' + gst;
+                if (el('discount-amount')) el('discount-amount').textContent = discount > 0 ? '-₹' + discount : '₹0';
+                if (el('total-amount')) el('total-amount').textContent = '₹' + total;
+                if (el('cart-count-desktop')) el('cart-count-desktop').textContent = totalItems;
+                if (el('cart-count-mobile')) el('cart-count-mobile').textContent = totalItems;
+            }
+
+            function refresh() {
+                render();
+                var cart = window.EAgri ? window.EAgri.getCart() : [];
+                var subtotal = cart.reduce(function (s, i) { return s + (i.price || 0) * (i.quantity || 0); }, 0);
+                var totalItems = cart.reduce(function (s, i) { return s + (i.quantity || 0); }, 0);
+                updateTotals(subtotal, totalItems);
+            }
+
+            container.addEventListener('click', function (e) {
+                var item = e.target.closest('.cart-item');
+                if (!item || !window.EAgri) return;
+                var id = item.dataset.productId;
+                var qInput = item.querySelector('.quantity-input');
+                if (e.target.closest('.remove-item')) {
+                    if (confirm('Remove this item?')) { window.EAgri.removeFromCart(id); refresh(); }
+                } else if (e.target.closest('.quantity-increase') && qInput) {
+                    var q = Math.min(parseInt(qInput.value, 10) + 1, parseInt(item.dataset.stock, 10) || 999);
+                    window.EAgri.updateCartItemQty(id, q);
+                    refresh();
+                } else if (e.target.closest('.quantity-decrease') && qInput) {
+                    var q = Math.max(parseInt(qInput.value, 10) - 1, 1);
+                    window.EAgri.updateCartItemQty(id, q);
+                    refresh();
+                }
+            });
+
+            container.addEventListener('input', function (e) {
+                if (e.target.classList.contains('quantity-input') && window.EAgri) {
+                    var item = e.target.closest('.cart-item');
+                    var id = item.dataset.productId;
+                    var q = Math.max(1, Math.min(parseInt(e.target.value, 10) || 1, parseInt(item.dataset.stock, 10) || 999));
+                    window.EAgri.updateCartItemQty(id, q);
+                    refresh();
+                }
+            });
+
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', function () {
+                    var cart = window.EAgri ? window.EAgri.getCart() : [];
+                    if (cart.length === 0) { alert('Your cart is empty.'); return; }
+                    var addrEl = document.getElementById('delivery-address');
+                    var addr = addrEl ? addrEl.value.trim() : '';
+                    var cp = window.EAgri ? window.EAgri.getConsumerProfile() : {};
+                    if (!addr) addr = cp.address || '';
+                    if (!addr) { alert('Please enter your delivery address.'); if (addrEl) addrEl.focus(); return; }
+                    
+                    if(window.EAgri && window.EAgri.updateConsumerProfile) {
+                        cp.address = addr;
+                        window.EAgri.updateConsumerProfile(cp);
+                    }
+                    window.location.href = 'payment.html';
+                });
+            }
+
+            (function setupAddressPrefill() {
+                var addrEl = document.getElementById('delivery-address');
+                if (!addrEl) return;
+
+                function setFromDefaultAddress() {
+                    if (!window.EAgriSettings || typeof window.EAgriSettings.getDefaultAddress !== 'function') return false;
+                    try {
+                        var def = window.EAgriSettings.getDefaultAddress();
+                        if (!def) return false;
+                        var parts = [def.addressLine, def.city, def.state, def.pincode].filter(Boolean);
+                        var addrStr = parts.join(', ');
+                        if (addrStr && !addrEl.value) {
+                            addrEl.value = addrStr;
+                            return true;
+                        }
+                    } catch (e) {}
+                    return false;
+                }
+
+                function setFromConsumerProfile() {
+                    var cp = window.EAgri ? window.EAgri.getConsumerProfile() : {};
+                    if (addrEl && cp.address && !addrEl.value) {
+                        addrEl.value = cp.address;
+                        return true;
+                    }
+                    return false;
+                }
+
+                if (!setFromDefaultAddress()) {
+                    setFromConsumerProfile();
+                }
+
+                window.addEventListener('eagri-profile-loaded', function () {
+                    if (!addrEl || addrEl.value) return;
+                    if (!setFromDefaultAddress()) {
+                        setFromConsumerProfile();
+                    }
+                });
+            })();
+
+            window.addEventListener('eagri-cart-change', refresh);
+            refresh();
+            if (window.EAgri) {
+                window.EAgri.initCartBadges();
+                window.EAgri.initMobileMenu();
+            }
+
+            // Update cart saved time dynamically
+            var timeEl = document.getElementById('cart-saved-time');
+            if (timeEl) {
+                function updateCartTime() {
+                    var now = new Date();
+                    var options = { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+                    timeEl.textContent = 'Last updated: ' + now.toLocaleString('en-IN', options);
+                }
+                updateCartTime();
+                setInterval(updateCartTime, 60000);
+            }
+        })();
+    </script>
+</body>
+
+</html>
+
+
+

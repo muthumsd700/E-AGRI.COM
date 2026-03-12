@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Farmer dashboard to manage profile and add farm products">
+    <title>Farmer Dashboard - E-Agri Commerce</title>
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body class="bg-background">
+    <header class="sticky top-0 z-navigation bg-surface/95 backdrop-blur-sm border-b border-border shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-3">
+                    <svg class="w-10 h-10" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="24" cy="24" r="22" fill="#2D5016" />
+                        <path d="M24 8C24 8 16 12 16 20C16 24 18 28 24 32C30 28 32 24 32 20C32 12 24 8 24 8Z"
+                            fill="#FF9933" />
+                        <circle cx="24" cy="22" r="3" fill="#FFFFFF" />
+                    </svg>
+                    <div>
+                        <h1 class="text-xl font-heading font-bold text-primary">Farmer Dashboard</h1>
+                        <p class="text-xs text-text-secondary">Manage your products and profile</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <a href="settings.html" class="text-text-secondary hover:text-primary" data-i18n="nav_settings" data-i18n="nav_settings">Settings</a>
+                    <a href="product_catalog.html" class="text-text-secondary hover:text-primary">View Catalog</a>
+                    <a href="#farmer-orders" class="text-text-secondary hover:text-primary">Orders</a>
+                    <a href="home_landing.html" class="btn btn-outline px-4 py-2 h-auto">Back to Home</a>
+                    <div class="auth-user-info items-center gap-3" style="display:none;">
+                        <span class="text-sm text-text-secondary">Welcome, <strong
+                                class="auth-user-name text-primary"></strong></span>
+                        <button class="auth-logout-btn btn btn-outline px-4 py-2 h-auto text-sm" data-i18n="nav_logout">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Farmer Profile -->
+            <section class="card lg:col-span-1">
+                <h2 class="text-2xl font-heading font-semibold text-primary mb-4">Farmer Profile</h2>
+
+                <div class="flex items-center gap-4 mb-6">
+                    <img id="profile-image"
+                        src=""
+                        alt="Farmer profile photo" class="w-20 h-20 rounded-full object-cover border border-border hidden">
+                    <div>
+                        <p id="profile-name" class="text-xl font-semibold text-primary">Ramesh Kumar</p>
+                        <p id="profile-location" class="text-text-secondary">Nashik, Maharashtra</p>
+                        <p id="profile-tagline" class="text-sm text-text-tertiary">Organic Vegetables Farmer</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3 mb-6">
+                    <p class="text-sm">
+                        <span class="font-medium text-primary">Phone:</span>
+                        <span id="profile-phone">+91 98765 43210</span>
+                    </p>
+                    <p class="text-sm">
+                        <span class="font-medium text-primary">Experience:</span>
+                        <span id="profile-experience">12 years</span>
+                    </p>
+                    <p class="text-sm">
+                        <span class="font-medium text-primary">Farm Size:</span>
+                        <span id="profile-farm-size">8 acres</span>
+                    </p>
+                </div>
+
+                <div class="bg-primary/5 rounded-lg p-4">
+                    <p class="text-sm text-text-secondary">
+                        Tip: Add clear product photos and accurate stock to get better customer trust and faster orders.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Add Product + Product List -->
+            <section class="lg:col-span-2 space-y-6">
+                <div class="card">
+                    <h2 class="text-2xl font-heading font-semibold text-primary mb-4">Add Product</h2>
+                    <form id="product-form" class="space-y-4">
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="product-name" class="text-sm font-medium text-primary">Product Name</label>
+                                <input id="product-name" class="input mt-1" type="text"
+                                    placeholder="e.g., Fresh Tomatoes" required>
+                            </div>
+                            <div>
+                                <label for="product-category" class="text-sm font-medium text-primary">Category</label>
+                                <input id="product-category" class="input mt-1" type="text"
+                                    placeholder="e.g., Vegetables" required>
+                            </div>
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="product-price" class="text-sm font-medium text-primary">Price (INR)</label>
+                                <input id="product-price" class="input mt-1" type="number" min="1"
+                                    placeholder="e.g., 40" required>
+                            </div>
+                            <div>
+                                <label for="product-stock" class="text-sm font-medium text-primary">Quantity / Stock
+                                    (kg)</label>
+                                <input id="product-stock" class="input mt-1" type="number" min="0"
+                                    placeholder="e.g., 200" required>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="product-availability" class="accent-primary" checked>
+                                <span class="text-sm font-medium text-primary">Available</span>
+                            </label>
+                        </div>
+
+                        <div>
+                            <label for="product-image-file" class="text-sm font-medium text-primary">
+                                Upload Product Image (Max 5MB)
+                            </label>
+
+                            <input id="product-image-file" class="input mt-1" type="file" accept="image/*" required>
+
+                            <p class="text-xs text-text-secondary mt-1">
+                                Only JPG, PNG, WEBP allowed. Maximum size 5MB.
+                            </p>
+
+                            <!-- Image Preview -->
+                            <img id="product-image-preview"
+                                class="mt-3 hidden w-32 h-32 object-cover rounded-lg border border-border"
+                                alt="Image Preview">
+                        </div>
+
+                        <div>
+                            <label for="product-description"
+                                class="text-sm font-medium text-primary">Description</label>
+                            <textarea id="product-description" class="input mt-1" rows="3"
+                                placeholder="Short product description"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Add Product</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-2xl font-heading font-semibold text-primary">Your Products</h2>
+                        <p id="product-count" class="text-sm text-text-secondary">0 products</p>
+                    </div>
+                    <div id="products-list" class="grid sm:grid-cols-2 gap-4"></div>
+                </div>
+
+                <div class="card" id="farmer-orders">
+                    <h2 class="text-2xl font-heading font-semibold text-primary mb-4">Received Orders</h2>
+                    <div id="farmer-orders-list" class="space-y-4"></div>
+                    <div id="farmer-orders-empty" class="hidden text-center py-8 text-text-secondary">
+                        No orders yet.
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Edit Product Modal -->
+        <div id="edit-product-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 p-4"
+            aria-hidden="true">
+            <div class="card max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                <h3 class="text-xl font-heading font-semibold text-primary mb-4">Edit Product</h3>
+                <form id="edit-product-form" class="space-y-4">
+                    <input type="hidden" id="edit-product-id">
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div><label for="edit-product-name" class="text-sm font-medium text-primary">Product
+                                Name</label>
+                            <input id="edit-product-name" class="input mt-1" type="text" required>
+                        </div>
+                        <div><label for="edit-product-category"
+                                class="text-sm font-medium text-primary">Category</label>
+                            <input id="edit-product-category" class="input mt-1" type="text" required>
+                        </div>
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div><label for="edit-product-price" class="text-sm font-medium text-primary">Price
+                                (INR)</label>
+                            <input id="edit-product-price" class="input mt-1" type="number" min="1" required>
+                        </div>
+                        <div><label for="edit-product-stock" class="text-sm font-medium text-primary">Stock (kg)</label>
+                            <input id="edit-product-stock" class="input mt-1" type="number" min="0" required>
+                        </div>
+                    </div>
+                    <div><label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="edit-product-availability" class="accent-primary" checked>
+                            <span class="text-sm font-medium text-primary">Available</span></label></div>
+                    <div>
+                        <label class="text-sm font-medium text-primary">Product Image</label>
+                        <div class="mt-1 flex items-center gap-4">
+                            <div id="edit-product-avatar" class="w-16 h-16 rounded-lg bg-surface-elevated flex items-center justify-center overflow-hidden border border-border">
+                                <img id="edit-product-preview" src="" alt="Preview" class="w-full h-full object-cover hidden">
+                                <span class="text-xs text-text-tertiary">No image</span>
+                            </div>
+                            <label class="btn btn-secondary btn-sm cursor-pointer">
+                                <span>Change Image</span>
+                                <input type="file" id="edit-product-file" accept="image/*" class="sr-only">
+                            </label>
+                        </div>
+                        <input id="edit-product-image" type="hidden">
+                    </div>
+                    <div><label for="edit-product-description"
+                            class="text-sm font-medium text-primary">Description</label>
+                        <textarea id="edit-product-description" class="input mt-1" rows="3"></textarea>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" id="edit-modal-cancel" class="btn btn-outline">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1200&auto=format&fit=crop";
+
+        const productForm = document.getElementById("product-form");
+        const productsList = document.getElementById("products-list");
+        const productCount = document.getElementById("product-count");
+        const fileInput = document.getElementById("product-image-file");
+        const previewImg = document.getElementById("product-image-preview");
+        const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+        let imageBase64 = "";
+
+        /* ===============================
+           FARMER AUTH GUARD
+        =================================*/
+        function checkFarmerAccess() {
+            const user = window.EAgri ? window.EAgri.getUser() : null;
+            // Token is stored inside eagriUser.token (set by login.html)
+            const token = (user && user.token) ? user.token : '';
+
+            if (!token || !user) {
+                // Not logged in
+                const main = document.querySelector('main');
+                if (main) {
+                    main.innerHTML = `
+                        <div class="flex flex-col items-center justify-center min-h-[50vh] text-center p-8">
+                            <div class="card max-w-md w-full">
+                                <div class="text-6xl mb-4">🔒</div>
+                                <h2 class="text-2xl font-heading font-bold text-primary mb-2">Login Required</h2>
+                                <p class="text-text-secondary mb-6">You must be logged in as a <strong>Farmer</strong> to access this dashboard.</p>
+                                <a href="login.html" class="btn btn-primary">Go to Login</a>
+                            </div>
+                        </div>`;
+                }
+                return false;
+            }
+
+            if (user.role !== 'farmer') {
+                // Logged in but not a farmer
+                const main = document.querySelector('main');
+                if (main) {
+                    main.innerHTML = `
+                        <div class="flex flex-col items-center justify-center min-h-[50vh] text-center p-8">
+                            <div class="card max-w-md w-full">
+                                <div class="text-6xl mb-4">🚫</div>
+                                <h2 class="text-2xl font-heading font-bold text-primary mb-2">Farmers Only</h2>
+                                <p class="text-text-secondary mb-6">Only <strong>Farmers</strong> can add and manage products. Your account is registered as <strong>${window.EAgri.escapeHtml(user.role)}</strong>.</p>
+                                <a href="consumer_dashboard.html" class="btn btn-primary">Go to Consumer Dashboard</a>
+                            </div>
+                        </div>`;
+                }
+                return false;
+            }
+
+            return true;
+        }
+
+        /* ===============================
+           IMAGE UPLOAD + PREVIEW
+        =================================*/
+        if (fileInput) {
+            fileInput.addEventListener("change", function () {
+                const file = this.files[0];
+                if (!file) return;
+                if (file.size > MAX_IMAGE_SIZE) { alert("Image must be less than 5MB."); this.value = ""; return; }
+                if (!file.type.startsWith("image/")) { alert("Only image files allowed."); this.value = ""; return; }
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imageBase64 = e.target.result;
+                    previewImg.src = imageBase64;
+                    previewImg.classList.remove("hidden");
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        /* ===============================
+           RENDER PRODUCTS (async)
+        =================================*/
+        async function renderProducts() {
+            try {
+                productsList.innerHTML = '<p class="text-text-secondary col-span-2">Loading products...</p>';
+                const products = window.EAgri ? await window.EAgri.getFarmerProducts() : [];
+                productCount.textContent = products.length + " product" + (products.length === 1 ? "" : "s");
+
+                if (products.length === 0) {
+                    productsList.innerHTML = '<div class="col-span-2 bg-primary/5 rounded-lg p-4"><p class="text-text-secondary">No products yet. Add your first product above!</p></div>';
+                    return;
+                }
+
+                productsList.innerHTML = products.map(p => `
+                    <article class="border border-border rounded-xl overflow-hidden bg-surface">
+                        <img src="${p.image || FALLBACK_IMAGE}" 
+                             class="w-full h-40 object-cover"
+                             onerror="this.src='${FALLBACK_IMAGE}'">
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold text-primary">${window.EAgri.escapeHtml(p.name)}</h3>
+                            <p class="text-sm text-text-secondary">${window.EAgri.escapeHtml(p.category || '')}</p>
+                            <p class="text-lg font-bold text-primary">₹${window.EAgri.escapeHtml(String(p.price))}/kg</p>
+                            <p class="text-sm text-text-tertiary">Stock: ${window.EAgri.escapeHtml(String(p.stock))} kg</p>
+                            <div class="mt-2 flex gap-3">
+                                <button class="text-primary hover:underline font-medium edit-product" data-id="${window.EAgri.escapeHtml(p.id)}">Edit</button>
+                                <button class="text-error hover:underline remove-product" data-id="${window.EAgri.escapeHtml(p.id)}">Delete</button>
+                            </div>
+                        </div>
+                    </article>
+                `).join("");
+            } catch (err) {
+                productsList.innerHTML = '<div class="col-span-2 bg-error/5 rounded-lg p-4"><p class="text-error">Failed to load products. Make sure the server is running.</p></div>';
+            }
+        }
+
+        /* ===============================
+           ADD PRODUCT (async)
+        =================================*/
+        if (productForm) {
+            productForm.addEventListener("submit", async function (e) {
+                e.preventDefault();
+                const submitBtn = productForm.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Adding...';
+
+                const name = document.getElementById("product-name").value.trim();
+                const category = document.getElementById("product-category").value.trim();
+                const price = parseFloat(document.getElementById("product-price").value.trim());
+                const stock = parseInt(document.getElementById("product-stock").value.trim(), 10);
+                const description = document.getElementById("product-description").value.trim();
+                const availability = document.getElementById("product-availability").checked;
+
+                if (!imageBase64) {
+                    alert("Please upload a product image.");
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Add Product';
+                    return;
+                }
+
+                try {
+                    await window.EAgri.addFarmerProduct({ name, category, price, stock, description, image: imageBase64, availability });
+                    if (window.EAgri.toast) window.EAgri.toast("Product added successfully!", "success");
+                    productForm.reset();
+                    imageBase64 = "";
+                    previewImg.classList.add("hidden");
+                    fileInput.value = "";
+                    await renderProducts();
+                } catch (err) {
+                    if (window.EAgri.toast) window.EAgri.toast("Error: " + err.message, "error");
+                    else alert("Error: " + err.message);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Add Product';
+                }
+            });
+        }
+
+        /* ===============================
+           DELETE & EDIT (async)
+        =================================*/
+        productsList.addEventListener("click", async function (e) {
+            const removeBtn = e.target.closest(".remove-product");
+            const editBtn = e.target.closest(".edit-product");
+
+            if (removeBtn && window.EAgri) {
+                if (confirm("Delete this product? This cannot be undone.")) {
+                    try {
+                        await window.EAgri.removeFarmerProduct(removeBtn.dataset.id);
+                        if (window.EAgri.toast) window.EAgri.toast("Product deleted.", "success");
+                        await renderProducts();
+                    } catch (err) {
+                        if (window.EAgri.toast) window.EAgri.toast("Error: " + err.message, "error");
+                    }
+                }
+            }
+
+            if (editBtn && window.EAgri) {
+                const id = editBtn.dataset.id;
+                const products = await window.EAgri.getFarmerProducts();
+                const product = products.find(p => p.id === id);
+                if (product) {
+                    document.getElementById("edit-product-id").value = product.id;
+                    document.getElementById("edit-product-name").value = product.name || "";
+                    document.getElementById("edit-product-category").value = product.category || "";
+                    document.getElementById("edit-product-price").value = product.price || "";
+                    document.getElementById("edit-product-stock").value = product.stock || "";
+                    document.getElementById("edit-product-availability").checked = product.availability !== false;
+                    
+                    const editPreview = document.getElementById("edit-product-preview");
+                    const editImageInput = document.getElementById("edit-product-image");
+                    if (product.image) {
+                        editPreview.src = product.image;
+                        editPreview.classList.remove("hidden");
+                        editImageInput.value = product.image;
+                    } else {
+                        editPreview.classList.add("hidden");
+                        editImageInput.value = "";
+                    }
+                    
+                    document.getElementById("edit-product-description").value = product.description || "";
+                    document.getElementById("edit-product-modal").classList.remove("hidden");
+                }
+            }
+        });
+
+        /* ===============================
+           SAVE EDIT CHANGES (async)
+        =================================*/
+        const editForm = document.getElementById("edit-product-form");
+        const editCancelBtn = document.getElementById("edit-modal-cancel");
+        const editModal = document.getElementById("edit-product-modal");
+
+        if (editForm) {
+            editForm.addEventListener("submit", async function (e) {
+                e.preventDefault();
+                const id = document.getElementById("edit-product-id").value;
+                if (!id || !window.EAgri) return;
+                const saveBtn = editForm.querySelector('button[type="submit"]');
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+                try {
+                    await window.EAgri.updateFarmerProduct(id, {
+                        name: document.getElementById("edit-product-name").value.trim(),
+                        category: document.getElementById("edit-product-category").value.trim(),
+                        price: parseFloat(document.getElementById("edit-product-price").value.trim()),
+                        stock: parseInt(document.getElementById("edit-product-stock").value.trim(), 10),
+                        availability: document.getElementById("edit-product-availability").checked,
+                        image: document.getElementById("edit-product-image").value.trim(),
+                        description: document.getElementById("edit-product-description").value.trim()
+                    });
+                    editModal.classList.add("hidden");
+                    await renderProducts();
+                    if (window.EAgri.toast) window.EAgri.toast("Product updated successfully", "success");
+                } catch (err) {
+                    if (window.EAgri.toast) window.EAgri.toast("Error: " + err.message, "error");
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save Changes';
+                }
+            });
+        }
+
+        if (editCancelBtn) {
+            editCancelBtn.addEventListener("click", function () { editModal.classList.add("hidden"); });
+        }
+
+        const editFileInput = document.getElementById("edit-product-file");
+        if (editFileInput) {
+            editFileInput.addEventListener("change", function() {
+                const file = this.files[0];
+                if (!file) return;
+                if (file.size > MAX_IMAGE_SIZE) { alert("Image must be less than 5MB."); return; }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64 = e.target.result;
+                    document.getElementById("edit-product-preview").src = base64;
+                    document.getElementById("edit-product-preview").classList.remove("hidden");
+                    document.getElementById("edit-product-image").value = base64;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        /* ===============================
+           LOAD PROFILE
+        =================================*/
+        function loadProfile() {
+            if (!window.EAgri) return;
+            try {
+                const profile = window.EAgri.getFarmerProfile();
+                const nameEl = document.getElementById('profile-name');
+                const locationEl = document.getElementById('profile-location');
+                const phoneEl = document.getElementById('profile-phone');
+                const expEl = document.getElementById('profile-experience');
+                const sizeEl = document.getElementById('profile-farm-size');
+                const tagEl = document.getElementById('profile-tagline');
+                const imgEl = document.getElementById('profile-image');
+                if (nameEl && profile.name && typeof profile.name !== 'object') nameEl.textContent = profile.name;
+                if (locationEl && profile.location && typeof profile.location !== 'object') locationEl.textContent = profile.location;
+                if (phoneEl && profile.phone && typeof profile.phone !== 'object') phoneEl.textContent = profile.phone;
+                if (expEl && profile.experience && typeof profile.experience !== 'object') expEl.textContent = profile.experience;
+                if (sizeEl && profile.farmSize && typeof profile.farmSize !== 'object') sizeEl.textContent = profile.farmSize;
+                if (tagEl && profile.tagline && typeof profile.tagline !== 'object') tagEl.textContent = profile.tagline;
+                if (imgEl && profile.image && typeof profile.image === 'string') {
+                    imgEl.src = profile.image;
+                    imgEl.classList.remove('hidden');
+                } else if (imgEl) {
+                    imgEl.classList.add('hidden');
+                }
+            } catch (e) { console.warn('Failed to load farmer profile', e); }
+        }
+
+        /* ===============================
+           RENDER FARMER ORDERS (async)
+        =================================*/
+        async function renderFarmerOrders() {
+            if (!window.EAgri) return;
+            const listEl = document.getElementById('farmer-orders-list');
+            const emptyEl = document.getElementById('farmer-orders-empty');
+            if (!listEl || !emptyEl) return;
+
+            try {
+                listEl.innerHTML = '<p class="text-text-secondary">Loading incoming orders...</p>';
+                const orders = await window.EAgri.getFarmerOrders();
+
+                if (!orders || orders.length === 0) {
+                    listEl.innerHTML = '';
+                    emptyEl.classList.remove('hidden');
+                    return;
+                }
+
+                emptyEl.classList.add('hidden');
+                listEl.innerHTML = orders.map(function (o) {
+                    const itemsSummary = (o.items || []).map(function (i) {
+                        return window.EAgri.escapeHtml(`${i.name} (${i.quantity} kg)`);
+                    }).join(', ');
+
+                    const status = o.deliveryStatus || 'pending';
+                    const payment = o.paymentStatus || 'Pending';
+
+                    return `
+                    <article class="border border-border rounded-xl bg-surface p-4 flex flex-col gap-3" data-order-id="${o.id}">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                            <div>
+                                <p class="text-xs text-text-tertiary">Order ID</p>
+                                <p class="font-heading font-semibold text-primary">#${o.id.slice(-6).toUpperCase()}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-text-tertiary">Total</p>
+                                <p class="text-xl font-heading font-bold text-primary">₹${o.total}</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-text-secondary">Items: ${itemsSummary}</p>
+                        <div class="flex flex-wrap items-center gap-3 justify-between pt-2 border-t border-border mt-2">
+                            <span class="text-xs px-3 py-1 rounded-full bg-surface-elevated text-text-secondary capitalize">Status: ${status}</span>
+                            <div class="flex items-center gap-2">
+                                <select class="input text-sm h-8 order-status-select bg-white border-border">
+                                    <option value="pending" ${status === 'pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="confirmed" ${status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                                    <option value="shipped" ${status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                                    <option value="delivered" ${status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                                </select>
+                                <button type="button" class="btn btn-outline btn-sm h-8 px-3 update-order-status">Update</button>
+                            </div>
+                        </div>
+                    </article>`;
+                }).join('');
+
+                // Re-bind listeners
+                listEl.querySelectorAll('.update-order-status').forEach(function (btn) {
+                    btn.addEventListener('click', async function () {
+                        const card = btn.closest('[data-order-id]');
+                        if (!card) return;
+                        const id = card.getAttribute('data-order-id');
+                        const status = card.querySelector('.order-status-select').value;
+
+                        btn.disabled = true;
+                        btn.textContent = '...';
+
+                        try {
+                            await window.EAgri.updateOrderStatus(id, status);
+                            if (window.EAgri.toast) window.EAgri.toast('Order updated!', 'success');
+                            renderFarmerOrders();
+                        } catch (err) {
+                            if (window.EAgri.toast) window.EAgri.toast(err.message, 'error');
+                        } finally {
+                            btn.disabled = false;
+                            btn.textContent = 'Update';
+                        }
+                    });
+                });
+            } catch (err) {
+                console.error('Failed to render orders', err);
+                listEl.innerHTML = '<p class="text-error">Error loading orders.</p>';
+            }
+        }
+
+        /* ===============================
+           INITIAL LOAD
+        =================================*/
+        if (checkFarmerAccess()) {
+            loadProfile();
+            renderProducts();
+            renderFarmerOrders();
+        }
+    </script>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login to E-Agri Commerce Platform - Access your farmer or consumer dashboard">
+    <title>Login - E-Agri Commerce Platform</title>
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body class="bg-background">
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-navigation bg-surface/95 backdrop-blur-sm border-b border-border shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex items-center gap-3">
+                    <svg class="w-12 h-12" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="24" cy="24" r="22" fill="#2D5016" />
+                        <path d="M24 8C24 8 16 12 16 20C16 24 18 28 24 32C30 28 32 24 32 20C32 12 24 8 24 8Z"
+                            fill="#FF9933" />
+                        <circle cx="24" cy="22" r="3" fill="#FFFFFF" />
+                        <path d="M20 32L24 40L28 32" stroke="#8B4513" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <div>
+                        <h1 class="text-xl font-heading font-bold text-primary">E-Agri Commerce</h1>
+                        <p class="text-xs text-text-secondary">Farm to Table Direct</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="home_landing.html"
+                        class="text-text-secondary hover:text-primary transition-colors">Home</a>
+                    <a href="product_catalog.html"
+                        class="text-text-secondary hover:text-primary transition-colors">Products</a>
+                    <a href="farmer_dashboard.html" class="text-text-secondary hover:text-primary transition-colors"
+                        data-role="farmer">Farmer Dashboard</a>
+                    <a href="consumer_dashboard.html" class="text-text-secondary hover:text-primary transition-colors"
+                        data-role="consumer">Consumer Dashboard</a>
+                    <a href="login.html" class="btn btn-outline px-4 h-auto auth-login-btn" data-i18n="nav_login">Login</a>
+                    <div class="auth-user-info items-center gap-3" style="display:none;">
+                        <span class="text-sm text-text-secondary">Welcome, <strong
+                                class="auth-user-name text-primary"></strong></span>
+                        <button class="auth-logout-btn btn btn-outline px-3 py-1 h-auto text-sm" data-i18n="nav_logout">Logout</button>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn"
+                    class="md:hidden p-2 rounded-lg hover:bg-surface-elevated transition-colors"
+                    aria-label="Toggle mobile menu">
+                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_117a4830d-1764671721354.png"
+                        alt="Menu icon" class="w-7 h-7"
+                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                </button>
+            </div>
+
+            <!-- Mobile Navigation Menu -->
+            <div id="mobile-menu" class="hidden md:hidden pb-4 border-t border-border mt-2">
+                <div class="flex flex-col gap-3 pt-4">
+                    <a href="home_landing.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors">Home</a>
+                    <a href="product_catalog.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors">Products</a>
+                    <a href="farmer_dashboard.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors"
+                        data-role="farmer">Farmer
+                        Dashboard</a>
+                    <a href="consumer_dashboard.html"
+                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors"
+                        data-role="consumer">Consumer
+                        Dashboard</a>
+                    <a href="login.html" class="btn btn-outline py-2 px-4 mx-3 text-center auth-login-btn" data-i18n="nav_login">Login</a>
+                    <div class="auth-user-info py-2 px-3" style="display:none;">
+                        <span class="text-sm text-text-secondary">Welcome, <strong
+                                class="auth-user-name text-primary"></strong></span>
+                        <button
+                            class="auth-logout-btn btn btn-outline py-2 px-4 mx-3 text-center text-sm">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Login Section -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <!-- Intro Text -->
+            <div class="space-y-6">
+                <h2 class="text-3xl sm:text-4xl font-heading font-bold text-primary">Welcome back to E-Agri Commerce
+                </h2>
+                <p class="text-lg text-text-secondary max-w-2xl">
+                    Login to access your farmer or consumer dashboard, manage products, track orders, and support
+                    India's farming community.
+                </p>
+                <ul class="space-y-2 text-text-tertiary text-sm">
+                    <li>• Secure sign-in for both farmers and consumers</li>
+                    <li>• Access personalized dashboards and order history</li>
+                    <li>• Manage your farm listings or shopping preferences</li>
+                </ul>
+            </div>
+
+            <!-- Login Card -->
+            <div class="card max-w-md w-full mx-auto">
+                <h3 class="text-2xl font-heading font-semibold text-primary mb-2">Login to your account</h3>
+                <p class="text-sm text-text-tertiary mb-6">Enter your registered email and password to continue.</p>
+
+                <form id="login-form" class="space-y-4">
+                    <div>
+                        <label for="role" class="block text-sm font-medium text-text-primary mb-2">Login as</label>
+                        <select id="role" class="input">
+                            <option value="farmer">Farmer</option>
+                            <option value="consumer">Consumer</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-text-primary mb-2">Email
+                            address</label>
+                        <input type="email" id="email" class="input" placeholder="you@example.com" required>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-text-primary mb-2">Password</label>
+                        <input type="password" id="password" class="input" placeholder="Enter your password" required>
+                    </div>
+
+                    <div class="flex items-center justify-between text-sm">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="accent-primary">
+                            <span class="text-text-secondary">Remember me</span>
+                        </label>
+                        <a href="forgot_password.html"
+                            class="text-info text-sm hover:text-info-dark transition-colors">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full">
+                        Login
+                    </button>
+
+                    <p class="text-sm text-text-tertiary text-center">
+                        New to E-Agri Commerce?
+                        <a href="register.html" class="text-secondary hover:text-secondary-600 font-medium">Create an
+                            account</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-primary-900 text-on-primary py-12 border-t border-primary-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg class="w-10 h-10" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="24" cy="24" r="22" fill="#FF9933" />
+                            <path d="M24 8C24 8 16 12 16 20C16 24 18 28 24 32C30 28 32 24 32 20C32 12 24 8 24 8Z"
+                                fill="#2D5016" />
+                            <circle cx="24" cy="22" r="3" fill="#FFFFFF" />
+                        </svg>
+                        <div>
+                            <h3 class="font-heading font-bold text-lg">E-Agri Commerce</h3>
+                            <p class="text-xs text-on-primary/70">Farm to Table Direct</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-on-primary/80 leading-relaxed">
+                        Empowering Indian farmers and connecting them directly with consumers for a sustainable
+                        agricultural future.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-heading font-semibold text-lg mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="home_landing.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Home</a></li>
+                        <li><a href="product_catalog.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Products</a>
+                        </li>
+                        <li data-role="farmer"><a href="farmer_dashboard.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Farmer
+                                Dashboard</a></li>
+                        <li data-role="consumer"><a href="consumer_dashboard.html"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Consumer
+                                Dashboard</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h4 class="font-heading font-semibold text-lg mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Help
+                                Center</a></li>
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Contact Us</a>
+                        </li>
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">FAQs</a></li>
+                        <li><a href="javascript:void(0)"
+                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Terms &
+                                Conditions</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="font-heading font-semibold text-lg mb-4">Contact</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1175352d5-1767644430280.png"
+                                alt="Email icon" class="w-5 h-5 mt-0.5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-sm text-on-primary/80">support@eagricommerce.in</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_13361d1fe-1768398985241.png"
+                                alt="Phone icon" class="w-5 h-5 mt-0.5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-sm text-on-primary/80">+91 1800-123-4567</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_11407ebac-1766822096581.png"
+                                alt="Location icon" class="w-5 h-5 mt-0.5"
+                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <span class="text-sm text-on-primary/80">Tiruchirappalli,Tamil Nadu, India</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="pt-8 border-t border-primary-800 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-on-primary/70">© 2026 E-Agri Commerce Platform. All Rights Reserved.</p>
+                <div class="flex items-center gap-4">
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="Facebook">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1b9a5f070-1766967796860.png"
+                            alt="Facebook social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="Twitter">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_11caec31f-1764660939199.png"
+                            alt="Twitter social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="Instagram">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1f9c7aecf-1764660938700.png"
+                            alt="Instagram social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
+                        aria-label="LinkedIn">
+                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1904267c6-1768733084246.png"
+                            alt="LinkedIn social media icon" class="w-6 h-6"
+                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/auth.js"></script>
+    <!-- Mobile Menu Toggle Script -->
+    <script>
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+    </script>
+
+    <!-- Auth: Handle login and redirect based on role -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('login-form');
+            if (!form) return;
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const roleSelect = document.getElementById('role');
+                const emailInput = document.getElementById('email');
+                const passwordInput = document.getElementById('password');
+
+                const role = roleSelect ? roleSelect.value : 'consumer';
+                const email = emailInput ? emailInput.value.trim() : '';
+                const password = passwordInput ? passwordInput.value : '';
+
+                const isHttp = window.location.protocol === 'http:' || window.location.protocol === 'https:';
+                const sameOriginApi = isHttp && window.location.port === '5000';
+                const API_BASE = sameOriginApi
+                    ? window.location.origin
+                    : (window.EAGRI_API_BASE || 'http://localhost:5000');
+
+                try {
+                    const response = await fetch(`${API_BASE}/api/auth/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email, password, role })
+                    });
+
+                    const data = await response.json().catch(() => ({ message: 'Invalid server response' }));
+
+                    if (!response.ok) {
+                        alert(data.message || 'Login failed');
+                        return;
+                    }
+
+                    // Success: save minimal state to localStorage (similar to past mock for UI compability)
+                    const user = {
+                        name: data.user.name,
+                        email: data.user.email,
+                        role: data.user.role,
+                        token: data.token
+                    };
+
+                    localStorage.setItem('eagriUser', JSON.stringify(user));
+
+                    // Redirect based on role
+                    if (data.user.role === 'farmer') {
+                        window.location.href = 'farmer_dashboard.html';
+                    } else {
+                        window.location.href = 'consumer_dashboard.html';
+                    }
+                } catch (err) {
+                    console.error('Login Error:', err);
+                    alert("An error occurred during login. Please try again.");
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
+
+
+
