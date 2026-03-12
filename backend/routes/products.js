@@ -60,7 +60,7 @@ router.get('/:id', async (req, res) => {
 // @access  Private
 router.post('/', auth, async (req, res) => {
     try {
-        const { name, description, price, image, category, stock, availability } = req.body;
+        const { name, description, price, image, category, stock, availability, farmingDetails } = req.body;
 
         // Check if user is a farmer
         const user = await User.findById(req.user.id);
@@ -77,7 +77,8 @@ router.post('/', auth, async (req, res) => {
             stock,
             availability: availability !== undefined ? availability : true,
             farmer: req.user.id,
-            farmerName: user.name
+            farmerName: user.name,
+            farmingDetails: farmingDetails || {}
         });
 
         const product = await newProduct.save();
@@ -103,7 +104,7 @@ router.put('/:id', auth, async (req, res) => {
             return res.status(403).json({ message: 'Not authorized' });
         }
 
-        const { name, description, price, image, category, stock, availability } = req.body;
+        const { name, description, price, image, category, stock, availability, farmingDetails } = req.body;
 
         product.name = name || product.name;
         product.description = description || product.description;
@@ -112,6 +113,9 @@ router.put('/:id', auth, async (req, res) => {
         product.category = category || product.category;
         product.stock = stock !== undefined ? stock : product.stock;
         product.availability = availability !== undefined ? availability : product.availability;
+        if (farmingDetails) {
+            product.farmingDetails = { ...product.farmingDetails.toObject(), ...farmingDetails };
+        }
         product.updatedAt = Date.now();
 
         await product.save();
@@ -142,6 +146,59 @@ router.delete('/:id', auth, async (req, res) => {
 
         await product.deleteOne();
         res.json({ message: 'Product removed' });
+    } catch (err) {
+        console.error(err.message);
+        if (err.kind === 'ObjectId') {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        res.status(500).send('Server error');
+    }
+});
+
+// @route   POST api/products/:id/reviews
+// @desc    Add a review to a product (Consumers only)
+// @access  Private
+router.post('/:id/reviews', auth, async (req, res) => {
+    try {
+        const { rating, comment } = req.body;
+
+        // Validate rating
+        if (!rating || rating < 1 || rating > 5) {
+            return res.status(400).json({ message: 'Rating must be between 1 and 5' });
+        }
+        if (!comment || !comment.trim()) {
+            return res.status(400).json({ message: 'Review comment is required' });
+        }
+
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        // Check if user already reviewed this product
+        const alreadyReviewed = product.reviews.find(
+            r => r.user.toString() === req.user.id
+        );
+        if (alreadyReviewed) {
+            return res.status(400).json({ message: 'You have already reviewed this product' });
+        }
+
+        const review = {
+            user: req.user.id,
+            userName: user.name,
+            rating: Number(rating),
+            comment: comment.trim()
+        };
+
+        product.reviews.push(review);
+        await product.save();
+
+        res.json(product.reviews);
     } catch (err) {
         console.error(err.message);
         if (err.kind === 'ObjectId') {

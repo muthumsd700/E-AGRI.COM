@@ -106,4 +106,59 @@ router.put('/password', authMiddleware, async (req, res) => {
     }
 });
 
+// @route   GET api/user/wishlist
+// @desc    Get authenticated user's wishlist
+// @access  Private
+router.get('/wishlist', authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('wishlist');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(user.wishlist || []);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST api/user/wishlist/toggle
+// @desc    Add or remove a product from the wishlist
+// @access  Private
+router.post('/wishlist/toggle', authMiddleware, async (req, res) => {
+    try {
+        const { productId } = req.body;
+        if (!productId) {
+            return res.status(400).json({ message: 'Product ID is required' });
+        }
+
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Check if product is already in wishlist
+        const existingIndex = user.wishlist.findIndex(
+            w => w.productId && w.productId.toString() === productId
+        );
+
+        let action;
+        if (existingIndex > -1) {
+            // Remove from wishlist
+            user.wishlist.splice(existingIndex, 1);
+            action = 'removed';
+        } else {
+            // Add to wishlist
+            user.wishlist.push({ productId, addedAt: new Date() });
+            action = 'added';
+        }
+
+        await user.save();
+        res.json({ action, wishlist: user.wishlist });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;

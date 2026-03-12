@@ -602,11 +602,14 @@
         _id: "ORD" + Date.now(),
         consumerId: user.id || user._id,
         createdAt: new Date().toISOString(),
-        status: "confirmed",
+        status: "pending",
         items: items,
         totalAmount: totalAmount,
         shippingAddress: deliveryAddress,
-        paymentMethod: paymentMethod || 'cod'
+        paymentMethod: paymentMethod || 'cod',
+        timeline: [
+          { status: 'pending', label: 'Order Placed', time: new Date().toISOString(), completed: true }
+        ]
       };
       
       this.saveOrder(orderData);
@@ -652,24 +655,120 @@
           createdAt: o.createdAt
         }));
       } catch (_) {
-        return [];
+        // Fallback to LocalStorage if API fails
+        const orders = readJSON('eagriOrders', []);
+        return orders.map(o => ({
+          id: o._id || o.id,
+          items: o.items,
+          total: o.totalAmount,
+          deliveryStatus: o.status,
+          paymentStatus: o.paymentStatus || (o.paymentMethod === 'cod' ? 'Pending' : 'Paid'),
+          createdAt: o.createdAt
+        }));
       }
     },
 
     async updateOrderStatus(orderId, status) {
+      // 1. Try to update via API if token exists
       const token = getAuthToken();
-      if (!token) throw new Error('Not authenticated');
-      const res = await fetch(API_BASE + '/api/orders/' + orderId + '/status', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': token,
-        },
-        body: JSON.stringify({ status }),
+      if (token) {
+        try {
+          const res = await fetch(API_BASE + '/api/orders/' + orderId + '/status', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-auth-token': token,
+            },
+            body: JSON.stringify({ status }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            return data;
+          }
+        } catch (e) {
+          console.warn('API update failed, trying localStorage...', e);
+        }
+      }
+
+      // 2. Fallback to LocalStorage (eagriOrders)
+      const orders = readJSON('eagriOrders', []);
+      const orderIdx = orders.findIndex(o => (o._id === orderId || o.id === orderId));
+      if (orderIdx > -1) {
+        orders[orderIdx].status = status;
+        
+        // Add to timeline
+        if (!orders[orderIdx].timeline) orders[orderIdx].timeline = [];
+        const labelMap = {
+          'pending': 'Order Placed',
+          'confirmed': 'Order Confirmed',
+          'packed': 'Packed',
+          'shipped': 'Shipped',
+          'out_for_delivery': 'Out for Delivery',
+          'delivered': 'Delivered'
+        };
+        
+        // Only add if not already there or if status changed
+        const exists = orders[orderIdx].timeline.find(t => t.status === status);
+        if (!exists) {
+          orders[orderIdx].timeline.push({
+            status: status,
+            label: labelMap[status] || status,
+            time: new Date().toISOString(),
+            completed: true
+          });
+        }
+        
+        writeJSON('eagriOrders', orders);
+        return { success: true, status };
+      }
+      
+      throw new Error('Order not found');
+    },
+
+    // Tracking Utilities
+    getOrderTrackingConfig(status) {
+      const configs = {
+        'pending': { progress: '10%', color: 'yellow', label: 'Pending' },
+        'confirmed': { progress: '25%', color: 'blue', label: 'Confirmed' },
+        'packed': { progress: '40%', color: 'blue', label: 'Packed' },
+        'shipped': { progress: '60%', color: 'purple', label: 'Shipped' },
+        'out_for_delivery': { progress: '85%', color: 'orange', label: 'Out for Delivery' },
+        'delivered': { progress: '100%', color: 'green', label: 'Delivered' }
+      };
+      return configs[status] || configs['pending'];
+    },
+
+    getStatusColorClass(status) {
+      const colors = {
+        'pending': 'bg-warning-light/20 text-warning-dark',
+        'confirmed': 'bg-info-light/20 text-info-dark',
+        'packed': 'bg-info-light/20 text-info-dark',
+        'shipped': 'bg-purple-100 text-purple-700',
+        'out_for_delivery': 'bg-orange-100 text-orange-700',
+        'delivered': 'bg-success-light/20 text-success-dark'
+      };
+      return colors[status] || 'bg-surface-elevated text-text-secondary';
+    },
+
+    getOrderTimelineSteps(order) {
+      const stages = [
+        { status: 'pending', label: 'Order Placed' },
+        { status: 'confirmed', label: 'Order Confirmed' },
+        { status: 'packed', label: 'Packed' },
+        { status: 'shipped', label: 'Shipped' },
+        { status: 'out_for_delivery', label: 'Out for Delivery' },
+        { status: 'delivered', label: 'Delivered' }
+      ];
+      
+      const timeline = order.timeline || [];
+      return stages.map(stage => {
+        const history = timeline.find(h => h.status === stage.status);
+        return {
+          ...stage,
+          completed: !!history,
+          time: history ? this.formatDate(history.time) : null
+        };
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to update order status');
-      return data;
     },
 
     initCartBadges() {

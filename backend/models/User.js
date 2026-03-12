@@ -59,6 +59,16 @@ const UserSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    wishlist: [{
+        productId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product'
+        },
+        addedAt: {
+            type: Date,
+            default: Date.now
+        }
+    }],
     createdAt: {
         type: Date,
         default: Date.now

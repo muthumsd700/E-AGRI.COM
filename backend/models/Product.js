@@ -1,5 +1,31 @@
 const mongoose = require('mongoose');
 
+const ReviewSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    userName: {
+        type: String,
+        required: true
+    },
+    rating: {
+        type: Number,
+        required: true,
+        min: 1,
+        max: 5
+    },
+    comment: {
+        type: String,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+});
+
 const ProductSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -41,6 +67,13 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    farmingDetails: {
+        method: { type: String, trim: true, default: '' },
+        harvestDate: { type: String, trim: true, default: '' },
+        location: { type: String, trim: true, default: '' },
+        organicCertified: { type: Boolean, default: false }
+    },
+    reviews: [ReviewSchema],
     createdAt: {
         type: Date,
         default: Date.now

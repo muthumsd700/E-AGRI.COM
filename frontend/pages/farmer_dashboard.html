@@ -555,10 +555,12 @@
                         <div class="flex flex-wrap items-center gap-3 justify-between pt-2 border-t border-border mt-2">
                             <span class="text-xs px-3 py-1 rounded-full bg-surface-elevated text-text-secondary capitalize">Status: ${status}</span>
                             <div class="flex items-center gap-2">
-                                <select class="input text-sm h-8 order-status-select bg-white border-border">
+                                <select class="input text-sm h-10 order-status-select bg-white border-border">
                                     <option value="pending" ${status === 'pending' ? 'selected' : ''}>Pending</option>
                                     <option value="confirmed" ${status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                                    <option value="packed" ${status === 'packed' ? 'selected' : ''}>Packed</option>
                                     <option value="shipped" ${status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                                    <option value="out_for_delivery" ${status === 'out_for_delivery' ? 'selected' : ''}>Out for Delivery</option>
                                     <option value="delivered" ${status === 'delivered' ? 'selected' : ''}>Delivered</option>
                                 </select>
                                 <button type="button" class="btn btn-outline btn-sm h-8 px-3 update-order-status">Update</button>
@@ -603,5 +605,10 @@
             loadProfile();
             renderProducts();
             renderFarmerOrders();
+            
+            // Sync with other tabs
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'eagriOrders') renderFarmerOrders();
+            });
         }
     </script>

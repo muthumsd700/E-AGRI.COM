@@ -642,6 +642,38 @@
             </div>
         </div>
     </footer>
+    
+    <!-- Track Order Modal -->
+    <div id="track-order-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 p-4">
+        <div class="card max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-heading font-semibold text-primary">Track Your Order</h3>
+                <button id="close-track-modal" class="text-text-secondary hover:text-primary">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="modal-order-info" class="mb-6 p-4 bg-surface-elevated rounded-xl">
+                <div class="flex justify-between mb-2">
+                    <span class="text-sm text-text-secondary">Order ID:</span>
+                    <span id="modal-order-id" class="font-bold text-primary">#---</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-sm text-text-secondary">Estimated Delivery:</span>
+                    <span id="modal-est-delivery" class="font-bold text-primary">---</span>
+                </div>
+            </div>
+
+            <!-- Vertical Timeline -->
+            <div id="tracking-timeline" class="relative pl-8 space-y-8 before:content-[''] before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-border">
+                <!-- Steps will be injected here -->
+            </div>
+            
+            <button id="close-track-modal-btn" class="btn btn-primary w-full mt-8">Close</button>
+        </div>
+    </div>
 
     <!-- JavaScript for Tab Functionality -->
     <script>
@@ -742,9 +774,7 @@
                            const date = new Date(o.createdAt).toLocaleDateString('en-GB');
                            const items = (o.items || []).map(i => `${i.name} (${i.quantity}kg)`).join(', ');
                            const status = o.status || 'pending';
-                           let statusClass = 'warning-light/20 text-warning-dark';
-                           if (status === 'delivered') statusClass = 'success-light/20 text-success-dark';
-                           else if (status === 'shipped') statusClass = 'info-light/20 text-info-dark';
+                           const statusColor = window.EAgri.getStatusColorClass(status);
 
                            return `<tr>
                                <td>${date}</td>
@@ -752,7 +782,7 @@
                                <td>${items}</td>
                                <td>Farmer</td>
                                <td class="font-bold text-primary">₹${o.totalAmount}</td>
-                               <td><span class="inline-flex items-center bg-${statusClass} text-xs font-bold px-3 py-1 rounded-full capitalize">${status}</span></td>
+                               <td><span class="inline-flex items-center ${statusColor} text-xs font-bold px-3 py-1 rounded-full capitalize">${status.replace(/_/g, ' ')}</span></td>
                                <td><button class="text-secondary hover:text-secondary-600 text-sm font-medium">View</button></td>
                            </tr>`;
                        }).join('');
@@ -762,11 +792,9 @@
                    if (ordersContainer) {
                        ordersContainer.innerHTML = orders.map(o => {
                            const status = o.status || 'pending';
-                           let progress = '25%';
-                           if (status === 'delivered') progress = '100%';
-                           else if (status === 'shipped') progress = '75%';
-                           else if (status === 'confirmed') progress = '50%';
-
+                           const config = window.EAgri.getOrderTrackingConfig(status);
+                           const colorClass = window.EAgri.getStatusColorClass(status);
+                           
                            const items = (o.items || []).map(i => `
                                <div class="flex items-center gap-4 py-3 border-b border-border last:border-0">
                                    <img src="${i.image || 'https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'}" class="w-12 h-12 object-cover rounded-lg">
@@ -779,31 +807,80 @@
                                    </div>
                                </div>`).join('');
 
-                           return `<div class="card">
+                           return `<div class="card" data-order-id="${o._id || o.id}">
                                <div class="flex justify-between items-start mb-4">
                                    <div>
-                                       <h4 class="font-semibold text-primary">Order #${String(o._id).slice(-6).toUpperCase()}</h4>
+                                       <h4 class="font-semibold text-primary">Order #${String(o._id || o.id).slice(-6).toUpperCase()}</h4>
                                        <p class="text-xs text-text-secondary">Placed on ${new Date(o.createdAt).toLocaleDateString()}</p>
                                    </div>
                                    <div class="text-right">
                                        <p class="text-xl font-bold text-primary">₹${o.totalAmount}</p>
-                                       <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-surface-elevated capitalize">${status}</span>
+                                       <span class="text-xs font-bold px-3 py-1 rounded-full ${colorClass} capitalize">${config.label}</span>
                                    </div>
                                </div>
-                               <div class="w-full bg-surface-elevated rounded-full h-1.5 mb-4">
-                                   <div class="bg-secondary h-1.5 rounded-full" style="width: ${progress}"></div>
+                               <div class="w-full bg-surface-elevated rounded-full h-2 mb-2">
+                                   <div class="bg-secondary h-2 rounded-full transition-all duration-500" style="width: ${config.progress}"></div>
+                               </div>
+                               <div class="flex justify-between text-[10px] text-text-tertiary mb-4 font-medium uppercase tracking-wider">
+                                   <span>Placed</span>
+                                   <span>Shipped</span>
+                                   <span>Delivered</span>
                                </div>
                                <div class="space-y-1 mb-4">${items}</div>
                                <div class="flex gap-2">
-                                   <button class="btn btn-outline flex-1 py-2 text-sm">Track</button>
+                                   <button class="btn btn-outline flex-1 py-2 text-sm track-order-btn">Track Order</button>
                                    <button class="btn btn-primary flex-1 py-2 text-sm">Details</button>
                                </div>
                            </div>`;
                        }).join('');
+
+                       // Bind track buttons
+                       ordersContainer.querySelectorAll('.track-order-btn').forEach(btn => {
+                           btn.addEventListener('click', () => {
+                               const orderId = btn.closest('[data-order-id]').dataset.orderId;
+                               const order = orders.find(ord => (ord._id === orderId || ord.id === orderId));
+                               if (order) openTrackingModal(order);
+                           });
+                       });
                    }
                 };
 
+                const openTrackingModal = (order) => {
+                    const modal = document.getElementById('track-order-modal');
+                    const timelineContainer = document.getElementById('tracking-timeline');
+                    document.getElementById('modal-order-id').textContent = '#' + String(order._id || order.id).slice(-6).toUpperCase();
+                    
+                    // Estimate delivery: +3 days from order
+                    const est = new Date(order.createdAt);
+                    est.setDate(est.getDate() + 3);
+                    document.getElementById('modal-est-delivery').textContent = est.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+                    const steps = window.EAgri.getOrderTimelineSteps(order);
+                    timelineContainer.innerHTML = steps.map(step => `
+                        <div class="relative">
+                            <div class="absolute -left-[29px] top-1 w-5 h-5 rounded-full z-10 flex items-center justify-center ${step.completed ? 'bg-success text-white' : 'bg-surface-elevated border-2 border-border text-text-tertiary'}">
+                                ${step.completed ? '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>' : ''}
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-sm ${step.completed ? 'text-primary' : 'text-text-tertiary'}">${step.label}</h4>
+                                <p class="text-xs text-text-secondary">${step.time || (step.completed ? 'Completed' : 'Upcoming')}</p>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    modal.classList.remove('hidden');
+                };
+
+                const modal = document.getElementById('track-order-modal');
+                document.getElementById('close-track-modal')?.addEventListener('click', () => modal.classList.add('hidden'));
+                document.getElementById('close-track-modal-btn')?.addEventListener('click', () => modal.classList.add('hidden'));
+
                 await renderAllOrders();
+
+                // Listen for changes in other tabs (Farmer Dashboard updates)
+                window.addEventListener('storage', (e) => {
+                    if (e.key === 'eagriOrders') renderAllOrders();
+                });
             }
         });
     </script>
