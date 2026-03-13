@@ -1,320 +1,219 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Detailed product information for fresh agricultural produce directly from Indian farmers">
+    <meta name="description" content="Detailed product information for fresh agricultural produce directly from Indian farmers">
     <title>Product Details - E-Agri Commerce Platform</title>
     <link rel="stylesheet" href="../css/main.css">
-
+    <style>
+        /* Skeleton Loading */
+        .skeleton{background:linear-gradient(90deg,#e0e0e0 25%,#f0f0f0 50%,#e0e0e0 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
+        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+        .skeleton-img{width:100%;height:500px}
+        .skeleton-title{height:40px;width:70%;margin-bottom:12px}
+        .skeleton-price{height:48px;width:40%;margin-bottom:16px}
+        .skeleton-text{height:16px;width:100%;margin-bottom:8px}
+        .skeleton-text.short{width:60%}
+        .skeleton-card{height:180px;width:100%}
+        /* Star rating */
+        .star-btn{background:none;border:none;cursor:pointer;padding:2px;font-size:1.5rem;color:#d1d5db;transition:color .2s}
+        .star-btn.active,.star-btn:hover{color:#f59e0b}
+        .star-display{color:#f59e0b;font-size:1.1rem}
+        /* Wishlist */
+        .wishlist-btn{transition:all .3s ease}
+        .wishlist-btn.active svg{fill:#ef4444;color:#ef4444}
+        /* Error page */
+        .error-page{text-align:center;padding:80px 20px}
+        .error-page svg{width:120px;height:120px;margin:0 auto 24px;color:#9ca3af}
+        /* Review form */
+        .review-form textarea{width:100%;min-height:100px;padding:12px;border:2px solid var(--border);border-radius:12px;resize:vertical;font-family:inherit;font-size:.95rem;background:var(--surface)}
+        .review-form textarea:focus{outline:none;border-color:var(--primary)}
+        /* Product image fallback */
+        .product-img-wrap{position:relative;overflow:hidden;border-radius:16px;background:#f3f4f6}
+        .product-img-wrap img{width:100%;height:500px;object-fit:cover;transition:transform .3s}
+        .product-img-wrap:hover img{transform:scale(1.02)}
+    </style>
 </head>
-
 <body class="bg-background">
     <!-- Navigation Header -->
     <header class="sticky top-0 z-navigation bg-surface/95 backdrop-blur-sm border-b border-border shadow-sm">
         <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
-                <!-- Logo -->
                 <div class="flex items-center gap-3">
-                    <svg class="w-12 h-12" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="24" cy="24" r="22" fill="#2D5016" />
-                        <path d="M24 8C24 8 16 12 16 20C16 24 18 28 24 32C30 28 32 24 32 20C32 12 24 8 24 8Z"
-                            fill="#FF9933" />
-                        <circle cx="24" cy="22" r="3" fill="#FFFFFF" />
-                        <path d="M20 32L24 40L28 32" stroke="#8B4513" stroke-width="2" stroke-linecap="round" />
-                    </svg>
-                    <div>
-                        <h1 class="text-xl font-heading font-bold text-primary">E-Agri Commerce</h1>
-                        <p class="text-xs text-text-secondary">Farm to Table Direct</p>
-                    </div>
+                    <svg class="w-12 h-12" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" fill="#2D5016"/><path d="M24 8C24 8 16 12 16 20C16 24 18 28 24 32C30 28 32 24 32 20C32 12 24 8 24 8Z" fill="#FF9933"/><circle cx="24" cy="22" r="3" fill="#FFF"/><path d="M20 32L24 40L28 32" stroke="#8B4513" stroke-width="2" stroke-linecap="round"/></svg>
+                    <div><h1 class="text-xl font-heading font-bold text-primary">E-Agri Commerce</h1><p class="text-xs text-text-secondary">Farm to Table Direct</p></div>
                 </div>
-
-                <!-- Desktop Navigation -->
                 <div class="hidden md:flex items-center gap-6">
-                    <a href="home_landing.html"
-                        class="text-text-secondary hover:text-primary transition-colors">Home</a>
-                    <a href="product_catalog.html"
-                        class="text-text-secondary hover:text-primary transition-colors">Products</a>
-                    <a href="farmer_dashboard.html" class="text-text-secondary hover:text-primary transition-colors"
-                        data-role="farmer">Farmer Dashboard</a>
-                    <a href="consumer_dashboard.html" class="text-text-secondary hover:text-primary transition-colors"
-                        data-role="consumer">Consumer Dashboard</a>
-                    <a href="settings.html"
-                        class="text-text-secondary hover:text-primary transition-colors">Settings</a>
+                    <a href="home_landing.html" class="text-text-secondary hover:text-primary transition-colors">Home</a>
+                    <a href="product_catalog.html" class="text-text-secondary hover:text-primary transition-colors">Products</a>
+                    <a href="farmer_dashboard.html" class="text-text-secondary hover:text-primary transition-colors" data-role="farmer">Farmer Dashboard</a>
+                    <a href="consumer_dashboard.html" class="text-text-secondary hover:text-primary transition-colors" data-role="consumer">Consumer Dashboard</a>
+                    <a href="settings.html" class="text-text-secondary hover:text-primary transition-colors">Settings</a>
                     <a href="login.html" class="btn btn-outline px-4 py-2 h-auto auth-login-btn">Login</a>
                     <div class="auth-user-info items-center gap-3" style="display:none;">
-                        <span class="text-sm text-text-secondary">Welcome, <strong
-                                class="auth-user-name text-primary"></strong></span>
+                        <span class="text-sm text-text-secondary">Welcome, <strong class="auth-user-name text-primary"></strong></span>
                         <button class="auth-logout-btn btn btn-outline px-3 py-1 h-auto text-sm">Logout</button>
                     </div>
                     <a href="shopping_cart.html" class="relative">
-                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        <span id="cart-count-desktop"
-                            class="absolute -top-2 -right-2 bg-secondary text-on-secondary text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <span id="cart-count-desktop" class="absolute -top-2 -right-2 bg-secondary text-on-secondary text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
                     </a>
                 </div>
-
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn"
-                    class="md:hidden p-2 rounded-lg hover:bg-surface-elevated transition-colors"
-                    aria-label="Toggle mobile menu">
-                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_117a4830d-1764671721354.png"
-                        alt="Menu icon" class="w-7 h-7"
-                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-surface-elevated transition-colors" aria-label="Toggle mobile menu">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
             </div>
-
-            <!-- Mobile Navigation Menu -->
             <div id="mobile-menu" class="hidden md:hidden pb-4 border-t border-border mt-2">
                 <div class="flex flex-col gap-3 pt-4">
-                    <a href="home_landing.html"
-                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors">Home</a>
-                    <a href="product_catalog.html"
-                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors">Products</a>
-                    <a href="farmer_dashboard.html"
-                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors"
-                        data-role="farmer">Farmer Dashboard</a>
-                    <a href="consumer_dashboard.html"
-                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors"
-                        data-role="consumer">Consumer Dashboard</a>
-                    <a href="settings.html"
-                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors">Settings</a>
+                    <a href="home_landing.html" class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10">Home</a>
+                    <a href="product_catalog.html" class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10">Products</a>
+                    <a href="farmer_dashboard.html" class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10" data-role="farmer">Farmer Dashboard</a>
+                    <a href="consumer_dashboard.html" class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10" data-role="consumer">Consumer Dashboard</a>
+                    <a href="settings.html" class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10">Settings</a>
                     <a href="login.html" class="btn btn-outline py-2 px-4 mx-3 text-center auth-login-btn">Login</a>
                     <div class="auth-user-info py-2 px-3" style="display:none;">
-                        <span class="text-sm text-text-secondary">Welcome, <strong
-                                class="auth-user-name text-primary"></strong></span>
-                        <button
-                            class="auth-logout-btn btn btn-outline py-2 px-4 mx-3 text-center text-sm">Logout</button>
+                        <span class="text-sm text-text-secondary">Welcome, <strong class="auth-user-name text-primary"></strong></span>
+                        <button class="auth-logout-btn btn btn-outline py-2 px-4 mx-3 text-center text-sm">Logout</button>
                     </div>
-                    <a href="shopping_cart.html"
-                        class="text-text-secondary py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-2">
-                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1e9800c8c-1764650951315.png"
-                            alt="Shopping cart icon" class="w-5 h-5"
-                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                        Shopping Cart
-                    </a>
                 </div>
             </div>
         </nav>
     </header>
 
-    <!-- Breadcrumb Navigation -->
+    <!-- Breadcrumb -->
     <section class="bg-surface border-b border-border">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <nav class="flex items-center gap-2 text-sm" aria-label="Breadcrumb">
                 <a href="home_landing.html" class="text-text-tertiary hover:text-primary transition-colors">Home</a>
-                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_15fb9a386-1768027314909.png"
-                    alt="Breadcrumb separator" class="w-4 h-4"
-                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                <a href="product_catalog.html"
-                    class="text-text-tertiary hover:text-primary transition-colors">Products</a>
-                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_15fb9a386-1768027314909.png"
-                    alt="Breadcrumb separator" class="w-4 h-4"
-                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                <a href="product_catalog.html"
-                    class="text-text-tertiary hover:text-primary transition-colors"><span id="breadcrumb-category">Category</span></a>
-                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_15fb9a386-1768027314909.png"
-                    alt="Breadcrumb separator" class="w-4 h-4"
-                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                <svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <a href="product_catalog.html" class="text-text-tertiary hover:text-primary transition-colors">Products</a>
+                <svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <a href="product_catalog.html" class="text-text-tertiary hover:text-primary transition-colors"><span id="breadcrumb-category">Category</span></a>
+                <svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 <span class="text-primary font-medium" id="breadcrumb-name">Product</span>
             </nav>
         </div>
     </section>
 
+    <!-- Loading Skeleton (shown while fetching) -->
+    <section id="loading-skeleton" class="py-12 bg-background">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12">
+                <div class="skeleton skeleton-img"></div>
+                <div class="space-y-6">
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-price"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text short"></div>
+                    <div class="flex gap-4 pt-4"><div class="skeleton" style="height:56px;flex:1"></div><div class="skeleton" style="height:56px;width:56px"></div></div>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6 mt-12">
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Error State (hidden by default) -->
+    <section id="error-state" class="py-12 bg-background" style="display:none;">
+        <div class="error-page">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <h2 class="text-3xl font-heading font-bold text-primary mb-4">Sorry, this product is not available.</h2>
+            <p class="text-text-secondary mb-8 max-w-md mx-auto">The product you're looking for might have been removed, is temporarily unavailable, or the link may be incorrect.</p>
+            <div class="flex gap-4 justify-center flex-wrap">
+                <a href="product_catalog.html" class="btn btn-primary px-6 py-3 h-auto">← Back to Products</a>
+                <a href="home_landing.html" class="btn btn-outline px-6 py-3 h-auto">Go to Home Page</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Content (hidden until loaded) -->
+    <div id="product-content" style="display:none;">
+
     <!-- Product Details Section -->
     <section class="py-12 bg-background">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid lg:grid-cols-2 gap-12">
-                <!-- Left Section: Image Gallery -->
+                <!-- Left: Image -->
                 <div class="space-y-4">
-                    <!-- Main Product Image -->
-                    <div class="relative overflow-hidden rounded-2xl bg-surface border border-border shadow-lg">
-                        <img id="main-product-image"
-                            src="https://img.rocket.new/generatedImages/rocket_gen_img_154d057fc-1768188622301.png"
-                            alt="Fresh red tomatoes harvested from organic farm showing premium quality produce"
-                            class="w-full h-[500px] object-cover" loading="eager"
-                            onerror="this.src='https://images.unsplash.com/photo-1546470427-e26264be0b0d?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-
-                        <!-- Organic Badge -->
-                        <div id="product-badge"
-                            class="absolute top-4 right-4 bg-success text-on-success px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_146c348a4-1767639838594.png"
-                                alt="Organic certification leaf icon" class="w-5 h-5 inline-block mr-1"
-                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                    <div class="product-img-wrap border border-border shadow-lg">
+                        <img id="main-product-image" src="" alt="Product image" loading="eager"
+                            onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22 fill=%22%23e5e7eb%22%3E%3Crect width=%22400%22 height=%22400%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%239ca3af%22 font-size=%2220%22%3ENo Image%3C/text%3E%3C/svg%3E';">
+                        <div id="product-badge" class="absolute top-4 right-4 bg-success text-on-success px-4 py-2 rounded-full text-sm font-bold shadow-lg" style="display:none;">
+                            <svg class="w-5 h-5 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                             Certified Organic
                         </div>
-
-                        <!-- Stock Status -->
-                        <div
-                            class="absolute top-4 left-4 bg-surface/95 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium border border-border">
-                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_109535f33-1769184329229.png"
-                                alt="In stock availability icon" class="w-5 h-5 inline-block mr-1"
-                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                        <div class="absolute top-4 left-4 bg-surface/95 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium border border-border">
                             <span id="stock-status" class="text-success font-semibold">In Stock</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Right Section: Product Information -->
+                <!-- Right: Info -->
                 <div class="space-y-6">
-                    <!-- Product Title & Rating -->
                     <div>
                         <h1 id="product-title" class="text-4xl font-heading font-bold text-primary mb-3">Product</h1>
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="flex items-center gap-1">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                    alt="Star rating icon" class="w-5 h-5"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                    alt="Star rating icon" class="w-5 h-5"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                    alt="Star rating icon" class="w-5 h-5"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                    alt="Star rating icon" class="w-5 h-5"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1dfa0826a-1764662786277.png"
-                                    alt="Half star rating icon" class="w-5 h-5"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                <span class="text-lg font-semibold text-text-primary ml-2">—</span>
-                            </div>
+                        <div id="rating-summary" class="flex items-center gap-4 mb-4">
+                            <div id="stars-display" class="flex items-center gap-1"></div>
                             <span class="text-text-tertiary">|</span>
-                            <span class="text-text-secondary">Rating from recent orders</span>
+                            <span id="review-count-label" class="text-text-secondary">No reviews yet</span>
                         </div>
                     </div>
-
-                    <!-- Price Section -->
+                    <!-- Price -->
                     <div class="bg-primary/5 border border-primary/20 rounded-xl p-6">
                         <div class="flex items-baseline gap-3 mb-2">
                             <span id="product-price" class="text-5xl font-heading font-bold text-primary">₹0</span>
                             <span class="text-2xl text-text-secondary">/kg</span>
                         </div>
                         <div class="flex items-center gap-2 text-success-dark">
-                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1bcedfce1-1766844615345.png"
-                                alt="Discount tag icon" class="w-5 h-5"
-                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
                             <span class="font-semibold">Typical savings when buying direct from farmers</span>
                         </div>
                     </div>
-
-                    <!-- Product Description -->
+                    <!-- Description -->
                     <div class="space-y-3">
                         <h3 class="text-xl font-heading font-semibold text-primary">About This Product</h3>
-                        <p id="product-description" class="text-text-secondary leading-relaxed">
-                            Detailed information about the selected product will appear here once it has been loaded.
-                            This typically includes how it is grown, its quality characteristics, and common ways it can
-                            be used in everyday cooking.
-                        </p>
-                        <div class="grid sm:grid-cols-2 gap-4 pt-4">
-                            <div class="flex items-start gap-3">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10d875ff2-1766817002058.png"
-                                    alt="Checkmark icon" class="w-6 h-6 mt-0.5 flex-shrink-0"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                <div>
-                                    <p class="font-medium text-text-primary">100% Organic</p>
-                                    <p class="text-sm text-text-tertiary">No pesticides or chemicals</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10d875ff2-1766817002058.png"
-                                    alt="Checkmark icon" class="w-6 h-6 mt-0.5 flex-shrink-0"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                <div>
-                                    <p class="font-medium text-text-primary">Farm Fresh</p>
-                                    <p class="text-sm text-text-tertiary">Harvested within 24 hours</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10d875ff2-1766817002058.png"
-                                    alt="Checkmark icon" class="w-6 h-6 mt-0.5 flex-shrink-0"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                <div>
-                                    <p class="font-medium text-text-primary">Grade A Quality</p>
-                                    <p class="text-sm text-text-tertiary">Hand-sorted premium</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10d875ff2-1766817002058.png"
-                                    alt="Checkmark icon" class="w-6 h-6 mt-0.5 flex-shrink-0"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                <div>
-                                    <p class="font-medium text-text-primary">Rich Nutrients</p>
-                                    <p class="text-sm text-text-tertiary">High in vitamins & minerals</p>
-                                </div>
-                            </div>
-                        </div>
+                        <p id="product-description" class="text-text-secondary leading-relaxed">Loading...</p>
+                        <div id="product-features" class="grid sm:grid-cols-2 gap-4 pt-4"></div>
                     </div>
-
-                    <!-- Quantity Selector -->
+                    <!-- Quantity -->
                     <div class="space-y-3">
                         <h3 class="text-lg font-heading font-semibold text-primary">Select Quantity</h3>
                         <div class="flex flex-col gap-2">
                             <div class="flex items-center gap-4">
                                 <div class="flex items-center border-2 border-border rounded-2xl overflow-hidden bg-surface-elevated">
-                                    <button id="decrease-qty"
-                                        class="px-5 py-3 hover:bg-primary/10 transition-colors text-primary font-bold text-xl"
-                                        aria-label="Decrease quantity">
-                                        −
-                                    </button>
-                                    <input type="number" id="quantity-input" value="1" min="1" max="50"
-                                        class="w-20 text-center text-xl font-semibold border-x-2 border-border py-3 focus:outline-none bg-surface"
-                                        aria-label="Product quantity">
-                                    <button id="increase-qty"
-                                        class="px-5 py-3 hover:bg-primary/10 transition-colors text-primary font-bold text-xl"
-                                        aria-label="Increase quantity">
-                                        +
-                                    </button>
+                                    <button id="decrease-qty" class="px-5 py-3 hover:bg-primary/10 transition-colors text-primary font-bold text-xl" aria-label="Decrease quantity">−</button>
+                                    <input type="number" id="quantity-input" value="1" min="1" max="50" class="w-20 text-center text-xl font-semibold border-x-2 border-border py-3 focus:outline-none bg-surface" aria-label="Product quantity">
+                                    <button id="increase-qty" class="px-5 py-3 hover:bg-primary/10 transition-colors text-primary font-bold text-xl" aria-label="Increase quantity">+</button>
                                 </div>
                                 <span class="text-text-secondary">kg</span>
                                 <span id="quantity-available" class="text-text-tertiary ml-auto">Available: —</span>
                             </div>
-                            <p id="total-price" class="text-sm font-semibold text-primary/90">
-                                Total: ₹0
-                            </p>
+                            <p id="total-price" class="text-sm font-semibold text-primary/90">Total: ₹0</p>
                         </div>
                     </div>
-
                     <!-- Action Buttons -->
                     <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                        <button id="add-to-cart-btn"
-                            class="btn btn-primary flex-1 text-lg h-14 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1ccc01a18-1767411610341.png"
-                                alt="Add to cart icon" class="w-6 h-6 mr-2"
-                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                        <button id="add-to-cart-btn" class="btn btn-primary flex-1 text-lg h-14 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                             Add to Cart
                         </button>
-                        <button class="btn btn-outline h-14 px-6" aria-label="Add to wishlist">
-                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1b7750942-1769184328395.png"
-                                alt="Wishlist heart icon" class="w-6 h-6"
-                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                        <button id="wishlist-btn" class="wishlist-btn btn btn-outline h-14 px-6" aria-label="Add to wishlist">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                         </button>
                     </div>
-
-                    <!-- Delivery Information -->
+                    <!-- Delivery Info -->
                     <div class="bg-info/5 border border-info/20 rounded-xl p-5 space-y-3">
                         <div class="flex items-start gap-3">
-                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1f1fa5cd6-1766987196023.png"
-                                alt="Fast delivery truck icon" class="w-6 h-6 mt-0.5"
-                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                            <div>
-                                <p class="font-semibold text-text-primary">Fast Delivery</p>
-                                <p class="text-sm text-text-secondary">Expected delivery: 24-48 hours from order</p>
-                            </div>
+                            <svg class="w-6 h-6 mt-0.5 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
+                            <div><p class="font-semibold text-text-primary">Fast Delivery</p><p class="text-sm text-text-secondary">Expected delivery: 24-48 hours from order</p></div>
                         </div>
                         <div class="flex items-start gap-3">
-                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_18ef31ffa-1766569801431.png"
-                                alt="Quality guarantee shield icon" class="w-6 h-6 mt-0.5"
-                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                            <div>
-                                <p class="font-semibold text-text-primary">Quality Guarantee</p>
-                                <p class="text-sm text-text-secondary">100% satisfaction or money back</p>
-                            </div>
+                            <svg class="w-6 h-6 mt-0.5 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            <div><p class="font-semibold text-text-primary">Quality Guarantee</p><p class="text-sm text-text-secondary">100% satisfaction or money back</p></div>
                         </div>
                     </div>
                 </div>
@@ -322,95 +221,35 @@
         </div>
     </section>
 
-    <!-- Farmer Information Section -->
+    <!-- Farmer Info Section -->
     <section class="py-12 bg-surface border-y border-border">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl font-heading font-bold text-primary mb-8 text-center">Meet Your Farmer</h2>
-
             <div class="card max-w-4xl mx-auto">
                 <div class="flex flex-col md:flex-row gap-8 items-start">
-                    <!-- Farmer Photo -->
                     <div class="flex-shrink-0">
                         <div class="relative">
-                            <img id="farmer-photo"
-                                src="https://img.rocket.new/generatedImages/rocket_gen_img_1de8ac34f-1763300586214.png"
-                                alt="Portrait of the farmer supplying this product"
-                                class="w-32 h-32 rounded-full object-cover border-4 border-primary shadow-lg"
-                                loading="lazy"
-                                onerror="this.src='https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400'; this.onerror=null;">
-                            <div
-                                class="absolute -bottom-2 -right-2 bg-success text-on-success rounded-full p-2 shadow-lg">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1e2aaafff-1769184330877.png"
-                                    alt="Verified farmer badge icon" class="w-6 h-6"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                            <div id="farmer-photo" class="w-32 h-32 rounded-full border-4 border-primary shadow-lg bg-primary/10 flex items-center justify-center overflow-hidden">
+                                <svg class="w-16 h-16 text-primary/40" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+                            </div>
+                            <div class="absolute -bottom-2 -right-2 bg-success text-on-success rounded-full p-2 shadow-lg">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Farmer Details -->
                     <div class="flex-1 space-y-4">
                         <div>
                             <h3 id="farmer-name" class="text-2xl font-heading font-bold text-primary mb-1">Farmer</h3>
                             <div class="flex items-center gap-2 text-text-secondary mb-3">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1263f966d-1766595347304.png"
-                                    alt="Location marker icon" class="w-5 h-5"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                <span id="farmer-location">Farmer location</span>
-                            </div>
-                            <div class="flex items-center gap-1 mb-4">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                    alt="Star rating icon" class="w-5 h-5"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                    alt="Star rating icon" class="w-5 h-5"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                    alt="Star rating icon" class="w-5 h-5"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                    alt="Star rating icon" class="w-5 h-5"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                    alt="Star rating icon" class="w-5 h-5"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                <span class="text-lg font-semibold text-text-primary ml-2">—</span>
-                                <span class="text-text-tertiary ml-2">(sample rating)</span>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                <span id="farmer-location">Location</span>
                             </div>
                         </div>
-
-                        <p id="farmer-tagline" class="text-text-secondary leading-relaxed">
-                            This section introduces the farmer who supplies the selected product, including a short
-                            overview of their farming practices and experience.
-                        </p>
-
+                        <p id="farmer-tagline" class="text-text-secondary leading-relaxed">This section introduces the farmer.</p>
                         <div class="grid sm:grid-cols-3 gap-4 pt-4">
-                            <div class="bg-primary/5 rounded-lg p-4 text-center">
-                                <p id="farmer-experience" class="text-3xl font-bold text-primary mb-1">—</p>
-                                <p class="text-sm text-text-secondary">Years Experience</p>
-                            </div>
-                            <div class="bg-primary/5 rounded-lg p-4 text-center">
-                                <p id="farmer-farm-size" class="text-3xl font-bold text-primary mb-1">—</p>
-                                <p class="text-sm text-text-secondary">Farm Size</p>
-                            </div>
-                            <div class="bg-primary/5 rounded-lg p-4 text-center">
-                                <p id="farmer-customers" class="text-3xl font-bold text-primary mb-1">—</p>
-                                <p class="text-sm text-text-secondary">Customers Served</p>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-wrap gap-3 pt-4">
-                            <a href="farmer_dashboard.html" class="btn btn-outline">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_11790ae31-1768505831055.png"
-                                    alt="View profile icon" class="w-5 h-5 mr-2"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                View Profile
-                            </a>
-                            <button class="btn btn-outline">
-                                <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1718083bd-1767889411667.png"
-                                    alt="Contact farmer icon" class="w-5 h-5 mr-2"
-                                    onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                Contact Farmer
-                            </button>
+                            <div class="bg-primary/5 rounded-lg p-4 text-center"><p id="farmer-experience" class="text-3xl font-bold text-primary mb-1">—</p><p class="text-sm text-text-secondary">Years Experience</p></div>
+                            <div class="bg-primary/5 rounded-lg p-4 text-center"><p id="farmer-farm-size" class="text-3xl font-bold text-primary mb-1">—</p><p class="text-sm text-text-secondary">Farm Size</p></div>
+                            <div class="bg-primary/5 rounded-lg p-4 text-center"><p id="farmer-customers" class="text-3xl font-bold text-primary mb-1">—</p><p class="text-sm text-text-secondary">Customers Served</p></div>
                         </div>
                     </div>
                 </div>
@@ -418,542 +257,105 @@
         </div>
     </section>
 
-    <!-- Farming Details Section -->
+    <!-- Farming Details Section (dynamic) -->
     <section class="py-12 bg-background">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl font-heading font-bold text-primary mb-8 text-center">Typical Farming & Harvest Details</h2>
-
-            <div class="grid md:grid-cols-3 gap-6">
-                <!-- Farming Method -->
-                <div class="card">
-                    <div class="bg-success/10 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
-                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_14e0e1fad-1767359145421.png"
-                            alt="Organic farming sprout icon" class="w-10 h-10"
-                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                    </div>
-                    <h3 class="text-xl font-heading font-semibold text-primary mb-3">Farming Method (Example)</h3>
-                    <ul class="space-y-2 text-text-secondary">
-                        <li class="flex items-start gap-2">
-                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10d875ff2-1766817002058.png"
-                                alt="Checkmark icon" class="w-5 h-5 mt-0.5 flex-shrink-0"
-                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                            <span>Many of our farmers use organic methods</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10d875ff2-1766817002058.png"
-                                alt="Checkmark icon" class="w-5 h-5 mt-0.5 flex-shrink-0"
-                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                            <span>Natural compost fertilizers where possible</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10d875ff2-1766817002058.png"
-                                alt="Checkmark icon" class="w-5 h-5 mt-0.5 flex-shrink-0"
-                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                            <span>Efficient irrigation systems</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10d875ff2-1766817002058.png"
-                                alt="Checkmark icon" class="w-5 h-5 mt-0.5 flex-shrink-0"
-                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                            <span>Biological and low-chemical pest control</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Harvest Information -->
-                <div class="card">
-                    <div class="bg-warning/10 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
-                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_10f7c574e-1769014283477.png"
-                            alt="Harvest calendar icon" class="w-10 h-10"
-                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                    </div>
-                    <h3 class="text-xl font-heading font-semibold text-primary mb-3">Harvest Details (Typical)</h3>
-                    <ul class="space-y-3 text-text-secondary">
-                        <li>
-                            <p class="font-medium text-text-primary">Harvest Timing</p>
-                            <p class="text-sm">Exact harvest dates depend on the specific product and season.</p>
-                        </li>
-                        <li>
-                            <p class="font-medium text-text-primary">Harvest Season</p>
-                            <p class="text-sm">Seasons vary by crop; this section can reflect the current product’s typical harvest window.</p>
-                        </li>
-                        <li>
-                            <p class="font-medium text-text-primary">Growing Period</p>
-                            <p class="text-sm">Typical growing periods are shown here when available for the selected product.</p>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Delivery Timeline -->
-                <div class="card">
-                    <div class="bg-info/10 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
-                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_17d3cc191-1767192374344.png"
-                            alt="Delivery truck icon" class="w-10 h-10"
-                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                    </div>
-                    <h3 class="text-xl font-heading font-semibold text-primary mb-3">Delivery Timeline (Indicative)</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-start gap-3">
-                            <div class="bg-success w-2 h-2 rounded-full mt-2"></div>
-                            <div>
-                                <p class="font-medium text-text-primary">Order Processing</p>
-                                <p class="text-sm text-text-tertiary">Typically processed within a short time after ordering.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <div class="bg-success w-2 h-2 rounded-full mt-2"></div>
-                            <div>
-                                <p class="font-medium text-text-primary">Quality Check & Pack</p>
-                                <p class="text-sm text-text-tertiary">Fresh produce is checked and packed before dispatch.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <div class="bg-success w-2 h-2 rounded-full mt-2"></div>
-                            <div>
-                                <p class="font-medium text-text-primary">Delivery to You</p>
-                                <p class="text-sm text-text-tertiary">Delivery time depends on your location and courier availability.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <h2 class="text-3xl font-heading font-bold text-primary mb-8 text-center">Farming & Harvest Details</h2>
+            <div id="farming-details-grid" class="grid md:grid-cols-3 gap-6"></div>
         </div>
     </section>
 
-    <!-- Customer Reviews Section -->
+    <!-- Customer Reviews Section (dynamic) -->
     <section class="py-12 bg-surface border-y border-border">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                 <div>
-                    <h2 class="text-3xl font-heading font-bold text-primary mb-2">Sample Customer Reviews</h2>
-                    <p class="text-text-secondary">Illustrative feedback for how reviews may look once connected to real data</p>
+                    <h2 class="text-3xl font-heading font-bold text-primary mb-2">Customer Reviews</h2>
+                    <p id="reviews-subtitle" class="text-text-secondary">Be the first to review this product</p>
                 </div>
-                <button class="btn btn-outline">
-                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_13d759113-1767354639878.png"
-                        alt="Write review icon" class="w-5 h-5 mr-2"
-                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
+                <button id="write-review-btn" class="btn btn-outline" style="display:none;">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                     Write a Review
                 </button>
             </div>
-
-            <!-- Reviews Grid -->
-            <div class="grid md:grid-cols-2 gap-6">
-                <!-- Review 1 -->
-                <div class="card">
-                    <div class="flex items-start gap-4 mb-4">
-                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1cf870e50-1763294025759.png"
-                            alt="Profile photo of a customer" class="w-12 h-12 rounded-full object-cover"
-                            loading="lazy"
-                            onerror="this.src='https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=100'; this.onerror=null;">
-                        <div class="flex-1">
-                            <h4 class="font-semibold text-text-primary">Customer 1</h4>
-                            <div class="flex items-center gap-2 mt-1">
-                                <div class="flex items-center gap-0.5">
-                                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                        alt="Star rating icon" class="w-4 h-4"
-                                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                        alt="Star rating icon" class="w-4 h-4"
-                                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                        alt="Star rating icon" class="w-4 h-4"
-                                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                        alt="Star rating icon" class="w-4 h-4"
-                                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                        alt="Star rating icon" class="w-4 h-4"
-                                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                </div>
-                                <span class="text-sm text-text-tertiary">Sample date</span>
-                            </div>
+            <!-- Review Form (hidden by default) -->
+            <div id="review-form-container" class="card mb-8" style="display:none;">
+                <h3 class="text-xl font-heading font-semibold text-primary mb-4">Write Your Review</h3>
+                <div class="review-form">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-text-primary mb-2">Your Rating</label>
+                        <div id="star-rating-input" class="flex gap-1">
+                            <button class="star-btn" data-rating="1">★</button>
+                            <button class="star-btn" data-rating="2">★</button>
+                            <button class="star-btn" data-rating="3">★</button>
+                            <button class="star-btn" data-rating="4">★</button>
+                            <button class="star-btn" data-rating="5">★</button>
                         </div>
                     </div>
-                    <p class="text-text-secondary leading-relaxed mb-4">
-                        Example review content describing the freshness, quality, and overall experience of purchasing
-                        directly from farmers through this platform.
-                    </p>
-                    <div class="flex items-center gap-2">
-                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1c66c9dc1-1769184331993.png"
-                            alt="Verified purchase icon" class="w-5 h-5"
-                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                        <span class="text-sm text-success-dark font-medium">Verified Purchase</span>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-text-primary mb-2">Your Review</label>
+                        <textarea id="review-comment" placeholder="Share your experience with this product..."></textarea>
                     </div>
-                </div>
-
-                <!-- Review 2 -->
-                <div class="card">
-                    <div class="flex items-start gap-4 mb-4">
-                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_18c66c46c-1763301780768.png"
-                            alt="Profile photo of another customer" class="w-12 h-12 rounded-full object-cover"
-                            loading="lazy"
-                            onerror="this.src='https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100'; this.onerror=null;">
-                        <div class="flex-1">
-                            <h4 class="font-semibold text-text-primary">Customer 2</h4>
-                            <div class="flex items-center gap-2 mt-1">
-                                <div class="flex items-center gap-0.5">
-                                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                        alt="Star rating icon" class="w-4 h-4"
-                                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                        alt="Star rating icon" class="w-4 h-4"
-                                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                        alt="Star rating icon" class="w-4 h-4"
-                                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_184280168-1764677508307.png"
-                                        alt="Star rating icon" class="w-4 h-4"
-                                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1dfa0826a-1764662786277.png"
-                                        alt="Half star rating icon" class="w-4 h-4"
-                                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                                </div>
-                                <span class="text-sm text-text-tertiary">Sample date</span>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-text-secondary leading-relaxed mb-4">
-                        Another example review highlighting the benefits of supporting farmers directly and receiving
-                        fresh, high-quality produce.
-                    </p>
-                    <div class="flex items-center gap-2">
-                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1c66c9dc1-1769184331993.png"
-                            alt="Verified purchase icon" class="w-5 h-5"
-                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                        <span class="text-sm text-success-dark font-medium">Verified Purchase</span>
+                    <div class="flex gap-3">
+                        <button id="submit-review-btn" class="btn btn-primary px-6 py-2 h-auto">Submit Review</button>
+                        <button id="cancel-review-btn" class="btn btn-outline px-6 py-2 h-auto">Cancel</button>
                     </div>
                 </div>
             </div>
-
-            <!-- View All Reviews Button -->
-            <div class="text-center mt-8">
-                <button class="btn btn-outline">
-                    View All Reviews
-                    <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1291fe4cd-1767542533390.png"
-                        alt="Right arrow icon" class="w-5 h-5 ml-2"
-                        onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                </button>
-            </div>
+            <!-- Reviews List -->
+            <div id="reviews-list" class="grid md:grid-cols-2 gap-6"></div>
         </div>
     </section>
 
+    </div><!-- end #product-content -->
 
     <!-- Footer -->
     <footer class="bg-primary-900 text-on-primary py-12 border-t border-primary-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-4 gap-8 mb-8">
-                <!-- Company Info -->
                 <div>
                     <div class="flex items-center gap-2 mb-4">
-                        <svg class="w-10 h-10" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="24" cy="24" r="22" fill="#FF9933" />
-                            <path d="M24 8C24 8 16 12 16 20C16 24 18 28 24 32C30 28 32 24 32 20C32 12 24 8 24 8Z"
-                                fill="#2D5016" />
-                            <circle cx="24" cy="22" r="3" fill="#FFFFFF" />
-                        </svg>
-                        <div>
-                            <h3 class="font-heading font-bold text-lg">E-Agri Commerce</h3>
-                            <p class="text-xs text-on-primary/70">Farm to Table Direct</p>
-                        </div>
+                        <svg class="w-10 h-10" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" fill="#FF9933"/><path d="M24 8C24 8 16 12 16 20C16 24 18 28 24 32C30 28 32 24 32 20C32 12 24 8 24 8Z" fill="#2D5016"/><circle cx="24" cy="22" r="3" fill="#FFF"/></svg>
+                        <div><h3 class="font-heading font-bold text-lg">E-Agri Commerce</h3><p class="text-xs text-on-primary/70">Farm to Table Direct</p></div>
                     </div>
-                    <p class="text-sm text-on-primary/80 leading-relaxed">
-                        Empowering Indian farmers and connecting them directly with consumers for a sustainable
-                        agricultural future.
-                    </p>
+                    <p class="text-sm text-on-primary/80 leading-relaxed">Empowering Indian farmers and connecting them directly with consumers for a sustainable agricultural future.</p>
                 </div>
-
-                <!-- Quick Links -->
                 <div>
                     <h4 class="font-heading font-semibold text-lg mb-4">Quick Links</h4>
                     <ul class="space-y-2">
-                        <li><a href="home_landing.html"
-                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Home</a></li>
-                        <li><a href="product_catalog.html"
-                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Products</a>
-                        </li>
-                        <li data-role="farmer"><a href="farmer_dashboard.html"
-                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Farmer
-                                Dashboard</a></li>
-                        <li data-role="consumer"><a href="consumer_dashboard.html"
-                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Consumer
-                                Dashboard</a></li>
-                        <li><a href="settings.html"
-                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Settings</a>
-                        </li>
+                        <li><a href="home_landing.html" class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Home</a></li>
+                        <li><a href="product_catalog.html" class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Products</a></li>
+                        <li data-role="farmer"><a href="farmer_dashboard.html" class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Farmer Dashboard</a></li>
+                        <li data-role="consumer"><a href="consumer_dashboard.html" class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Consumer Dashboard</a></li>
+                        <li><a href="settings.html" class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Settings</a></li>
                     </ul>
                 </div>
-
-                <!-- Support -->
                 <div>
                     <h4 class="font-heading font-semibold text-lg mb-4">Support</h4>
                     <ul class="space-y-2">
-                        <li><a href="javascript:void(0)"
-                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Help
-                                Center</a></li>
-                        <li><a href="javascript:void(0)"
-                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Contact Us</a>
-                        </li>
-                        <li><a href="javascript:void(0)"
-                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">FAQs</a></li>
-                        <li><a href="javascript:void(0)"
-                                class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Terms &
-                                Conditions</a></li>
+                        <li><a href="javascript:void(0)" class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Help Center</a></li>
+                        <li><a href="javascript:void(0)" class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Contact Us</a></li>
+                        <li><a href="javascript:void(0)" class="text-sm text-on-primary/80 hover:text-secondary transition-colors">FAQs</a></li>
+                        <li><a href="javascript:void(0)" class="text-sm text-on-primary/80 hover:text-secondary transition-colors">Terms & Conditions</a></li>
                     </ul>
                 </div>
-
-                <!-- Contact -->
                 <div>
                     <h4 class="font-heading font-semibold text-lg mb-4">Contact</h4>
                     <ul class="space-y-3">
-                        <li class="flex items-start gap-2">
-                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1175352d5-1767644430280.png"
-                                alt="Email icon" class="w-5 h-5 mt-0.5"
-                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                            <span class="text-sm text-on-primary/80">support@eagricommerce.in</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_13361d1fe-1768398985241.png"
-                                alt="Phone icon" class="w-5 h-5 mt-0.5"
-                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                            <span class="text-sm text-on-primary/80">+91 1800-123-4567</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <img src="https://img.rocket.new/generatedImages/rocket_gen_img_11407ebac-1766822096581.png"
-                                alt="Location icon" class="w-5 h-5 mt-0.5"
-                                onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                            <span class="text-sm text-on-primary/80">Tiruchirappalli,Tamil Nadu, India</span>
-                        </li>
+                        <li class="flex items-start gap-2"><svg class="w-5 h-5 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg><span class="text-sm text-on-primary/80">support@eagricommerce.in</span></li>
+                        <li class="flex items-start gap-2"><svg class="w-5 h-5 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg><span class="text-sm text-on-primary/80">+91 1800-123-4567</span></li>
+                        <li class="flex items-start gap-2"><svg class="w-5 h-5 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span class="text-sm text-on-primary/80">Tiruchirappalli, Tamil Nadu, India</span></li>
                     </ul>
                 </div>
             </div>
-
-            <!-- Bottom Bar -->
             <div class="pt-8 border-t border-primary-800 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <p class="text-sm text-on-primary/70">© 2026 E-Agri Commerce Platform. All Rights Reserved.</p>
-                <div class="flex items-center gap-4">
-                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
-                        aria-label="Facebook">
-                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1b9a5f070-1766967796860.png"
-                            alt="Facebook social media icon" class="w-6 h-6"
-                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                    </a>
-                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
-                        aria-label="Twitter">
-                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_11caec31f-1764660939199.png"
-                            alt="Twitter social media icon" class="w-6 h-6"
-                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                    </a>
-                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
-                        aria-label="Instagram">
-                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1f9c7aecf-1764660938700.png"
-                            alt="Instagram social media icon" class="w-6 h-6"
-                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                    </a>
-                    <a href="javascript:void(0)" class="text-on-primary/70 hover:text-secondary transition-colors"
-                        aria-label="LinkedIn">
-                        <img src="https://img.rocket.new/generatedImages/rocket_gen_img_1904267c6-1768733084246.png"
-                            alt="LinkedIn social media icon" class="w-6 h-6"
-                            onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop'; this.onerror=null;">
-                    </a>
-                </div>
             </div>
         </div>
     </footer>
 
     <script src="../js/app.js"></script>
     <script src="../js/auth.js"></script>
-    <script>
-        const API_BASE = window.EAGRI_API_BASE || 'http://localhost:5000';
-        const FALLBACK = 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=400';
-        
-        function getProductId() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('id');
-        }
-
-        async function getProduct() {
-            if (!window.EAgri) return null;
-            const allProducts = await window.EAgri.getProducts();
-            const productId = getProductId();
-            if (!productId) return allProducts[0] || null;
-            return allProducts.find(p => p.id === productId) || allProducts[0] || null;
-        }
-
-        function esc(s) {
-            return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
-
-        function updateBreadcrumb(product) {
-            const breadcrumb = document.getElementById('breadcrumb-category');
-            if (breadcrumb && product) {
-                breadcrumb.textContent = product.category || 'Products';
-            }
-            const breadcrumbName = document.getElementById('breadcrumb-name');
-            if (breadcrumbName && product) {
-                breadcrumbName.textContent = product.name || 'Product';
-            }
-        }
-
-        function updateProductImage(product) {
-            const img = document.getElementById('main-product-image');
-            if (img && product) {
-                img.src = product.image || FALLBACK;
-                img.alt = product.name || 'Product';
-            }
-        }
-
-        function updateBadge(product) {
-            const badgeContainer = document.getElementById('product-badge');
-            if (badgeContainer && product && product.badge) {
-                badgeContainer.innerHTML = `
-                    <div class="absolute top-4 right-4 bg-success text-on-success px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                        <span>${esc(product.badge)}</span>
-                    </div>`;
-            }
-        }
-
-        function updateStockStatus(product) {
-            const stockContainer = document.getElementById('stock-status');
-            if (stockContainer && product) {
-                const stock = parseInt(product.stock) || 0;
-                if (stock > 0) {
-                    stockContainer.innerHTML = `
-                        <span class="text-success font-semibold">In Stock (${stock} kg available)</span>`;
-                } else {
-                    stockContainer.innerHTML = `<span class="text-error font-semibold">Out of Stock</span>`;
-                }
-            }
-        }
-
-        function updateProductInfo(product) {
-            if (!product) {
-                document.getElementById('product-title').textContent = 'Product Not Found';
-                return;
-            }
-
-            document.getElementById('product-title').textContent = product.name || 'Product';
-            document.getElementById('product-price').textContent = '₹' + (product.price || 0);
-            document.getElementById('product-description').textContent = product.description || 'No description available';
-            document.getElementById('quantity-available').textContent = 'Available: ' + (product.stock || 0) + ' kg';
-            document.getElementById('quantity-input').max = product.stock || 50;
-            
-            let fp = null;
-            if (window.EAgri && typeof window.EAgri.getFarmerProfile === 'function') {
-                fp = window.EAgri.getFarmerProfile();
-            }
-
-            if (document.getElementById('farmer-name')) {
-                document.getElementById('farmer-name').textContent = (fp && fp.name && fp.name !== 'Farmer') ? fp.name : (product.farmer || 'Farmer');
-            }
-            if (document.getElementById('farmer-location')) {
-                document.getElementById('farmer-location').textContent = fp?.location || product.farmerLocation || 'Location';
-            }
-
-            const fpDescEl = document.getElementById('farmer-tagline');
-            if (fpDescEl && fp?.tagline) fpDescEl.textContent = fp.tagline;
-
-            const fpImg = document.getElementById('farmer-photo');
-            if (fpImg && fp?.image) fpImg.src = fp.image;
-
-            const fpExpEl = document.getElementById('farmer-experience');
-            if (fpExpEl && fp?.experience) {
-                const num = fp.experience.toString().replace(/[^0-9+]/g, '');
-                fpExpEl.textContent = num || fp.experience;
-            }
-
-            const fpSizeEl = document.getElementById('farmer-farm-size');
-            if (fpSizeEl && fp?.farmSize) {
-                const sz = fp.farmSize.toString().replace(/[^0-9+.]/g, '');
-                fpSizeEl.textContent = sz || fp.farmSize;
-            }
-
-            const fpCustEl = document.getElementById('farmer-customers');
-            if (fpCustEl) {
-                fpCustEl.textContent = "500+";
-            }
-
-            updateBreadcrumb(product);
-            updateProductImage(product);
-            updateBadge(product);
-            updateStockStatus(product);
-
-            const addToCartBtn = document.getElementById('add-to-cart-btn');
-            if (addToCartBtn) {
-                const stock = parseInt(product.stock) || 0;
-                if (stock <= 0) {
-                    addToCartBtn.disabled = true;
-                    addToCartBtn.textContent = 'Out of Stock';
-                    addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                }
-            }
-        }
-
-        function changeMainImage(src, btn) {
-            const mainImg = document.getElementById('main-product-image');
-            if (mainImg) mainImg.src = src;
-            document.querySelectorAll('.thumbnail-btn').forEach(b => {
-                b.classList.remove('border-primary');
-                b.classList.add('border-border');
-            });
-            if (btn) {
-                btn.classList.remove('border-border');
-                btn.classList.add('border-primary');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', async function() {
-            const product = await getProduct();
-            updateProductInfo(product);
-
-            const quantityInput = document.getElementById('quantity-input');
-            const decreaseBtn = document.getElementById('decrease-qty');
-            const increaseBtn = document.getElementById('increase-qty');
-            const addToCartBtn = document.getElementById('add-to-cart-btn');
-
-            if (decreaseBtn && quantityInput) {
-                decreaseBtn.addEventListener('click', function() {
-                    let qty = parseInt(quantityInput.value) || 1;
-                    qty = Math.max(1, qty - 1);
-                    quantityInput.value = qty;
-                });
-            }
-
-            if (increaseBtn && quantityInput) {
-                increaseBtn.addEventListener('click', function() {
-                    let qty = parseInt(quantityInput.value) || 1;
-                    const max = parseInt(quantityInput.max) || 50;
-                    qty = Math.min(max, qty + 1);
-                    quantityInput.value = qty;
-                });
-            }
-
-            if (addToCartBtn && quantityInput) {
-                addToCartBtn.addEventListener('click', async function() {
-                    if (!window.EAgri) return;
-                    // Re-fetch or use existing product
-                    const prod = await getProduct();
-                    if (!prod) return;
-                    
-                    const qty = parseInt(quantityInput.value) || 1;
-                    const added = window.EAgri.addToCart(prod, qty);
-                    
-                    if (added) {
-                         if (window.EAgri.toast) window.EAgri.toast('Added to cart.', 'success');
-                         else alert('Added to cart successfully!');
-                    } else {
-                        alert('Failed to add to cart');
-                    }
-                });
-            }
-
-            if (window.EAgri) {
-                window.EAgri.initCartBadges();
-                window.EAgri.initMobileMenu();
-            }
-        });
-
-        window.changeMainImage = changeMainImage;
-    </script>
+    <script src="../js/product_details.js"></script>
 </body>
-
 </html>

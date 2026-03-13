@@ -816,6 +816,91 @@
       showToast(message, type);
     },
 
+    // ---------- Product Details ----------
+    async getProductById(productId) {
+      try {
+        const res = await fetch(API_BASE + '/api/products/' + productId);
+        if (!res.ok) {
+          if (res.status === 404) return null;
+          throw new Error('Failed to fetch product');
+        }
+        const p = await res.json();
+        return {
+          id: p._id || p.id,
+          name: p.name || 'Product',
+          price: parseFloat(p.price) || 0,
+          stock: parseInt(p.stock, 10) || 0,
+          image: p.image || FALLBACK_IMG,
+          category: p.category || 'General',
+          description: p.description || '',
+          farmer: p.farmerName || (p.farmer && p.farmer.name) || 'Farmer',
+          farmerId: p.farmerId || (p.farmer && (p.farmer._id || p.farmer.id)) || '',
+          farmerLocation: p.farmerLocation || '',
+          farmingDetails: p.farmingDetails || {},
+          reviews: p.reviews || [],
+          availability: p.availability !== false,
+        };
+      } catch (err) {
+        console.error('getProductById error:', err);
+        // Fallback: try from getProducts list
+        const all = await this.getProducts();
+        return all.find(p => p.id === productId) || null;
+      }
+    },
+
+    // ---------- Reviews ----------
+    async submitReview(productId, rating, comment) {
+      const token = getAuthToken();
+      if (!token) throw new Error('Not authenticated. Please log in to submit a review.');
+      const res = await fetch(API_BASE + '/api/products/' + productId + '/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': token,
+        },
+        body: JSON.stringify({ rating, comment }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to submit review');
+      return data;
+    },
+
+    // ---------- Wishlist ----------
+    async getWishlist() {
+      const token = getAuthToken();
+      if (!token) return [];
+      try {
+        const res = await fetch(API_BASE + '/api/profile/wishlist', {
+          headers: { 'x-auth-token': token },
+        });
+        if (!res.ok) return [];
+        return await res.json();
+      } catch (_) {
+        return [];
+      }
+    },
+
+    async toggleWishlist(productId) {
+      const token = getAuthToken();
+      if (!token) throw new Error('Not authenticated. Please log in.');
+      const res = await fetch(API_BASE + '/api/profile/wishlist/toggle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': token,
+        },
+        body: JSON.stringify({ productId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to update wishlist');
+      return data;
+    },
+
+    async isInWishlist(productId) {
+      const wishlist = await this.getWishlist();
+      return wishlist.some(w => (w.productId === productId || (w.productId && w.productId.toString() === productId)));
+    },
+
     applyTheme: applyThemeFromSettings,
     applyLanguage: applyLanguageFromSettings,
   };
