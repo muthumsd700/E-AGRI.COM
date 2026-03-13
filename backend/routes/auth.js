@@ -11,7 +11,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret_key_for_eagri_platform';
 // @access  Public
 router.post('/register', async (req, res) => {
     try {
-        const { name, email, password, role, phone, address } = req.body;
+        const { name, email, password, role, phone, address, experience, farmSize } = req.body;
 
         // Validation
         if (!name || !email || !password) {
@@ -30,7 +30,9 @@ router.post('/register', async (req, res) => {
             password,
             role: role || 'consumer',
             phone,
-            address
+            address,
+            experience: role === 'farmer' ? (experience || '') : '',
+            farmSize: role === 'farmer' ? (farmSize || '') : ''
         });
 
         // Hash password
@@ -60,7 +62,9 @@ router.post('/register', async (req, res) => {
                         email: user.email,
                         role: user.role,
                         phone: user.phone,
-                        address: user.address
+                        address: user.address,
+                        experience: user.experience,
+                        farmSize: user.farmSize
                     }
                 });
             }
@@ -121,7 +125,9 @@ router.post('/login', async (req, res) => {
                         email: user.email,
                         role: user.role,
                         phone: user.phone,
-                        address: user.address
+                        address: user.address,
+                        experience: user.experience,
+                        farmSize: user.farmSize
                     }
                 });
             }

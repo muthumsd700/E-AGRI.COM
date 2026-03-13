@@ -27,6 +27,15 @@
         paymentMethods: [],
     };
 
+    const INDIAN_STATES = [
+        "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana",
+        "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+        "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+        "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands",
+        "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh",
+        "Lakshadweep", "Puducherry"
+    ];
+
     /** Cached profile from API (name, email, role, phone, address, addresses, defaultAddressId, profilePhoto) */
     let currentUser = null;
 
@@ -77,6 +86,8 @@
             addresses: user.addresses || existing.addresses || [],
             defaultAddressId: user.defaultAddressId || existing.defaultAddressId || '',
             profilePhoto: user.profilePhoto || existing.profilePhoto || '',
+            experience: user.experience || existing.experience || '',
+            farmSize: user.farmSize || existing.farmSize || ''
         }));
     }
 
@@ -365,16 +376,68 @@
     // ---------- Sidebar & Navigation ----------
     function setSidebarOpen(isOpen) {
         const sidebar = document.getElementById('sidebar');
-        const toggle = document.getElementById('sidebar-toggle');
-        if (!sidebar) return;
-        const open = !!isOpen;
-        sidebar.classList.toggle('open', open);
-        if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        if (open && window.innerWidth < 1024) {
-            document.body.classList.add('overflow-hidden');
+        const overlay = document.getElementById('sidebar-overlay');
+        const body = document.body;
+
+        if (isOpen) {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+            body.style.overflow = 'hidden';
         } else {
-            document.body.classList.remove('overflow-hidden');
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            body.style.overflow = '';
         }
+    }
+
+    function initSidebar() {
+        const hamburger = document.getElementById('sidebar-hamburger');
+        const overlay = document.getElementById('sidebar-overlay');
+        const sidebar = document.getElementById('sidebar');
+
+        if (hamburger) hamburger.addEventListener('click', () => setSidebarOpen(true));
+        if (overlay) overlay.addEventListener('click', () => setSidebarOpen(false));
+
+        // Navigation Clicks
+        document.querySelectorAll('.settings-nav-item[data-section]').forEach(item => {
+            item.addEventListener('click', () => {
+                const sectionId = item.getAttribute('data-section');
+                showSection(sectionId);
+                setSidebarOpen(false);
+            });
+        });
+
+        // Scroll Spy Logic
+        const sections = document.querySelectorAll('section[data-scroll-section]');
+        const mainContent = document.querySelector('main');
+        
+        mainContent.addEventListener('scroll', () => {
+            let current = "";
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (mainContent.scrollTop >= sectionTop - 100) {
+                    current = section.getAttribute('data-scroll-section');
+                }
+            });
+
+            if (current) {
+                document.querySelectorAll('.settings-nav-item').forEach(item => {
+                    item.classList.toggle('active', item.getAttribute('data-section') === current);
+                });
+                updateBreadcrumb(current);
+            }
+        });
+    }
+
+    function updateBreadcrumb(sectionId) {
+        const breadcrumbEl = document.getElementById('breadcrumb-current');
+        if (!breadcrumbEl) return;
+        const nameMap = {
+            profile: 'Profile', account: 'Account', address: 'Address',
+            notifications: 'Notifications', privacy: 'Privacy & Data',
+            security: 'Security', payment: 'Payment'
+        };
+        breadcrumbEl.textContent = nameMap[sectionId] || 'Settings';
     }
 
     function showSection(sectionId) {
@@ -465,134 +528,101 @@
         const name = user.name || 'User';
         const roleRaw = (user.role || 'consumer').toLowerCase();
         const role = roleRaw === 'farmer' ? 'Farmer' : 'Consumer';
-        const email = user.email || '';
         const phone = user.phone || '';
-        const farmerProfile = (window.EAgri && typeof window.EAgri.getFarmerProfile === 'function')
-            ? window.EAgri.getFarmerProfile()
-            : null;
 
         document.getElementById('profile-display-name').textContent = name;
         document.getElementById('profile-display-role').textContent = role;
-        document.getElementById('profile-display-email').textContent = email;
         document.getElementById('profile-name').value = name;
         document.getElementById('profile-phone').value = phone;
-        document.getElementById('profile-email').value = email;
-        document.getElementById('profile-role-badge').textContent = role;
 
-        const expInput = document.getElementById('profile-experience');
-        const farmSizeInput = document.getElementById('profile-farm-size');
-        if (expInput) {
-            expInput.value = farmerProfile && typeof farmerProfile.experience === 'string'
-                ? farmerProfile.experience
-                : '';
-        }
-        if (farmSizeInput) {
-            farmSizeInput.value = farmerProfile && typeof farmerProfile.farmSize === 'string'
-                ? farmerProfile.farmSize
-                : '';
+        // Farmer specific fields
+        if (roleRaw === 'farmer') {
+            document.getElementById('profile-experience').value = user.experience || '';
+            document.getElementById('profile-farm-size').value = user.farmSize || '';
         }
 
-        const initials = name.split(' ').map(function (n) { return n[0]; }).join('').toUpperCase().slice(0, 2);
-        const avatarContainer = document.getElementById('profile-avatar');
         const img = document.getElementById('profile-photo-img');
         const initEl = document.getElementById('profile-initials');
+        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        
+        if (initEl) initEl.textContent = initials;
 
         if (user.profilePhoto) {
-            if (img) {
-                img.src = user.profilePhoto;
-                img.classList.remove('hidden');
-            }
+            if (img) { img.src = user.profilePhoto; img.classList.remove('hidden'); }
             if (initEl) initEl.classList.add('hidden');
-            if (avatarContainer) avatarContainer.classList.remove('hidden');
         } else {
-            if (avatarContainer) avatarContainer.classList.add('hidden');
+            if (img) img.classList.add('hidden');
+            if (initEl) initEl.classList.remove('hidden');
         }
+
+        calculateProfileCompletion();
     }
 
     function initProfile() {
         renderProfile();
-        document.getElementById('form-profile')?.addEventListener('submit', async function (e) {
+        const form = document.getElementById('form-profile');
+        const photoInput = document.getElementById('profile-photo-input');
+        const dropZone = document.getElementById('photo-drop-zone');
+
+        form?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('profile-name').value.trim();
-            const phone = document.getElementById('profile-phone').value.trim();
-            const experienceInput = document.getElementById('profile-experience');
-            const farmSizeInput = document.getElementById('profile-farm-size');
-            const experience = experienceInput ? experienceInput.value.trim() : '';
-            const farmSize = farmSizeInput ? farmSizeInput.value.trim() : '';
-
-            // Validation
-            if (!name) {
-                toast('Name is required.', 'error');
-                return;
+            const payload = {
+                name: document.getElementById('profile-name').value.trim(),
+                phone: document.getElementById('profile-phone').value.trim()
+            };
+            if (getRole() === 'farmer') {
+                payload.experience = document.getElementById('profile-experience').value.trim();
+                payload.farmSize = document.getElementById('profile-farm-size').value.trim();
             }
-            if (!validatePhone(phone)) {
-                toast('Phone must be 10 digits.', 'error');
-                return;
-            }
-
-            // Loading state
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Saving...';
 
             try {
-                await apiUpdateProfile({ name, phone });
-                if (window.EAgri && typeof window.EAgri.setFarmerProfile === 'function') {
-                    const update = {};
-                    if (experience) update.experience = experience;
-                    if (farmSize) update.farmSize = farmSize;
-                    if (Object.keys(update).length) {
-                        window.EAgri.setFarmerProfile(update);
-                    }
-                }
+                await apiUpdateProfile(payload);
+                toast('Profile updated successfully');
                 renderProfile();
-                toast('Profile saved.', 'success');
-            } catch (err) {
-                toast(err.message || 'Failed to save profile.', 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = originalText;
-            }
+            } catch (err) { toast(err.message, 'error'); }
         });
-        document.getElementById('profile-photo-input')?.addEventListener('change', async function (e) {
-            const file = e.target.files[0];
-            if (!file) return;
 
-            // Basic validation
-            if (file.size > 5 * 1024 * 1024) { // 5MB limit
-                toast('File size too large. Max 5MB.', 'error');
-                return;
-            }
-            if (!file.type.startsWith('image/')) {
-                toast('Please select an image file.', 'error');
-                return;
-            }
-
+        // Photo Upload / Drag-and-Drop
+        const handleFile = (file) => {
+            if (!file.type.startsWith('image/')) return toast('Please upload an image', 'error');
             const reader = new FileReader();
-            reader.onload = async function () {
-                // Loading state
-                const uploadBtn = document.querySelector('.profile-photo-upload-btn');
-                if (uploadBtn) {
-                    uploadBtn.disabled = true;
-                    uploadBtn.textContent = 'Uploading...';
-                }
-
-                try {
-                    await apiUpdateProfile({ profilePhoto: reader.result });
-                    renderProfile();
-                    toast('Profile photo updated.', 'success');
-                } catch (err) {
-                    toast(err.message || 'Failed to update photo.', 'error');
-                } finally {
-                    if (uploadBtn) {
-                        uploadBtn.disabled = false;
-                        uploadBtn.textContent = 'Upload Photo';
-                    }
-                }
+            reader.onload = async () => {
+                await apiUpdateProfile({ profilePhoto: reader.result });
+                renderProfile();
+                toast('Photo updated');
             };
             reader.readAsDataURL(file);
-        });
+        };
+
+        photoInput?.addEventListener('change', (e) => e.target.files[0] && handleFile(e.target.files[0]));
+        
+        if (dropZone) {
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('active'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('active');
+                if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+            });
+            dropZone.addEventListener('click', () => photoInput.click());
+        }
+    }
+
+    function calculateProfileCompletion() {
+        const user = getStoredUser();
+        const fields = ['name', 'phone', 'profilePhoto'];
+        if (user.role === 'farmer') fields.push('experience', 'farmSize');
+        
+        const completed = fields.filter(f => user[f] && user[f].toString().length > 0).length;
+        const percent = Math.round((completed / fields.length) * 100);
+
+        const fill = document.getElementById('profile-completion-fill');
+        const text = document.getElementById('profile-completion-text');
+        const banner = document.getElementById('profile-completion-banner');
+
+        if (fill) fill.style.width = percent + '%';
+        if (text) text.textContent = percent + '% Complete';
+        if (banner) banner.classList.toggle('hidden', percent === 100);
     }
 
     // ---------- Account ----------
@@ -604,53 +634,62 @@
         document.getElementById('account-role').textContent = user.role || '—';
     }
 
-    function initAccount() {
-        renderAccount();
-        document.getElementById('form-account-password')?.addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const current = document.getElementById('account-current-password').value;
-            const newPw = document.getElementById('account-new-password').value;
-            const confirm = document.getElementById('account-confirm-password').value;
+    // ---------- Form Validation & Password Strength ----------
+    function initValidation() {
+        // Password Strength
+        const newPwInput = document.getElementById('account-new-password');
+        const strengthFill = document.getElementById('pw-strength-bar-fill');
+        const strengthText = document.getElementById('pw-strength-text');
 
-            // Validation
-            if (!current) {
-                toast('Current password is required.', 'error');
-                return;
-            }
-            if (newPw.length < 6) {
-                toast('New password must be at least 6 characters.', 'error');
-                return;
-            }
-            if (newPw !== confirm) {
-                toast('Passwords do not match.', 'error');
-                return;
-            }
+        if (newPwInput) {
+            newPwInput.addEventListener('input', () => {
+                const val = newPwInput.value;
+                let score = 0;
+                if (val.length >= 6) score++;
+                if (val.length >= 10) score++;
+                if (/[A-Z]/.test(val)) score++;
+                if (/[0-9]/.test(val)) score++;
+                if (/[^A-Za-z0-9]/.test(val)) score++;
 
-            // Loading state
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Updating...';
+                const levels = [
+                    { label: 'Weak', color: '#ef4444', width: '20%' },
+                    { label: 'Fair', color: '#f59e0b', width: '40%' },
+                    { label: 'Good', color: '#3b82f6', width: '60%' },
+                    { label: 'Strong', color: '#10b981', width: '80%' },
+                    { label: 'Very Strong', color: '#059669', width: '100%' }
+                ];
 
-            try {
-                await apiUpdatePassword(current, newPw);
-                document.getElementById('form-account-password').reset();
-                toast('Password updated.', 'success');
-            } catch (err) {
-                toast(err.message || 'Failed to update password.', 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = originalText;
-            }
-        });
-        document.getElementById('btn-delete-account')?.addEventListener('click', function () {
-            confirmModal('Are you sure you want to delete your account? All data will be removed. This cannot be undone.', function () {
-                localStorage.removeItem(STORAGE_KEYS.USER);
-                localStorage.removeItem(STORAGE_KEYS.SETTINGS);
-                toast('Account deleted.', 'info');
-                setTimeout(function () {
-                    window.location.href = '../pages/login.html';
-                }, 500);
+                const level = score > 0 ? levels[Math.min(score - 1, levels.length - 1)] : null;
+                if (level) {
+                    strengthFill.style.width = level.width;
+                    strengthFill.style.backgroundColor = level.color;
+                    strengthText.textContent = level.label;
+                    strengthText.style.color = level.color;
+                } else {
+                    strengthFill.style.width = '0';
+                    strengthText.textContent = 'None';
+                    strengthText.style.color = '';
+                }
+            });
+        }
+
+        // Inline Field Validation
+        const fields = [
+            { id: 'profile-name', validator: v => v.length >= 3, errorId: 'error-profile-name', successId: 'success-profile-name' },
+            { id: 'profile-phone', validator: validatePhone, errorId: 'error-profile-phone' },
+            { id: 'account-current-password', validator: v => v.length > 0, errorId: 'error-account-current-password' },
+            { id: 'account-new-password', validator: v => v.length >= 6, errorId: 'error-account-new-password' }
+        ];
+
+        fields.forEach(f => {
+            const el = document.getElementById(f.id);
+            if (!el) return;
+            el.addEventListener('blur', () => {
+                const isValid = f.validator(el.value);
+                el.classList.toggle('field-invalid', !isValid);
+                el.classList.toggle('field-valid', isValid);
+                if (f.errorId) document.getElementById(f.errorId).style.display = isValid ? 'none' : 'flex';
+                if (f.successId) document.getElementById(f.successId).style.display = isValid ? 'flex' : 'none';
             });
         });
     }
@@ -752,7 +791,18 @@
     }
 
     function initAddress() {
+        // Populate States
+        const stateSelect = document.getElementById('address-state');
+        if (stateSelect) {
+            INDIAN_STATES.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = opt.textContent = s;
+                stateSelect.appendChild(opt);
+            });
+        }
+
         renderAddressList();
+        // ... rest of address logic remains same but uses INDIAN_STATES ...
         document.getElementById('form-address')?.addEventListener('submit', async function (e) {
             e.preventDefault();
             const editId = document.getElementById('address-edit-id').value;
@@ -888,38 +938,169 @@
         });
     }
 
-    // ---------- Privacy (visibility select) ----------
-    function initPrivacy() {
+    // ---------- Security & Data Export ----------
+    async function initSecurity() {
+        const toggle = document.getElementById('security-2fa-toggle');
+        const otpSection = document.getElementById('otp-section');
+        const btnVerify = document.getElementById('btn-verify-otp');
+        const digits = document.querySelectorAll('.otp-digit');
+
+        if (!toggle) return;
+
+        // Load existing 2FA state
+        const settings = getStoredSettings();
+        toggle.setAttribute('aria-checked', settings.security2FA ? 'true' : 'false');
+
+        toggle.addEventListener('click', async () => {
+            const turningOn = toggle.getAttribute('aria-checked') === 'false';
+            if (turningOn) {
+                otpSection.classList.remove('hidden');
+                toast('OTP sent to your registered mobile/email');
+                await fetch(API_BASE + '/api/profile/2fa', {
+                    method: 'POST',
+                    headers: { 'x-auth-token': getToken() }
+                });
+            } else {
+                setStoredSettings({ security2FA: false });
+                toggle.setAttribute('aria-checked', 'false');
+                otpSection.classList.add('hidden');
+                toast('2FA Disabled');
+            }
+        });
+
+        digits.forEach((d, idx) => {
+            d.addEventListener('input', (e) => {
+                if (e.target.value && idx < digits.length - 1) digits[idx + 1].focus();
+            });
+        });
+
+        btnVerify?.addEventListener('click', async () => {
+            const otp = Array.from(digits).map(d => d.value).join('');
+            if (otp.length < 6) return toast('Please enter 6-digit OTP', 'error');
+
+            try {
+                const res = await fetch(API_BASE + '/api/profile/2fa', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-auth-token': getToken() },
+                    body: JSON.stringify({ otp })
+                });
+                if (res.ok) {
+                    setStoredSettings({ security2FA: true });
+                    toggle.setAttribute('aria-checked', 'true');
+                    otpSection.classList.add('hidden');
+                    toast('2FA Enabled Successfully');
+                } else { toast('Invalid or expired OTP', 'error'); }
+            } catch (err) { toast('Error verifying OTP', 'error'); }
+        });
+
+        // Privacy visibility
         const vis = document.getElementById('privacy-visibility');
         if (vis) {
             vis.value = getStoredSettings().privacyVisibility || 'public';
-            vis.addEventListener('change', function () {
+            vis.addEventListener('change', () => {
                 setStoredSettings({ privacyVisibility: vis.value });
-                toast('Privacy updated.', 'success');
+                toast('Privacy updated');
             });
+        }
+
+        // Data Export
+        const exportBtn = document.getElementById('btn-export-data-privacy');
+        exportBtn?.addEventListener('click', async () => {
+            window.location.href = API_BASE + '/api/profile/export?token=' + getToken();
+            toast('Generating your data export...');
+        });
+
+        // Account Deletion
+        const deleteBtn = document.getElementById('btn-delete-account');
+        const deleteModal = document.getElementById('delete-confirm-modal');
+        const confirmInput = document.getElementById('delete-confirm-name');
+        const btnDeleteFinal = document.getElementById('btn-delete-final');
+
+        deleteBtn?.addEventListener('click', () => {
+            deleteModal.classList.remove('hidden');
+            deleteModal.classList.add('flex');
+        });
+
+        btnDeleteFinal?.addEventListener('click', async () => {
+            if (confirmInput.value !== (currentUser?.name || 'User')) {
+                return toast('Name does not match', 'error');
+            }
+            try {
+                const res = await fetch(API_BASE + '/api/profile/delete', {
+                    method: 'DELETE',
+                    headers: { 'x-auth-token': getToken() }
+                });
+                if (res.ok) {
+                    localStorage.clear();
+                    window.location.href = '../pages/login.html';
+                }
+            } catch (err) { toast('Deletion failed', 'error'); }
+        });
+    }
+
+    // ---------- Tab Sync ----------
+    function initTabSync() {
+        window.addEventListener('storage', (e) => {
+            if (e.key === STORAGE_KEYS.USER || e.key === STORAGE_KEYS.SETTINGS) {
+                currentUser = null; 
+                renderProfile();
+                renderToggles();
+                applyTheme();
+                applyTranslations();
+            }
+        });
+    }
+
+    // ---------- Payment (with API fallback) ----------
+    async function apiFetchPaymentMethods() {
+        const token = getToken();
+        if (!token) return getStoredSettings().paymentMethods || [];
+        try {
+            const res = await fetch(API_BASE + '/api/profile/payment-methods', {
+                headers: { 'x-auth-token': token }
+            });
+            if (!res.ok) throw new Error('Failed to fetch payment methods');
+            return await res.json();
+        } catch (err) {
+            console.warn('Payment methods API failed, using localStorage:', err);
+            return getStoredSettings().paymentMethods || [];
         }
     }
 
-    // ---------- Security (activity placeholder) ----------
-    function initSecurity() {
-        const el = document.getElementById('security-activity-now');
-        if (el) el.textContent = new Date().toLocaleString();
+    async function apiSavePaymentMethods(list) {
+        const token = getToken();
+        // Always update localStorage
+        setStoredSettings({ paymentMethods: list });
+        if (!token) return list;
+        try {
+            const res = await fetch(API_BASE + '/api/profile/payment-methods', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                body: JSON.stringify({ paymentMethods: list })
+            });
+            if (!res.ok) throw new Error('Failed to save payment methods');
+            return await res.json();
+        } catch (err) {
+            console.warn('Payment methods API save failed, localStorage updated:', err);
+            return list;
+        }
     }
 
-    // ---------- Payment ----------
     function getPaymentMethods() {
         return (getStoredSettings().paymentMethods || []).slice();
     }
 
     function setPaymentMethods(list) {
         setStoredSettings({ paymentMethods: list });
+        // Async save to API if available
+        apiSavePaymentMethods(list).catch(() => {});
     }
 
-    function renderPaymentList() {
-        const list = getPaymentMethods();
+    async function renderPaymentList() {
+        const list = await apiFetchPaymentMethods();
         const container = document.getElementById('payment-list');
         if (!container) return;
-        if (list.length === 0) {
+        if (!list || list.length === 0) {
             container.innerHTML = '<p class="text-text-tertiary text-sm" data-i18n="payment_none">No payment methods saved.</p>';
             applyTranslations();
             return;
@@ -929,9 +1110,10 @@
             return '<div class="payment-card"><span class="font-medium">' + escapeHtml(label) + '</span><button type="button" class="payment-remove text-sm text-error hover:underline" data-id="' + pm.id + '" aria-label="Remove ' + (pm.type === 'upi' ? 'UPI' : 'card') + ' payment method">Remove</button></div>';
         }).join('');
         container.querySelectorAll('.payment-remove').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                const list = getPaymentMethods().filter(function (p) { return p.id !== btn.getAttribute('data-id'); });
-                setPaymentMethods(list);
+            btn.addEventListener('click', async function () {
+                const newList = getPaymentMethods().filter(function (p) { return p.id !== btn.getAttribute('data-id'); });
+                setStoredSettings({ paymentMethods: newList });
+                await apiSavePaymentMethods(newList);
                 renderPaymentList();
                 toast('Payment method removed.', 'success');
             });
@@ -1006,6 +1188,7 @@
         initTheme();
         applyTranslations();
         initSidebar();
+        initTabSync();
         if (window.EAgri) {
             window.EAgri.initCartBadges();
             window.EAgri.initMobileMenu();
@@ -1013,7 +1196,7 @@
         initLanguage();
         initAppearance();
         initToggles();
-        initPrivacy();
+        initValidation();
         initSecurity();
         initPayment();
 
@@ -1022,9 +1205,21 @@
 
         applyRoleUI();
         initProfile();
-        initAccount();
         initAddress();
         showSection('profile');
+
+        // Unsaved changes protection
+        let isDirty = false;
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('input', () => isDirty = true);
+            form.addEventListener('submit', () => isDirty = false);
+        });
+        window.addEventListener('beforeunload', (e) => {
+            if (isDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
     }
 
     if (document.readyState === 'loading') {

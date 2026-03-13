@@ -12,12 +12,8 @@
   const CONSUMER_PROFILE_KEY = 'eagriConsumerProfile';
   const FARMER_PROFILE_KEY = 'eagriFarmerProfile';
   const ORDERS_KEY = 'eagri_orders';
-  const FALLBACK_IMG = 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=400&auto=format&fit=crop';
-  const API_BASE = 'http://localhost:5000';
-
-  // Sample products (fallback when no farmer products)
-  const SAMPLE_PRODUCTS = [
-  ];
+  const FALLBACK_IMG = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"><rect width="400" height="400" fill="%23f3f4f6"/><path d="M150 150h100v100H150z" fill="%23d1d5db"/><path d="M100 250l50-50 50 50 50-50 50 50" fill="none" stroke="%239ca3af" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="250" cy="150" r="20" fill="%239ca3af"/></svg>';
+  const API_BASE = window.location.origin.includes('localhost') ? 'http://localhost:5000' : '';
 
   function readJSON(key, fallback) {
     try {
@@ -376,80 +372,156 @@
           price: parseFloat(p.price) || 0,
           stock: parseInt(p.stock, 10) || 0,
           image: p.image || FALLBACK_IMG,
-          category: p.category || 'General',
+          category: p.category ? (p.category.charAt(0).toUpperCase() + p.category.slice(1).toLowerCase()) : 'General',
           description: p.description || '',
           farmer: p.farmerName || (p.farmer && p.farmer.name) || 'Farmer',
           farmerId: p.farmerId || (p.farmer && (p.farmer._id || p.farmer.id)) || '',
-          farmerLocation: p.farmerLocation || '',
+          farmerLocation: p.farmerLocation || p.farmingDetails?.location || (p.farmer?.address ? [p.farmer.address.city, p.farmer.address.state].filter(Boolean).join(', ') : ''),
+          farmingMethod: p.farmingDetails?.method || p.farmingMethod || 'conventional',
+          farmingDetails: p.farmingDetails || {},
+          availability: p.availability !== false,
+          avgRating: p.avgRating || 0,
+          reviewCount: p.reviewCount || 0,
+          reviews: p.reviews || []
         }));
       } catch (_) {
         // Fallback: return localStorage products if API unavailable
         const farmerList = Array.isArray(readJSON(FARMER_PRODUCTS_KEY, [])) ? readJSON(FARMER_PRODUCTS_KEY, []) : [];
-        return farmerList.map((p, idx) => ({
-          id: p.id || 'fd_' + idx,
-          name: p.name || 'Product',
-          price: parseFloat(p.price) || 0,
-          stock: parseInt(p.stock, 10) || 0,
-          image: p.image || FALLBACK_IMG,
-          category: p.category || 'General',
-          description: p.description || '',
-          farmer: p.farmer || 'Farmer',
-          farmerLocation: '',
-        }));
+        if (farmerList.length > 0) {
+          return farmerList.map((p, idx) => ({
+            id: p.id || 'fd_' + idx,
+            name: p.name || 'Product',
+            price: parseFloat(p.price) || 0,
+            stock: parseInt(p.stock, 10) || 0,
+            image: p.image || FALLBACK_IMG,
+            category: p.category ? (p.category.charAt(0).toUpperCase() + p.category.slice(1).toLowerCase()) : 'General',
+            description: p.description || '',
+            farmer: p.farmer || 'Farmer',
+            farmerLocation: '',
+            farmingMethod: p.farmingMethod || 'conventional',
+            farmingDetails: p.farmingDetails || {},
+            availability: p.availability !== false,
+            avgRating: 0,
+            reviewCount: 0
+          }));
+        }
+        
+        // No products available - return empty array (no static products)
+        return [];
       }
     },
 
-    // Add product via API (farmers only)
+    // Add product via API (farmers only) - falls back to localStorage if API fails
     async addFarmerProduct(product) {
       const token = getAuthToken();
       if (!token) throw new Error('Not authenticated');
-      const res = await fetch(API_BASE + '/api/products', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': token,
-        },
-        body: JSON.stringify(product),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to add product');
-      return data;
+      
+      // Try API first
+      try {
+        const res = await fetch(API_BASE + '/api/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+          },
+          body: JSON.stringify(product),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to add product');
+        
+        // Also save to localStorage for offline access
+        const existing = readJSON(FARMER_PRODUCTS_KEY, []);
+        existing.push({ ...product, id: data._id || data.id || generateId() });
+        writeJSON(FARMER_PRODUCTS_KEY, existing);
+        
+        return data;
+      } catch (err) {
+        // Fallback to localStorage
+        console.warn('API addFarmerProduct failed, using localStorage:', err);
+        const existing = readJSON(FARMER_PRODUCTS_KEY, []);
+        const newProduct = { ...product, id: generateId() };
+        existing.push(newProduct);
+        writeJSON(FARMER_PRODUCTS_KEY, existing);
+        return { _id: newProduct.id, ...newProduct };
+      }
     },
 
-    // Delete product via API (farmer who owns it only)
+    // Delete product via API (farmer who owns it only) - falls back to localStorage
     async removeFarmerProduct(id) {
       const token = getAuthToken();
       if (!token) throw new Error('Not authenticated');
-      const res = await fetch(API_BASE + '/api/products/' + id, {
-        method: 'DELETE',
-        headers: { 'x-auth-token': token },
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to delete product');
-      return data;
+      
+      // Try API first
+      try {
+        const res = await fetch(API_BASE + '/api/products/' + id, {
+          method: 'DELETE',
+          headers: { 'x-auth-token': token },
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to delete product');
+        
+        // Also remove from localStorage
+        const existing = readJSON(FARMER_PRODUCTS_KEY, []);
+        const filtered = existing.filter(p => p.id !== id);
+        writeJSON(FARMER_PRODUCTS_KEY, filtered);
+        
+        return data;
+      } catch (err) {
+        // Fallback to localStorage
+        console.warn('API removeFarmerProduct failed, using localStorage:', err);
+        const existing = readJSON(FARMER_PRODUCTS_KEY, []);
+        const filtered = existing.filter(p => p.id !== id);
+        writeJSON(FARMER_PRODUCTS_KEY, filtered);
+        return { success: true };
+      }
     },
 
-    // Update product via API (farmer who owns it only)
+    // Update product via API (farmer who owns it only) - falls back to localStorage
     async updateFarmerProduct(id, updates) {
       const token = getAuthToken();
       if (!token) throw new Error('Not authenticated');
-      const res = await fetch(API_BASE + '/api/products/' + id, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': token,
-        },
-        body: JSON.stringify(updates),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to update product');
-      return data;
+      
+      // Try API first
+      try {
+        const res = await fetch(API_BASE + '/api/products/' + id, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+          },
+          body: JSON.stringify(updates),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to update product');
+        
+        // Also update localStorage
+        const existing = readJSON(FARMER_PRODUCTS_KEY, []);
+        const idx = existing.findIndex(p => p.id === id);
+        if (idx > -1) {
+          existing[idx] = { ...existing[idx], ...updates };
+          writeJSON(FARMER_PRODUCTS_KEY, existing);
+        }
+        
+        return data;
+      } catch (err) {
+        // Fallback to localStorage
+        console.warn('API updateFarmerProduct failed, using localStorage:', err);
+        const existing = readJSON(FARMER_PRODUCTS_KEY, []);
+        const idx = existing.findIndex(p => p.id === id);
+        if (idx > -1) {
+          existing[idx] = { ...existing[idx], ...updates };
+          writeJSON(FARMER_PRODUCTS_KEY, existing);
+          return { success: true, _id: id, ...existing[idx] };
+        }
+        throw new Error('Product not found');
+      }
     },
 
-    // Get only THIS farmer's products from MongoDB
+    // Get only THIS farmer's products from MongoDB - falls back to localStorage
     async getFarmerProducts() {
       const token = getAuthToken();
       if (!token) return [];
+      
       try {
         const res = await fetch(API_BASE + '/api/products/my', {
           headers: { 'x-auth-token': token },
@@ -459,19 +531,29 @@
           throw new Error(data.message || 'Failed to fetch your products');
         }
         const products = await res.json();
-        return products.map((p) => ({
+        const mapped = products.map((p) => ({
           id: p._id || p.id,
           name: p.name,
           price: p.price,
           stock: p.stock,
           image: p.image || FALLBACK_IMG,
-          category: p.category || '',
+          category: p.category ? (p.category.charAt(0).toUpperCase() + p.category.slice(1).toLowerCase()) : 'General',
           description: p.description || '',
           availability: p.availability !== false,
+          farmer: p.farmerName || 'You',
+          farmerLocation: p.farmingDetails?.location || '',
+          farmingMethod: p.farmingDetails?.method || 'conventional',
+          reviews: p.reviews || []
         }));
+        
+        // Sync to localStorage for offline access
+        writeJSON(FARMER_PRODUCTS_KEY, mapped);
+        return mapped;
       } catch (err) {
-        console.error('getFarmerProducts error:', err);
-        throw err;
+        console.warn('getFarmerProducts API failed, using localStorage:', err);
+        // Fallback to localStorage
+        const localProducts = readJSON(FARMER_PRODUCTS_KEY, []);
+        return Array.isArray(localProducts) ? localProducts : [];
       }
     },
 
@@ -483,36 +565,66 @@
       writeJSON(USER_KEY, user);
     },
 
-    getConsumerProfile() {
-      const user = this.getUser();
-      const ext = readJSON(CONSUMER_PROFILE_KEY, {});
-
-      let resolvedAddress;
-      if (Object.prototype.hasOwnProperty.call(ext, 'address')) {
-        resolvedAddress = ext.address;
-      } else if (user && user.address) {
-        if (typeof user.address === 'string') {
-          resolvedAddress = user.address;
-        } else if (typeof user.address === 'object') {
-          const a = user.address;
+    // Get Consumer Profile from API (dynamic)
+    async getConsumerProfile() {
+      const token = getAuthToken();
+      if (!token) {
+        // Fallback to localStorage if no auth
+        const user = this.getUser();
+        const ext = readJSON(CONSUMER_PROFILE_KEY, {});
+        return {
+          name: ext.name ?? user?.name ?? 'Consumer',
+          email: ext.email ?? user?.email ?? '',
+          phone: user?.phone ?? ext.phone ?? '',
+          address: ext.address ?? '',
+          organicOnly: ext.organicOnly !== false,
+          vegetarian: !!ext.vegetarian,
+          glutenFree: !!ext.glutenFree,
+          memberSince: user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }),
+        };
+      }
+      
+      try {
+        const res = await fetch(API_BASE + '/api/profile/profile', {
+          headers: { 'x-auth-token': token }
+        });
+        if (!res.ok) throw new Error('Failed to fetch profile');
+        const profile = await res.json();
+        
+        // Format address
+        let resolvedAddress = '';
+        if (profile.address) {
+          const a = profile.address;
           const parts = [a.houseStreet, a.city, a.state, a.pincode].filter(Boolean);
           if (parts.length) resolvedAddress = parts.join(', ');
         }
+        
+        return {
+          name: profile.name || 'Consumer',
+          email: profile.email || '',
+          phone: profile.phone || '',
+          address: resolvedAddress,
+          organicOnly: profile.settings?.organicOnly !== false,
+          vegetarian: !!profile.settings?.vegetarian,
+          glutenFree: !!profile.settings?.glutenFree,
+          memberSince: profile.createdAt ? new Date(profile.createdAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }),
+          profilePhoto: profile.profilePhoto || '',
+        };
+      } catch (err) {
+        console.warn('getConsumerProfile API failed, using fallback:', err);
+        const user = this.getUser();
+        const ext = readJSON(CONSUMER_PROFILE_KEY, {});
+        return {
+          name: ext.name ?? user?.name ?? 'Consumer',
+          email: ext.email ?? user?.email ?? '',
+          phone: user?.phone ?? ext.phone ?? '',
+          address: ext.address ?? '',
+          organicOnly: ext.organicOnly !== false,
+          vegetarian: !!ext.vegetarian,
+          glutenFree: !!ext.glutenFree,
+          memberSince: user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }),
+        };
       }
-      if (!resolvedAddress) {
-        resolvedAddress = '';
-      }
-
-      return {
-        name: ext.name ?? user?.name ?? 'Consumer',
-        email: ext.email ?? user?.email ?? '',
-        phone: ext.phone ?? '+91 98765 43210',
-        address: resolvedAddress,
-        organicOnly: ext.organicOnly !== false,
-        vegetarian: !!ext.vegetarian,
-        glutenFree: !!ext.glutenFree,
-        memberSince: ext.memberSince ?? new Date().toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }),
-      };
     },
 
     setConsumerProfile(profile) {
@@ -520,60 +632,119 @@
       writeJSON(CONSUMER_PROFILE_KEY, { ...ext, ...profile });
     },
 
-    getFarmerProfile() {
-      const user = this.getUser();
-      const ext = readJSON(FARMER_PROFILE_KEY, {}) || {};
-
-      const addr = user && user.address ? user.address : null;
-      let locationFromUser = null;
-      if (addr && (addr.city || addr.state)) {
-        const city = addr.city || '';
-        const state = addr.state || '';
-        const parts = [city, state].filter(Boolean);
-        if (parts.length) locationFromUser = parts.join(', ');
+    // Update Consumer Profile via API (dynamic)
+    async updateConsumerProfile(profileData) {
+      const token = getAuthToken();
+      if (!token) {
+        // Fallback to localStorage if no auth
+        this.setConsumerProfile({
+            ...profileData,
+            name: profileData.name,
+            phone: profileData.phone,
+            address: profileData.address,
+        });
+        return true;
       }
-
-      let locationFromExt = null;
-      let shouldMigrateLocation = false;
-      if (Object.prototype.hasOwnProperty.call(ext, 'location')) {
-        const rawLoc = ext.location;
-        if (typeof rawLoc === 'string') {
-          const trimmed = rawLoc.trim();
-          if (trimmed) locationFromExt = trimmed;
-        } else if (rawLoc && typeof rawLoc === 'object') {
-          const city = rawLoc.city || rawLoc.taluk || rawLoc.district || '';
-          const state = rawLoc.state || rawLoc.province || '';
-          const parts = [city, state].filter(Boolean);
-          if (parts.length) {
-            locationFromExt = parts.join(', ');
-          }
-          shouldMigrateLocation = true;
-        } else {
-          shouldMigrateLocation = true;
+      
+      try {
+        const payload = {
+            name: profileData.name,
+            phone: profileData.phone,
+        };
+        
+        if (profileData.address) {
+            // Map the single string address back to the structure the backend expects
+            payload.address = {
+                houseStreet: profileData.address,
+                city: '',
+                state: '',
+                pincode: ''
+            };
         }
+        
+        const res = await fetch(API_BASE + '/api/profile/profile', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-auth-token': token
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        if (!res.ok) throw new Error('Failed to update profile');
+        
+        // Also update local storage for fast subsequent loads
+        this.setConsumerProfile(profileData);
+        // Dispatch an event so other pages/components know profile updated
+        window.dispatchEvent(new Event('eagri-profile-updated'));
+        return true;
+      } catch (err) {
+        console.warn('updateConsumerProfile API failed, using fallback:', err);
+        // Fallback
+        this.setConsumerProfile(profileData);
+        return true;
       }
+    },
 
-      const location = locationFromExt || locationFromUser || 'Nashik, Maharashtra';
-
-      if (shouldMigrateLocation && locationFromExt && typeof this.setFarmerProfile === 'function') {
-        this.setFarmerProfile({ location });
+    // Get Farmer Profile from API (dynamic)
+    async getFarmerProfile() {
+      const token = getAuthToken();
+      if (!token) {
+        // Fallback to localStorage if no auth
+        const user = this.getUser();
+        const ext = readJSON(FARMER_PROFILE_KEY, {}) || {};
+        return {
+          name: user?.name ?? ext.name ?? 'Farmer',
+          email: user?.email ?? ext.email ?? '',
+          location: ext.location ?? 'India',
+          phone: user?.phone ?? ext.phone ?? '',
+          experience: user?.experience ?? ext.experience ?? '',
+          farmSize: user?.farmSize ?? ext.farmSize ?? '',
+          image: user?.profilePhoto || ext.image || '',
+          tagline: ext.tagline ?? '',
+        };
       }
-
-      const imageFromUser = user && typeof user.profilePhoto === 'string' && user.profilePhoto.trim()
-        ? user.profilePhoto
-        : null;
-
-      return {
-        // prefer settings-synced user details, fall back to any legacy ext overrides
-        name: user?.name ?? ext.name ?? 'Farmer',
-        email: user?.email ?? ext.email ?? '',
-        location,
-        phone: user?.phone ?? ext.phone ?? '+91 98765 43210',
-        experience: ext.experience ?? '12 years',
-        farmSize: ext.farmSize ?? '8 acres',
-        image: imageFromUser || ext.image || 'https://images.unsplash.com/photo-1598875706250-21faaf804361?q=80&w=1200&auto=format&fit=crop',
-        tagline: ext.tagline ?? 'Organic Vegetables Farmer',
-      };
+      
+      try {
+        const res = await fetch(API_BASE + '/api/profile/profile', {
+          headers: { 'x-auth-token': token }
+        });
+        if (!res.ok) throw new Error('Failed to fetch profile');
+        const profile = await res.json();
+        
+        // Format location
+        let location = 'India';
+        if (profile.address) {
+          const a = profile.address;
+          const parts = [a.city, a.state].filter(Boolean);
+          if (parts.length) location = parts.join(', ');
+        }
+        
+        return {
+          name: profile.name || 'Farmer',
+          email: profile.email || '',
+          location: location,
+          phone: profile.phone || '',
+          experience: profile.experience || '',
+          farmSize: profile.farmSize || '',
+          image: profile.profilePhoto || '',
+          tagline: profile.tagline || '',
+        };
+      } catch (err) {
+        console.warn('getFarmerProfile API failed, using fallback:', err);
+        const user = this.getUser();
+        const ext = readJSON(FARMER_PROFILE_KEY, {}) || {};
+        return {
+          name: user?.name ?? ext.name ?? 'Farmer',
+          email: user?.email ?? ext.email ?? '',
+          location: ext.location ?? 'India',
+          phone: user?.phone ?? ext.phone ?? '',
+          experience: user?.experience ?? ext.experience ?? '',
+          farmSize: user?.farmSize ?? ext.farmSize ?? '',
+          image: user?.profilePhoto || ext.image || '',
+          tagline: ext.tagline ?? '',
+        };
+      }
     },
 
     setFarmerProfile(profile) {
@@ -581,7 +752,7 @@
       writeJSON(FARMER_PROFILE_KEY, { ...ext, ...profile });
     },
 
-    // ---------- Order Management (Local Storage) ----------
+    // ---------- Order Management (API-based with fallback) ----------
     async placeOrder(cartItems, deliveryAddress, paymentMethod) {
       const user = this.getUser();
       if (!user) throw new Error('Not authenticated');
@@ -590,14 +761,44 @@
       const items = cartItems.map(i => {
         totalAmount += (parseFloat(i.price) || 0) * (parseInt(i.quantity, 10) || 1);
         return {
+          product: i.id,
           name: i.name,
           quantity: i.quantity,
           price: i.price,
-          image: i.image,
-          farmerId: i.farmerId || i.farmer
+          farmer: i.farmerId || i.farmer
         };
       });
       
+      const token = getAuthToken();
+      
+      // Try API first
+      if (token) {
+        try {
+          const res = await fetch(API_BASE + '/api/orders', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-auth-token': token,
+            },
+            body: JSON.stringify({
+              items: items,
+              shippingAddress: deliveryAddress,
+              paymentMethod: paymentMethod || 'cod',
+              totalAmount: totalAmount
+            }),
+          });
+          
+          if (res.ok) {
+            const orderData = await res.json();
+            this.clearCart();
+            return orderData;
+          }
+        } catch (err) {
+          console.warn('API placeOrder failed, using localStorage fallback:', err);
+        }
+      }
+      
+      // Fallback to localStorage
       const orderData = {
         _id: "ORD" + Date.now(),
         consumerId: user.id || user._id,
@@ -629,6 +830,41 @@
     async getConsumerOrders() {
       const user = this.getUser();
       if (!user) return [];
+      const token = getAuthToken();
+      
+      // Try API first
+      if (token) {
+        try {
+          const res = await fetch(API_BASE + '/api/consumers/me/orders', {
+            headers: { 'x-auth-token': token }
+          });
+          if (res.ok) {
+            const orders = await res.json();
+            return orders.map(o => ({
+              _id: o._id || o.id,
+              id: o._id || o.id,
+              consumerId: o.consumer,
+              createdAt: o.createdAt,
+              status: o.status,
+              items: o.items.map(i => ({
+                name: i.name || (i.product && i.product.name),
+                quantity: i.quantity,
+                price: i.price,
+                image: i.image || (i.product && i.product.image),
+                farmerId: i.farmer
+              })),
+              totalAmount: o.totalAmount,
+              shippingAddress: o.shippingAddress,
+              paymentMethod: o.paymentMethod,
+              timeline: o.timeline || []
+            }));
+          }
+        } catch (err) {
+          console.warn('API getConsumerOrders failed, using fallback:', err);
+        }
+      }
+      
+      // Fallback to localStorage
       const userId = user.id || user._id;
       const orders = readJSON('eagriOrders', []);
       return orders
@@ -665,6 +901,23 @@
           paymentStatus: o.paymentStatus || (o.paymentMethod === 'cod' ? 'Pending' : 'Paid'),
           createdAt: o.createdAt
         }));
+      }
+    },
+
+    async getFarmerEarnings() {
+      const token = getAuthToken();
+      if (!token) {
+          return { totalOrders: 0, totalSales: 0, revenue: 0, estimatedProfit: 0, monthlyRevenue: [] };
+      }
+      try {
+        const res = await fetch(API_BASE + '/api/orders/farmer-summary', {
+          headers: { 'x-auth-token': token },
+        });
+        if (!res.ok) throw new Error('Failed to fetch farmer earnings');
+        return await res.json();
+      } catch (err) {
+        console.warn('getFarmerEarnings API failed:', err);
+        return { totalOrders: 0, totalSales: 0, revenue: 0, estimatedProfit: 0, monthlyRevenue: [] };
       }
     },
 

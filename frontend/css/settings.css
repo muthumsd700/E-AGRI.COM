@@ -1,38 +1,25 @@
 /**
- * E-Agri Commerce - Settings Module
- * Custom styles for dashboard layout, toggles, theme variables, and transitions.
- *
- * This file is intentionally small and works with the existing design system
- * from `../css/main.css`.
+ * E-Agri Commerce – Settings Module Styles
+ * Amazon/Flipkart-style dashboard UI
  */
 
-/* ========= Flipkart-like Settings Styling ========= */
+/* ─── Layout ──────────────────────────────────────────────────────────────── */
+body { background-color: var(--color-background); }
+header.sticky { box-shadow: var(--shadow-sm); }
+main, .card { border-radius: var(--radius-md); }
 
-/* Layout tweaks */
-body {
-    background-color: var(--color-background);
-}
-
-header.sticky {
-    box-shadow: var(--shadow-sm);
-}
-
-main,
-.card {
-    border-radius: var(--radius-md);
-}
-
-/* ========= Sidebar (settings-only) ========= */
+/* ─── Sidebar Navigation ──────────────────────────────────────────────────── */
 .settings-nav-item {
     color: var(--color-text-primary);
     border-radius: var(--radius-md);
     transition: background-color 180ms ease, color 180ms ease, transform 120ms ease;
     font-size: 0.9rem;
+    cursor: pointer;
 }
 .settings-nav-item:hover {
     background: var(--color-surface-elevated);
     color: var(--color-primary);
-    transform: translateX(1px);
+    transform: translateX(2px);
 }
 .settings-nav-item:focus-visible {
     outline: 2px solid var(--color-primary);
@@ -40,20 +27,73 @@ main,
     background: var(--color-primary-light);
     color: var(--color-primary);
 }
-.settings-nav-item.active {
+.settings-nav-item.active,
+.settings-nav-item.scroll-active {
     background: var(--color-primary-light);
     color: var(--color-primary);
     font-weight: 600;
 }
-.settings-nav-item.active svg {
-    color: var(--color-primary);
-}
+.settings-nav-item.active svg,
+.settings-nav-item.scroll-active svg { color: var(--color-primary); }
 
+/* ─── Hamburger Button (mobile sidebar trigger) ───────────────────────────── */
+#sidebar-hamburger {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.18s, box-shadow 0.18s;
+    box-shadow: var(--shadow-xs);
+}
+#sidebar-hamburger:hover { background: var(--color-surface-elevated); box-shadow: var(--shadow-sm); }
+@media (max-width: 1023px) { #sidebar-hamburger { display: flex; } }
+
+/* ─── Sidebar Overlay ────────────────────────────────────────────────────── */
+#sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 29;
+    backdrop-filter: blur(1px);
+    animation: overlayFade 0.2s ease;
+}
+#sidebar-overlay.visible { display: block; }
+@keyframes overlayFade { from { opacity: 0; } to { opacity: 1; } }
+
+/* ─── Mobile Sidebar ──────────────────────────────────────────────────────── */
+@media (max-width: 1023px) {
+    #sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 30;
+        transform: translateX(-100%);
+        transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+        width: 18rem;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+    #sidebar.open { transform: translateX(0); box-shadow: 8px 0 32px rgba(0,0,0,0.18); }
+}
+body.sidebar-open { overflow: hidden; }
+
+/* ─── Toggle Switch ───────────────────────────────────────────────────────── */
 .toggle-btn {
     flex-shrink: 0;
     position: relative;
     background: var(--color-border);
     border-radius: var(--radius-full);
+    transition: background 0.2s;
 }
 .toggle-btn::after {
     content: '';
@@ -63,74 +103,236 @@ main,
     width: 1.25rem;
     height: 1.25rem;
     border-radius: var(--radius-full);
-    background: var(--color-on-surface);
+    background: #fff;
     box-shadow: var(--shadow-sm);
-    transition: transform 0.2s;
+    transition: transform 0.2s cubic-bezier(0.4,0,0.2,1);
 }
-.toggle-btn[aria-checked="true"] {
-    background: var(--color-primary);
-}
-.toggle-btn:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-}
+.toggle-btn[aria-checked="true"] { background: var(--color-primary); }
+.toggle-btn[aria-checked="true"]::after { transform: translateX(1.25rem); }
+.toggle-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 
-/* Danger outline button (works with .btn-outline) */
-.settings-danger-outline{
-    border-color: var(--color-error) !important;
-    color: var(--color-error) !important;
-}
-.btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.settings-section {
-    animation: sectionFade 0.2s ease-out;
-}
+/* ─── Section Fade Animation ─────────────────────────────────────────────── */
+.settings-section { animation: sectionFade 0.22s ease-out; }
 @keyframes sectionFade {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ─── Toast Notifications ────────────────────────────────────────────────── */
 .toast {
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.625rem;
+    box-shadow: 0 10px 24px -4px rgba(0,0,0,0.18);
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.625rem;
     pointer-events: auto;
     font-size: 0.875rem;
     font-weight: 500;
+    min-width: 220px;
+    transition: opacity 0.25s, transform 0.25s;
 }
 .toast.success { background: #059669; color: white; }
-.toast.error { background: #dc2626; color: white; }
-.toast.info { background: var(--color-primary); color: white; }
+.toast.error   { background: #dc2626; color: white; }
+.toast.info    { background: var(--color-primary); color: white; }
+.toast.warning { background: #d97706; color: white; }
 
+/* ─── Inline Validation ──────────────────────────────────────────────────── */
+.field-error-msg {
+    display: none;
+    font-size: 0.75rem;
+    color: #dc2626;
+    margin-top: 0.25rem;
+    align-items: center;
+    gap: 0.25rem;
+}
+.field-error-msg.visible { display: flex; }
+.field-success-msg {
+    display: none;
+    font-size: 0.75rem;
+    color: #059669;
+    margin-top: 0.25rem;
+    align-items: center;
+    gap: 0.25rem;
+}
+.field-success-msg.visible { display: flex; }
+.input.field-invalid { border-color: #dc2626 !important; box-shadow: 0 0 0 2px rgba(220,38,38,0.15); }
+.input.field-valid   { border-color: #059669 !important; box-shadow: 0 0 0 2px rgba(5,150,105,0.15); }
+
+/* ─── Password Strength Bar ──────────────────────────────────────────────── */
+#pw-strength-wrap { margin-top: 0.5rem; }
+#pw-strength-bar-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--color-border);
+    overflow: hidden;
+}
+#pw-strength-bar-fill {
+    height: 100%;
+    border-radius: 9999px;
+    width: 0%;
+    transition: width 0.3s ease, background 0.3s ease;
+}
+#pw-strength-label {
+    font-size: 0.72rem;
+    margin-top: 0.25rem;
+    font-weight: 500;
+    color: var(--color-text-tertiary);
+    transition: color 0.3s;
+}
+/* strength levels */
+.strength-0 #pw-strength-bar-fill { width: 0%; }
+.strength-1 #pw-strength-bar-fill { width: 25%; background: #ef4444; }
+.strength-2 #pw-strength-bar-fill { width: 50%; background: #f59e0b; }
+.strength-3 #pw-strength-bar-fill { width: 75%; background: #84cc16; }
+.strength-4 #pw-strength-bar-fill { width: 100%; background: #22c55e; }
+
+/* ─── Profile Completion Meter ───────────────────────────────────────────── */
+#profile-completion-wrap {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    margin-bottom: 1.25rem;
+}
+#profile-completion-info { flex: 1; min-width: 0; }
+#profile-completion-track {
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--color-border);
+    overflow: hidden;
+    margin-top: 0.35rem;
+}
+#profile-completion-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, var(--color-primary), #22c55e);
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+#profile-completion-pct {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1;
+    min-width: 3rem;
+    text-align: right;
+}
+
+/* ─── Drag-and-Drop Photo Zone ───────────────────────────────────────────── */
+#photo-drop-zone {
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: var(--color-surface);
+}
+#photo-drop-zone:hover,
+#photo-drop-zone.drag-over {
+    border-color: var(--color-primary);
+    background: var(--color-primary-light, rgba(45,80,22,0.05));
+}
+#photo-drop-zone.drag-over { opacity: 0.85; }
+#photo-drop-zone svg { color: var(--color-text-tertiary); margin: 0 auto; }
+#photo-drop-zone p { font-size: 0.8rem; color: var(--color-text-tertiary); margin-top: 0.4rem; }
+#photo-drop-zone span { font-size: 0.7rem; color: var(--color-text-tertiary); }
+
+/* ─── OTP Input Grid ─────────────────────────────────────────────────────── */
+#otp-section { animation: sectionFade 0.2s ease-out; }
+.otp-inputs { display: flex; gap: 0.5rem; justify-content: flex-start; }
+.otp-digit {
+    width: 2.75rem;
+    height: 3rem;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+}
+.otp-digit:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(45,80,22,0.18); }
+.otp-digit.filled { border-color: var(--color-primary); }
+
+/* ─── Delete Confirm Modal ────────────────────────────────────────────────── */
+#delete-confirm-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 60;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    backdrop-filter: blur(2px);
+}
+#delete-confirm-modal.visible { display: flex; }
+#delete-confirm-box {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg, 12px);
+    padding: 2rem;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    animation: sectionFade 0.22s ease-out;
+}
+#delete-confirm-username-input {
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 0.6rem 0.875rem;
+    width: 100%;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--color-text-primary);
+    background: var(--color-surface);
+    transition: border-color 0.18s;
+}
+#delete-confirm-username-input:focus { border-color: #dc2626; outline: none; box-shadow: 0 0 0 2px rgba(220,38,38,0.2); }
+#delete-confirm-username-input.match { border-color: #dc2626; }
+#delete-confirm-btn {
+    background: #dc2626;
+    color: white;
+    border-radius: var(--radius-md);
+    padding: 0.6rem 1.25rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.18s, opacity 0.18s;
+}
+#delete-confirm-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+#delete-confirm-btn:not(:disabled):hover { background: #b91c1c; }
+
+/* ─── Address Cards ───────────────────────────────────────────────────────── */
 .address-card {
     padding: 1rem;
-    border-radius: 6px;
-    border: 1px solid #e0e0e0;
-    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 .address-card.default {
-    border-color: #2874f0;
-    box-shadow: 0 0 0 1px rgba(40, 116, 240, 0.1);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 1px rgba(45,80,22,0.12);
 }
 
+/* ─── Payment Cards ───────────────────────────────────────────────────────── */
 .payment-card {
     padding: 1rem;
-    border-radius: 6px;
-    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
 }
 
-/* Close button on settings card */
+/* ─── Close / Back Button ─────────────────────────────────────────────────── */
 .settings-close-btn {
     display: inline-flex;
     align-items: center;
@@ -139,10 +341,11 @@ main,
     height: 2.25rem;
     border-radius: 9999px;
     border: 1px solid var(--color-border);
-    background: #ffffff;
+    background: var(--color-surface);
     color: var(--color-text-tertiary);
     box-shadow: var(--shadow-xs);
-    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
+    cursor: pointer;
 }
 .settings-close-btn:hover {
     background: var(--color-primary-light);
@@ -150,27 +353,62 @@ main,
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
 }
-.settings-close-btn:active {
-    transform: translateY(0);
-    box-shadow: var(--shadow-sm);
-}
 
-@media (max-width: 1023px) {
-    #sidebar {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        z-index: 30;
-        transform: translateX(-100%);
-        transition: transform 0.2s;
-        width: 18rem;
-    }
-    #sidebar.open {
-        transform: translateX(0);
-    }
-}
+/* ─── Danger Outline Button ───────────────────────────────────────────────── */
+.settings-danger-outline { border-color: var(--color-error) !important; color: var(--color-error) !important; }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-body.overflow-hidden {
-    overflow: hidden;
+/* ─── Unsaved Changes Banner ──────────────────────────────────────────────── */
+#unsaved-banner {
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+    color: #92400e;
+    font-weight: 500;
+}
+#unsaved-banner.visible { display: flex; }
+#unsaved-banner svg { flex-shrink: 0; color: #f59e0b; }
+
+/* ─── Export Button ───────────────────────────────────────────────────────── */
+#btn-export-data {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.25rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+}
+#btn-export-data:hover { background: var(--color-primary); color: #fff; }
+
+/* ─── Session Card ─────────────────────────────────────────────────────────── */
+.session-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.875rem;
+}
+.session-card:last-child { border-bottom: none; }
+.session-card .session-current-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 9999px;
+    padding: 0.1rem 0.5rem;
+    text-transform: uppercase;
 }

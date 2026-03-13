@@ -5,6 +5,61 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 
+// @route   GET api/orders/farmer-summary
+// @desc    Get farmer earnings & order summary
+// @access  Private (farmer only)
+router.get('/farmer-summary', auth, async (req, res) => {
+    try {
+        if (req.user.role !== 'farmer') {
+            return res.status(403).json({ message: 'Only farmers can view this summary' });
+        }
+
+        const orders = await Order.find({ 'items.farmer': req.user.id }).sort({ createdAt: -1 });
+
+        const totalOrders = orders.length;
+        const totalSales = orders.filter(o => ['delivered', 'shipped', 'out_for_delivery'].includes(o.status)).length;
+
+        // Calculate revenue only from this farmer's items
+        let revenue = 0;
+        orders.forEach(order => {
+            order.items.forEach(item => {
+                if (item.farmer && item.farmer.toString() === req.user.id) {
+                    revenue += (item.price || 0) * (item.quantity || 0);
+                }
+            });
+        });
+
+        const estimatedProfit = Math.round(revenue * 0.72); // ~28% costs
+
+        // Monthly revenue for last 6 months
+        const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const now = new Date();
+        const monthlyRevenue = [];
+        for (let i = 5; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthKey = `${d.getFullYear()}-${d.getMonth()}`;
+            const label = monthNames[d.getMonth()];
+            let amount = 0;
+            orders.forEach(order => {
+                const oDate = new Date(order.createdAt);
+                if (oDate.getFullYear() === d.getFullYear() && oDate.getMonth() === d.getMonth()) {
+                    order.items.forEach(item => {
+                        if (item.farmer && item.farmer.toString() === req.user.id) {
+                            amount += (item.price || 0) * (item.quantity || 0);
+                        }
+                    });
+                }
+            });
+            monthlyRevenue.push({ month: label, amount: Math.round(amount) });
+        }
+
+        res.json({ totalOrders, totalSales, revenue: Math.round(revenue), estimatedProfit, monthlyRevenue });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
 // @route   GET api/orders
 // @desc    Get user's orders (Consumer)
 // @access  Private

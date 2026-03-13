@@ -177,6 +177,12 @@ async function processPayment(mode) {
 
         showLoader(false);
 
+        // Get real user data for prefill
+        const user = getCurrentUser();
+        const prefillName = user?.name || 'EAgri Customer';
+        const prefillEmail = user?.email || 'customer@example.com';
+        const prefillPhone = user?.phone || '';
+
         // 2. Setup Razorpay Options
         const options = {
             "key": "dummy_key_id", // Replace with valid API KEY during production if needed, or fetched from backend if preferred. We expect local env setup.
@@ -191,9 +197,9 @@ async function processPayment(mode) {
                 await verifyPayment(response, orderData.id);
             },
             "prefill": {
-                "name": "EAgri Customer",
-                "email": "customer@example.com",
-                "contact": "9999999999" // Dummy for testing
+                "name": prefillName,
+                "email": prefillEmail,
+                "contact": prefillPhone
             },
             "theme": {
                 "color": "#2D5016" // primary green
@@ -224,11 +230,30 @@ async function processPayment(mode) {
     }
 }
 
+// Helper to get current user from auth
+function getCurrentUser() {
+  try {
+    const raw = localStorage.getItem('eagriUser') || sessionStorage.getItem('eagriUser');
+    return raw ? JSON.parse(raw) : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function getUserId() {
+  const user = getCurrentUser();
+  return user ? (user.id || user._id) : null;
+}
+
 async function verifyPayment(paymentResponse, rzpOrderId) {
     showLoader(true);
     try {
-        // Use a dummy userId for now, in prod fetch from Auth
-        const userId = "60d0fe4f5311236168a109ca"; 
+        const userId = getUserId();
+        if (!userId) {
+            showLoader(false);
+            alert('Authentication error. Please login again.');
+            return;
+        }
 
         const verifyReq = await fetch('/api/payment/verify-payment', {
             method: 'POST',

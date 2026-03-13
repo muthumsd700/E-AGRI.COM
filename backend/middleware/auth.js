@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-
-const JWT_SECRET = process.env.JWT_SECRET || 'secret_key_for_eagri_platform';
+const { JWT_SECRET } = require('../config/constants');
 
 module.exports = async (req, res, next) => {
     // Get token from header

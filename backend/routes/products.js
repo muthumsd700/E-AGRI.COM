@@ -11,7 +11,7 @@ const auth = require('../middleware/auth'); // Assuming you have auth middleware
 // @access  Public
 router.get('/', async (req, res) => {
     try {
-        const products = await Product.find().populate('farmer', 'name');
+        const products = await Product.find().populate('farmer', 'name address');
         res.json(products);
     } catch (err) {
         console.error(err.message);
@@ -30,6 +30,19 @@ router.get('/my', auth, async (req, res) => {
         }
         const products = await Product.find({ farmer: req.user.id }).sort({ createdAt: -1 });
         res.json(products);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
+// @route   GET api/products/categories
+// @desc    Get distinct product categories
+// @access  Public
+router.get('/categories', async (req, res) => {
+    try {
+        const cats = await Product.distinct('category', { category: { $ne: '' } });
+        res.json(cats.filter(Boolean).sort());
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');

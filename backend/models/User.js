@@ -43,6 +43,16 @@ const UserSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    experience: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+    farmSize: {
+        type: String,
+        trim: true,
+        default: ''
+    },
     address: {
         type: AddressSchema,
         default: () => ({})
@@ -69,6 +79,20 @@ const UserSchema = new mongoose.Schema({
             default: Date.now
         }
     }],
+    settings: {
+        twoFAEnabled: { type: Boolean, default: false },
+        notifications: {
+            email: { type: Boolean, default: true },
+            orders: { type: Boolean, default: true },
+            promos: { type: Boolean, default: false },
+            delivery: { type: Boolean, default: true }
+        },
+        privacy: {
+            visibility: { type: String, default: 'public' },
+            allowContact: { type: Boolean, default: true },
+            allowRecommendations: { type: Boolean, default: true }
+        }
+    },
     createdAt: {
         type: Date,
         default: Date.now
