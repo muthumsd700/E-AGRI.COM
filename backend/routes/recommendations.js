@@ -34,7 +34,7 @@ router.get('/', auth, async (req, res) => {
         let recommendations = [];
         
         // Build query based on available data
-        const query = { stock: { $gt: 0 } };
+        const query = { quantity: { $gt: 0 } };
         if (category) {
             query.category = category;
         }
@@ -43,14 +43,14 @@ router.get('/', auth, async (req, res) => {
         if (purchasedFarmerIds.size > 0) {
             const farmerProducts = await Product.find({
                 ...query,
-                farmer: { $in: Array.from(purchasedFarmerIds) }
+                farmerId: { $in: Array.from(purchasedFarmerIds) }
             })
-            .populate('farmer', 'name')
+            .populate('farmerId', 'name')
             .limit(limitNum);
             
             recommendations.push(...farmerProducts.map(p => ({
                 ...p.toObject(),
-                reason: `From ${p.farmer?.name || 'your favorite farmer'}`
+                reason: `From ${p.farmerId?.name || 'your favorite farmer'}`
             })));
         }
         
@@ -61,7 +61,7 @@ router.get('/', auth, async (req, res) => {
                 category: { $in: Array.from(purchasedCategories) },
                 _id: { $nin: recommendations.map(r => r._id) }
             })
-            .populate('farmer', 'name')
+            .populate('farmerId', 'name')
             .limit(limitNum - recommendations.length);
             
             recommendations.push(...categoryProducts.map(p => ({
@@ -73,10 +73,10 @@ router.get('/', auth, async (req, res) => {
         // Strategy 3: Popular/featured products (fallback)
         if (recommendations.length < limitNum) {
             const popularProducts = await Product.find({
-                stock: { $gt: 0 },
+                quantity: { $gt: 0 },
                 _id: { $nin: recommendations.map(r => r._id) }
             })
-            .populate('farmer', 'name')
+            .populate('farmerId', 'name')
             .sort({ createdAt: -1 })
             .limit(limitNum - recommendations.length);
             
@@ -92,11 +92,11 @@ router.get('/', auth, async (req, res) => {
         
         if (seasonalCategories.length > 0 && recommendations.length < limitNum) {
             const seasonalProducts = await Product.find({
-                stock: { $gt: 0 },
+                quantity: { $gt: 0 },
                 category: { $in: seasonalCategories },
                 _id: { $nin: recommendations.map(r => r._id) }
             })
-            .populate('farmer', 'name')
+            .populate('farmerId', 'name')
             .limit(limitNum - recommendations.length);
             
             recommendations.push(...seasonalProducts.map(p => ({

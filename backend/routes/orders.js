@@ -10,7 +10,8 @@ const auth = require('../middleware/auth');
 // @access  Private (farmer only)
 router.get('/farmer-summary', auth, async (req, res) => {
     try {
-        if (req.user.role !== 'farmer') {
+        const user = await User.findById(req.user.id);
+        if (!user || user.role !== 'farmer') {
             return res.status(403).json({ message: 'Only farmers can view this summary' });
         }
 
@@ -60,7 +61,7 @@ router.get('/farmer-summary', auth, async (req, res) => {
     }
 });
 
-// @route   GET api/orders
+// @route   GET api/orders/my
 // @desc    Get user's orders (Consumer)
 // @access  Private
 router.get('/my', auth, async (req, res) => {
@@ -75,12 +76,31 @@ router.get('/my', auth, async (req, res) => {
     }
 });
 
+// @route   GET api/orders/user/:userId
+// @desc    Get user's orders (Consumer)
+// @access  Private
+router.get('/user/:userId', auth, async (req, res) => {
+    try {
+        if (req.user.id !== req.params.userId && req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Not authorized' });
+        }
+        const orders = await Order.find({ consumer: req.params.userId })
+            .populate('items.product', 'name image')
+            .sort({ createdAt: -1 });
+        res.json(orders);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
 // @route   GET api/orders/received
 // @desc    Get orders received by a farmer
 // @access  Private
 router.get('/received', auth, async (req, res) => {
     try {
-        if (req.user.role !== 'farmer') {
+        const user = await User.findById(req.user.id);
+        if (!user || user.role !== 'farmer') {
             return res.status(403).json({ message: 'Only farmers can view received orders' });
         }
 
@@ -159,7 +179,7 @@ router.post('/', auth, async (req, res) => {
                 return res.status(404).json({ message: `Product ${item.product} not found` });
             }
 
-            if (product.stock < item.quantity) {
+            if (product.quantity < item.quantity) {
                 return res.status(400).json({ message: `Insufficient stock for ${product.name}` });
             }
 
@@ -169,13 +189,13 @@ router.post('/', auth, async (req, res) => {
                 price: product.price,
                 quantity: item.quantity,
                 image: product.image,
-                farmer: product.farmer // Link to farmer
+                farmer: product.farmerId // Link to farmer
             });
 
             totalAmount += product.price * item.quantity;
 
-            // Reduce stock
-            product.stock -= item.quantity;
+            // Reduce quantity
+            product.quantity -= item.quantity;
             await product.save();
         }
 
@@ -184,7 +204,9 @@ router.post('/', auth, async (req, res) => {
             items: orderItems,
             totalAmount,
             shippingAddress,
-            paymentMethod: paymentMethod || 'cash_on_delivery'
+            paymentMethod: paymentMethod || 'cash_on_delivery',
+            status: 'Pending',
+            trackingSteps: [{ status: 'Order Placed', date: new Date() }]
         });
 
         const order = await newOrder.save();
@@ -207,9 +229,13 @@ router.put('/:id/status', auth, async (req, res) => {
             return res.status(404).json({ message: 'Order not found' });
         }
 
+        // Fetch user from DB to get role (JWT payload only contains id)
+        const requestingUser = await User.findById(req.user.id).select('role');
+        const isAdmin = requestingUser && requestingUser.role === 'admin';
+
         // Only allow status update if the user is a farmer of at least one item in the order
-        const isFarmer = order.items.some(item => item.farmer.toString() === req.user.id);
-        if (!isFarmer && req.user.role !== 'admin') {
+        const isFarmer = order.items.some(item => item.farmer && item.farmer.toString() === req.user.id);
+        if (!isFarmer && !isAdmin) {
             return res.status(403).json({ message: 'Not authorized to update this order' });
         }
 

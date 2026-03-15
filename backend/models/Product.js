@@ -1,38 +1,22 @@
 const mongoose = require('mongoose');
 
-const ReviewSchema = new mongoose.Schema({
-    user: {
+const ProductSchema = new mongoose.Schema({
+    farmerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    userName: {
+    farmerName: {
         type: String,
-        required: true
-    },
-    rating: {
-        type: Number,
         required: true,
-        min: 1,
-        max: 5
+        trim: true
     },
-    comment: {
-        type: String,
-        required: true
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
-});
-
-const ProductSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
         trim: true
     },
-    description: {
+    category: {
         type: String,
         trim: true
     },
@@ -41,47 +25,27 @@ const ProductSchema = new mongoose.Schema({
         required: true,
         min: 0
     },
-    image: {
-        type: String,
-        trim: true
-    },
-    category: {
-        type: String,
-        trim: true
-    },
-    stock: {
+    quantity: {
         type: Number,
         default: 0,
         min: 0
     },
-    availability: {
-        type: Boolean,
-        default: true
-    },
-    farmer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    farmerName: {
+    description: {
         type: String,
         trim: true
     },
-    farmingDetails: {
-        method: { type: String, trim: true, default: '' },
-        harvestDate: { type: String, trim: true, default: '' },
-        location: { type: String, trim: true, default: '' },
-        organicCertified: { type: Boolean, default: false }
+    image: {
+        type: String, // Can store base64 string or URL
+        trim: true
     },
-    reviews: [ReviewSchema],
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now
+    location: {
+        type: String,
+        trim: true,
+        default: ''
     }
+}, { 
+    timestamps: true, // Automatically manages createdAt and updatedAt
+    collection: 'products' // Ensure it saves to 'products' collection
 });
 
 module.exports = mongoose.model('Product', ProductSchema);

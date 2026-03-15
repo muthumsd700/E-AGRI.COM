@@ -1,3 +1,38 @@
+# Gitignore for E-Agri Commerce Platform
+
+# ── Environment & Secrets ────────────────────────────────────────────────────
 .env
+.env.local
+.env.*.local
+
+# ── Node.js ──────────────────────────────────────────────────────────────────
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# ── Build Output ─────────────────────────────────────────────────────────────
+dist/
+build/
+
+# ── OS & Editor ──────────────────────────────────────────────────────────────
 .DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# ── IDE ──────────────────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ── Debug/Temporary Files ─────────────────────────────────────────────────────
+*.tmp
+*.bak
+tmp_*.js
+out.json
+out2.json

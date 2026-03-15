@@ -2,7 +2,7 @@
   "name": "e-agri-commerce-platform",
   "version": "1.0.0",
   "description": "",
-  "main": "index.html",
+  "main": "backend/server.js",
   "dependencies": {
     "@dhiwise/component-tagger": "^1.0.14",
     "@tailwindcss/forms": "^0.5.7",
@@ -20,8 +20,8 @@
   "scripts": {
     "build:css": "npx @dhiwise/component-tagger && npx tailwindcss -i ./css/tailwind.css -o ./css/main.css",
     "watch:css": "npx @dhiwise/component-tagger && npx tailwindcss -i ./css/tailwind.css -o ./css/main.css --watch",
-    "dev": "npm run watch:css",
-    "start": "npx serve .",
+    "dev": "node backend/server.js",
+    "start": "node backend/server.js",
     "server": "node backend/server.js"
   },
   "author": "",

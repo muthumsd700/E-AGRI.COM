@@ -226,7 +226,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                 </svg>
-                                <span class="text-text-secondary" data-consumer-phone>+91 98765 43210</span>
+                                <span class="text-text-secondary" data-consumer-phone>--</span>
                             </div>
                             <div class="flex items-center gap-3 p-3 bg-surface-elevated rounded-lg">
                                 <svg class="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -255,93 +255,32 @@
                 <div class="lg:col-span-2">
                     <div class="card">
                         <h3 class="text-2xl font-heading font-semibold text-primary mb-6">Personal Information</h3>
-                        <form id="consumer-profile-form" class="space-y-6">
+                        <div class="space-y-6">
                             <div class="grid sm:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-sm font-medium text-text-primary mb-2">First Name</label>
-                                    <input type="text" id="consumer-first-name" class="input"
-                                        placeholder="Enter first name">
+                                    <p class="block text-sm font-medium text-text-primary mb-2">Full Name</p>
+                                    <p class="text-text-secondary" data-consumer-full-name>--</p>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-text-primary mb-2">Last Name</label>
-                                    <input type="text" id="consumer-last-name" class="input"
-                                        placeholder="Enter last name">
+                                    <p class="block text-sm font-medium text-text-primary mb-2">Email Address</p>
+                                    <p class="text-text-secondary" data-consumer-email>--</p>
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-text-primary mb-2">Email Address</label>
-                                <input type="email" id="consumer-email" value="" class="input"
-                                    placeholder="Enter email">
+                                <p class="block text-sm font-medium text-text-primary mb-2">Phone Number</p>
+                                <p class="text-text-secondary" data-consumer-phone>--</p>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-text-primary mb-2">Phone Number</label>
-                                <input type="tel" id="consumer-phone" value="" class="input"
-                                    placeholder="Enter phone number">
+                                <p class="block text-sm font-medium text-text-primary mb-2">Delivery Address</p>
+                                <p class="text-text-secondary" data-consumer-address>--</p>
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-text-primary mb-2">Delivery Address</label>
-                                <textarea rows="3" id="consumer-address" class="input" data-consumer-address
-                                    placeholder="Enter complete delivery address"></textarea>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-text-primary mb-2">Dietary
-                                    Preferences</label>
-                                <div class="flex flex-wrap gap-3">
-                                    <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" checked
-                                            class="w-5 h-5 rounded border-border text-primary focus:ring-secondary">
-                                        <span class="text-text-secondary">Organic Only</span>
-                                    </label>
-                                    <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox"
-                                            class="w-5 h-5 rounded border-border text-primary focus:ring-secondary">
-                                        <span class="text-text-secondary">Vegetarian</span>
-                                    </label>
-                                    <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox"
-                                            class="w-5 h-5 rounded border-border text-primary focus:ring-secondary">
-                                        <span class="text-text-secondary">Gluten-Free</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-text-primary mb-2">Communication
-                                    Preferences</label>
-                                <div class="space-y-2">
-                                    <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" checked
-                                            class="w-5 h-5 rounded border-border text-primary focus:ring-secondary">
-                                        <span class="text-text-secondary">Email notifications for order updates</span>
-                                    </label>
-                                    <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" checked
-                                            class="w-5 h-5 rounded border-border text-primary focus:ring-secondary">
-                                        <span class="text-text-secondary">SMS alerts for delivery</span>
-                                    </label>
-                                    <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox"
-                                            class="w-5 h-5 rounded border-border text-primary focus:ring-secondary">
-                                        <span class="text-text-secondary">Promotional offers and seasonal
-                                            products</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-4">
-                                <button type="submit" class="btn btn-primary">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    Save Changes
-                                </button>
-                                <button type="button" class="btn btn-outline">Cancel</button>
-                            </div>
-                        </form>
+                            <p class="text-sm text-text-secondary">
+                                To update your information, go to <a href="settings.html" class="text-primary hover:underline">Settings</a>.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -722,49 +661,33 @@
                     if (savingsEl) savingsEl.textContent = '₹' + (stats.savings || 0).toLocaleString();
                 };
 
-                // Load Consumer Profile from API
+                // Load Consumer Profile from API / local cache
                 const loadConsumerProfile = async () => {
-                    const profile = await apiFetch('/api/consumers/me');
+                    const profile = (window.EAgri && window.EAgri.getConsumerProfile) ? await window.EAgri.getConsumerProfile() : null;
                     if (!profile) return;
-                    
-                    // Update profile card
-                    const phoneEl = document.querySelector('[data-consumer-phone]');
-                    const memberSinceEl = document.querySelector('[data-consumer-member-since]');
-                    const firstNameEl = document.getElementById('consumer-first-name');
-                    const lastNameEl = document.getElementById('consumer-last-name');
-                    const emailEl = document.getElementById('consumer-email');
-                    const addressEl = document.getElementById('consumer-address');
-                    
-                    if (phoneEl && profile.phone) phoneEl.textContent = profile.phone;
-                    if (emailEl && profile.email) emailEl.value = profile.email;
-                    if (memberSinceEl && profile.createdAt) {
-                        memberSinceEl.textContent = new Date(profile.createdAt).toLocaleDateString('en-GB', { 
-                            month: 'short', year: 'numeric' 
-                        });
-                    }
-                    
-                    // Split name into first and last
-                    if (profile.name) {
-                        const nameParts = profile.name.split(' ');
-                        if (firstNameEl) firstNameEl.value = nameParts[0] || '';
-                        if (lastNameEl) lastNameEl.value = nameParts.slice(1).join(' ') || '';
-                    }
-                    
-                    // Format address
-                    if (addressEl && profile.address) {
-                        const addr = profile.address;
-                        const addrStr = [addr.houseStreet, addr.city, addr.state, addr.pincode]
-                            .filter(Boolean).join(', ');
-                        addressEl.value = addrStr;
-                    }
-                    
+
+                    const phoneEls = document.querySelectorAll('[data-consumer-phone]');
+                    const memberSinceEls = document.querySelectorAll('[data-consumer-member-since]');
+                    const fullNameEls = document.querySelectorAll('[data-consumer-full-name]');
+                    const emailEls = document.querySelectorAll('[data-consumer-email]');
+                    const addressEls = document.querySelectorAll('[data-consumer-address]');
+                    const userNameEls = document.querySelectorAll('[data-user-name]');
+
+                    phoneEls.forEach(el => el.textContent = profile.phone || '');
+                    memberSinceEls.forEach(el => el.textContent = profile.memberSince || '--');
+                    fullNameEls.forEach(el => el.textContent = profile.name || 'User');
+                    emailEls.forEach(el => el.textContent = profile.email || '');
+                    addressEls.forEach(el => el.textContent = profile.address || 'Not set');
+
+                    userNameEls.forEach(el => el.textContent = (profile.name || 'User').split(' ')[0] || 'User');
+
                     // Update profile photo if exists
                     if (profile.profilePhoto) {
                         const welcomeImg = document.getElementById('welcome-profile-img');
                         const profileAvatar = document.getElementById('consumer-profile-avatar');
                         const profileImg = document.getElementById('consumer-profile-img');
                         const profileInitials = document.getElementById('consumer-profile-initials');
-                        
+
                         if (welcomeImg) {
                             welcomeImg.src = profile.profilePhoto;
                             welcomeImg.classList.remove('hidden');
@@ -949,6 +872,54 @@
                 // Start loading data
                 initDataLoading();
 
+                // Utility functions for tracking
+                const getTrackingConfig = (status) => {
+                    const normStatus = (status || 'Pending').toLowerCase();
+                    if (normStatus === 'cancelled') return { progress: '0%', label: 'Cancelled' };
+                    if (normStatus === 'delivered') return { progress: '100%', label: 'Delivered' };
+                    if (normStatus === 'out for delivery') return { progress: '85%', label: 'Out for Delivery' };
+                    if (normStatus === 'shipped') return { progress: '60%', label: 'Shipped' };
+                    if (normStatus === 'packed') return { progress: '35%', label: 'Packed' };
+                    return { progress: '10%', label: 'Order Placed' }; // Pending by default
+                };
+                
+                const getStatusColorClass = (status) => {
+                    const s = (status || '').toLowerCase();
+                    if (s === 'delivered') return 'bg-success/10 text-success';
+                    if (s === 'cancelled') return 'bg-error/10 text-error';
+                    if (s === 'out for delivery') return 'bg-primary/10 text-primary';
+                    if (s === 'shipped') return 'bg-secondary/10 text-secondary';
+                    if (s === 'packed') return 'bg-warning/10 text-warning';
+                    return 'bg-surface-elevated text-text-secondary';
+                };
+
+                const getTimelineSteps = (order) => {
+                    const defaultSteps = [
+                        { label: 'Order Placed', statusKey: 'Order Placed' },
+                        { label: 'Packed', statusKey: 'Packed' },
+                        { label: 'Shipped', statusKey: 'Shipped' },
+                        { label: 'Out for Delivery', statusKey: 'Out for Delivery' },
+                        { label: 'Delivered', statusKey: 'Delivered' }
+                    ];
+
+                    const actualSteps = order.trackingSteps || [];
+                    let hasCancelled = actualSteps.some(s => s.status === 'Cancelled');
+                    
+                    if (hasCancelled) {
+                         const cancelStep = actualSteps.find(s => s.status === 'Cancelled');
+                         return [{ label: 'Order Placed', completed: true, time: new Date(order.createdAt).toLocaleDateString() },
+                                 { label: 'Cancelled', completed: true, time: new Date(cancelStep.date).toLocaleDateString(), isError: true }];
+                    }
+
+                    return defaultSteps.map(ds => {
+                        const found = actualSteps.find(as => as.status === ds.statusKey || as.status === ds.label);
+                        if (found) {
+                            return { label: ds.label, completed: true, time: new Date(found.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) };
+                        }
+                        return { label: ds.label, completed: false, time: null };
+                    });
+                };
+
                 // Render orders
                 const renderAllOrders = async () => {
                    const tbody = document.getElementById('transaction-tbody');
@@ -957,7 +928,18 @@
 
                    if (ordersContainer) ordersContainer.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-text-secondary">Loading your orders...</p></div>';
 
-                   const orders = await window.EAgri.getConsumerOrders();
+                   let userObj = {};
+                   try {
+                       const userStr = localStorage.getItem('eagriUser');
+                       if(userStr) userObj = JSON.parse(userStr);
+                   } catch(e) {}
+                   
+                   if (!userObj.id) {
+                       if (ordersContainer) ordersContainer.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-error">Please log in to see orders.</p></div>';
+                       return;
+                   }
+
+                   const orders = await apiFetch('/api/orders/user/' + userObj.id);
 
                    if (!orders || orders.length === 0) {
                        if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="text-center text-text-secondary py-6">No transactions yet.</td></tr>';
@@ -973,28 +955,28 @@
                    if (tbody) {
                        tbody.innerHTML = orders.map(o => {
                            const date = new Date(o.createdAt).toLocaleDateString('en-GB');
-                           const items = (o.items || []).map(i => `${i.name} (${i.quantity}kg)`).join(', ');
-                           const status = o.status || 'pending';
-                           const statusColor = window.EAgri.getStatusColorClass(status);
+                           const items = (o.items || []).map(i => `${i.name}`).join(', ');
+                           const status = o.status || 'Pending';
+                           const statusColor = getStatusColorClass(status);
 
                            return `<tr>
                                <td>${date}</td>
                                <td class="font-medium text-primary">${String(o._id).slice(-6).toUpperCase()}</td>
-                               <td>${items}</td>
-                               <td>Farmer</td>
+                               <td class="max-w-xs truncate">${items}</td>
+                               <td>Multiple</td>
                                <td class="font-bold text-primary">₹${o.totalAmount}</td>
-                               <td><span class="inline-flex items-center ${statusColor} text-xs font-bold px-3 py-1 rounded-full capitalize">${status.replace(/_/g, ' ')}</span></td>
-                               <td><button class="text-secondary hover:text-secondary-600 text-sm font-medium">View</button></td>
+                               <td><span class="inline-flex items-center ${statusColor} text-xs font-bold px-3 py-1 rounded-full capitalize">${status}</span></td>
+                               <td><button class="text-secondary hover:text-secondary-600 text-sm font-medium" onclick="window.scrollTo(0,0); document.querySelector('[data-tab=orders]').click();">Track</button></td>
                            </tr>`;
                        }).join('');
                    }
 
-                   // Order Cards
+                   // Order Cards Tracking
                    if (ordersContainer) {
                        ordersContainer.innerHTML = orders.map(o => {
-                           const status = o.status || 'pending';
-                           const config = window.EAgri.getOrderTrackingConfig(status);
-                           const colorClass = window.EAgri.getStatusColorClass(status);
+                           const status = o.status || 'Pending';
+                           const config = getTrackingConfig(status);
+                           const colorClass = getStatusColorClass(status);
                            
                            const items = (o.items || []).map(i => `
                                <div class="flex items-center gap-4 py-3 border-b border-border last:border-0">
@@ -1019,7 +1001,7 @@
                                        <span class="text-xs font-bold px-3 py-1 rounded-full ${colorClass} capitalize">${config.label}</span>
                                    </div>
                                </div>
-                               <div class="w-full bg-surface-elevated rounded-full h-2 mb-2">
+                               <div class="w-full bg-surface-elevated rounded-full h-2 mb-2 overflow-hidden">
                                    <div class="bg-secondary h-2 rounded-full transition-all duration-500" style="width: ${config.progress}"></div>
                                </div>
                                <div class="flex justify-between text-[10px] text-text-tertiary mb-4 font-medium uppercase tracking-wider">
@@ -1030,7 +1012,6 @@
                                <div class="space-y-1 mb-4">${items}</div>
                                <div class="flex gap-2">
                                    <button class="btn btn-outline flex-1 py-2 text-sm track-order-btn">Track Order</button>
-                                   <button class="btn btn-primary flex-1 py-2 text-sm">Details</button>
                                </div>
                            </div>`;
                        }).join('');
@@ -1056,14 +1037,14 @@
                     est.setDate(est.getDate() + 3);
                     document.getElementById('modal-est-delivery').textContent = est.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
-                    const steps = window.EAgri.getOrderTimelineSteps(order);
+                    const steps = getTimelineSteps(order);
                     timelineContainer.innerHTML = steps.map(step => `
                         <div class="relative">
-                            <div class="absolute -left-[29px] top-1 w-5 h-5 rounded-full z-10 flex items-center justify-center ${step.completed ? 'bg-success text-white' : 'bg-surface-elevated border-2 border-border text-text-tertiary'}">
-                                ${step.completed ? '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>' : ''}
+                            <div class="absolute -left-[29px] top-1 w-5 h-5 rounded-full z-10 flex items-center justify-center ${step.completed ? (step.isError ? 'bg-error text-white' : 'bg-success text-white') : 'bg-surface-elevated border-2 border-border text-text-tertiary'}">
+                                ${step.completed ? (step.isError ? '!' : '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>') : ''}
                             </div>
                             <div>
-                                <h4 class="font-semibold text-sm ${step.completed ? 'text-primary' : 'text-text-tertiary'}">${step.label}</h4>
+                                <h4 class="font-semibold text-sm ${step.completed ? (step.isError ? 'text-error' : 'text-primary') : 'text-text-tertiary'}">${step.label}</h4>
                                 <p class="text-xs text-text-secondary">${step.time || (step.completed ? 'Completed' : 'Upcoming')}</p>
                             </div>
                         </div>
@@ -1080,56 +1061,13 @@
 
                 // Listen for changes in other tabs (Farmer Dashboard updates)
                 window.addEventListener('storage', (e) => {
+                    if (e.key === 'eagriUser') loadConsumerProfile();
                     if (e.key === 'eagriOrders') renderAllOrders();
                 });
-                // Handle Profile Form Submission
-                const profileForm = document.getElementById('consumer-profile-form');
-                if (profileForm) {
-                    profileForm.addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        
-                        // Get values
-                        const firstName = document.getElementById('consumer-first-name')?.value.trim() || '';
-                        const lastName = document.getElementById('consumer-last-name')?.value.trim() || '';
-                        const phone = document.getElementById('consumer-phone')?.value.trim() || '';
-                        const address = document.getElementById('consumer-address')?.value.trim() || '';
-                        
-                        const fullName = [firstName, lastName].filter(Boolean).join(' ');
-                        
-                        // Show loading state on button
-                        const submitBtn = profileForm.querySelector('button[type="submit"]');
-                        const originalBtnContent = submitBtn.innerHTML;
-                        if (submitBtn) {
-                            submitBtn.disabled = true;
-                            submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Saving...';
-                        }
-                        
-                        try {
-                            const success = await window.EAgri.updateConsumerProfile({
-                                name: fullName,
-                                phone: phone,
-                                address: address
-                            });
-                            
-                            if (success) {
-                                // Show success feedback
-                                alert('Profile updated successfully!');
-                                // Refresh visual elements that depend on profile data
-                                await loadConsumerProfile();
-                            } else {
-                                alert('Failed to update profile. Please try again.');
-                            }
-                        } catch (err) {
-                            console.error('Error updating profile:', err);
-                            alert('An error occurred while saving.');
-                        } finally {
-                            if (submitBtn) {
-                                submitBtn.disabled = false;
-                                submitBtn.innerHTML = originalBtnContent;
-                            }
-                        }
-                    });
-                }
+                // Re-load profile when updated elsewhere (e.g., Settings)
+                window.addEventListener('eagri-profile-updated', async () => {
+                    await loadConsumerProfile();
+                });
             }
         });
     </script>

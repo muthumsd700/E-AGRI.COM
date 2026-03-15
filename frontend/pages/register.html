@@ -607,31 +607,22 @@
 
                 // Success — persist user using shared method
                 const userObj = { 
+                    id: data.user.id,
                     name: data.user.name, 
                     email: data.user.email, 
                     role: data.user.role, 
-                    phone: data.user.phone, 
-                    experience: experience, 
-                    farmSize: farmSize 
+                    phone: data.user.phone || phone, 
+                    experience: data.user.experience || experience, 
+                    farmSize: data.user.farmSize || farmSize 
                 };
                 
                 // We default to `true` (localStorage) for register, per normal app flow, 
                 // but one could optionally add a Remember Me here in the future
                 window.EAgriAuth.saveSession(userObj, data.token, true); 
 
-                // Note: Keep legacy duplicate mock saves if needed by other sections:
-                if (data.user.role === 'farmer') {
-                    let fp = JSON.parse(localStorage.getItem('eagriFarmerProfile') || '{}');
-                    fp.name = data.user.name; fp.email = data.user.email;
-                    fp.phone = data.user.phone; fp.location = data.user.address || fp.location;
-                    fp.farmSize = farmSize; fp.experience = experience;
-                    localStorage.setItem('eagriFarmerProfile', JSON.stringify(fp));
-                } else {
-                    let cp = JSON.parse(localStorage.getItem('eagriConsumerProfile') || '{}');
-                    cp.name = data.user.name; cp.email = data.user.email;
-                    cp.phone = data.user.phone; cp.address = data.user.address || cp.address;
-                    localStorage.setItem('eagriConsumerProfile', JSON.stringify(cp));
-                }
+                // Legacy duplicate mock saves removed:
+                // Frontend now universally relies on 'eagriUser' saved via window.EAgriAuth.saveSession
+
 
                 window.EAgriAuth.setRedirectingState(submitBtn);
 

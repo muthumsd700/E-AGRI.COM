@@ -74,8 +74,10 @@
     }
 
     function syncUserToStorage(user) {
+        console.log('💾 Settings: syncUserToStorage called with:', user);
         const existing = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER) || '{}');
-        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify({
+        console.log('📦 Settings: Existing localStorage data:', existing);
+        const updated = {
             ...existing,
             token: existing.token,
             name: user.name,
@@ -88,7 +90,10 @@
             profilePhoto: user.profilePhoto || existing.profilePhoto || '',
             experience: user.experience || existing.experience || '',
             farmSize: user.farmSize || existing.farmSize || ''
-        }));
+        };
+        console.log('✨ Settings: Final data to save:', updated);
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(updated));
+        console.log('✅ Settings: Data saved to localStorage');
     }
 
     async function apiFetchProfile() {
@@ -163,12 +168,17 @@
             });
             if (res.ok) {
                 const data = await res.json();
-                if (data.name || data.phone || data.profilePhoto) {
-                    currentUser = { ...currentUser, ...data };
-                    syncUserToStorage(currentUser);
-                }
+                // Ensure all fields from API response are merged, including farmer-specific ones
+                currentUser = { 
+                    ...currentUser, 
+                    ...data,
+                    experience: data.experience !== undefined ? data.experience : currentUser.experience,
+                    farmSize: data.farmSize !== undefined ? data.farmSize : currentUser.farmSize
+                };
+                syncUserToStorage(currentUser);
                 return data;
             }
+
         } catch (e) {
             console.warn('Profile API update failed, local storage was updated', e);
         }
@@ -189,10 +199,12 @@
 
     // ---------- Storage (client-only settings) ----------
     function getStoredUser() {
-        if (currentUser) return currentUser;
         try {
             const raw = localStorage.getItem(STORAGE_KEYS.USER);
-            return raw ? JSON.parse(raw) : {};
+            const user = raw ? JSON.parse(raw) : {};
+            // Update cache for consistency
+            currentUser = user;
+            return user;
         } catch (_) {}
         return {};
     }
@@ -221,20 +233,32 @@
 
     // ---------- Toast ----------
     function toast(message, type = 'success') {
-        const container = document.getElementById('toast-container');
-        if (!container) return;
+        let container = document.getElementById('toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            container.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:0.5rem;pointer-events:none;';
+            document.body.appendChild(container);
+        }
         const el = document.createElement('div');
-        el.className = `toast ${type}`;
         el.setAttribute('role', 'alert');
         el.textContent = message;
+        el.style.cssText = 'pointer-events:auto;padding:0.75rem 1rem;border-radius:0.5rem;color:#fff;font-size:0.875rem;font-weight:500;box-shadow:0 10px 15px -3px rgba(0,0,0,0.3);transition:opacity 0.2s,transform 0.2s;opacity:1;transform:translateX(0);';
+        
+        if (type === 'success') el.style.background = '#059669';
+        else if (type === 'error') el.style.background = '#dc2626';
+        else el.style.background = '#2563eb';
+        
         container.appendChild(el);
         setTimeout(() => {
             el.style.opacity = '0';
             el.style.transform = 'translateX(1rem)';
-            el.style.transition = 'opacity 0.2s, transform 0.2s';
-            setTimeout(() => el.remove(), 200);
+            setTimeout(() => el.remove(), 220);
         }, 3000);
     }
+    
+    // Expose toast globally
+    window.toast = toast;
 
     // ---------- Modal ----------
     function confirmModal(message, onConfirm) {
@@ -529,11 +553,13 @@
         const roleRaw = (user.role || 'consumer').toLowerCase();
         const role = roleRaw === 'farmer' ? 'Farmer' : 'Consumer';
         const phone = user.phone || '';
+        const email = user.email || '';
 
         document.getElementById('profile-display-name').textContent = name;
         document.getElementById('profile-display-role').textContent = role;
         document.getElementById('profile-name').value = name;
         document.getElementById('profile-phone').value = phone;
+        document.getElementById('profile-email').value = email;
 
         // Farmer specific fields
         if (roleRaw === 'farmer') {
@@ -568,17 +594,25 @@
             e.preventDefault();
             const payload = {
                 name: document.getElementById('profile-name').value.trim(),
-                phone: document.getElementById('profile-phone').value.trim()
+                phone: document.getElementById('profile-phone').value.trim(),
+                email: document.getElementById('profile-email').value.trim()
             };
             if (getRole() === 'farmer') {
                 payload.experience = document.getElementById('profile-experience').value.trim();
                 payload.farmSize = document.getElementById('profile-farm-size').value.trim();
             }
+            
+            console.log('Settings - Saving profile payload:', payload);
 
             try {
-                await apiUpdateProfile(payload);
+                const result = await apiUpdateProfile(payload);
+                console.log('Settings - apiUpdateProfile result:', result);
                 toast('Profile updated successfully');
                 renderProfile();
+                // Notify other pages to refresh displayed profile
+                window.dispatchEvent(new Event('eagri-profile-updated'));
+                console.log('Settings - Dispatched eagri-profile-updated event');
+                console.log('📡 Settings: Event dispatched with updated localStorage data');
             } catch (err) { toast(err.message, 'error'); }
         });
 
@@ -589,6 +623,8 @@
             reader.onload = async () => {
                 await apiUpdateProfile({ profilePhoto: reader.result });
                 renderProfile();
+                // Notify other pages to refresh shown profile
+                window.dispatchEvent(new Event('eagri-profile-updated'));
                 toast('Photo updated');
             };
             reader.readAsDataURL(file);
@@ -677,6 +713,7 @@
         const fields = [
             { id: 'profile-name', validator: v => v.length >= 3, errorId: 'error-profile-name', successId: 'success-profile-name' },
             { id: 'profile-phone', validator: validatePhone, errorId: 'error-profile-phone' },
+            { id: 'profile-email', validator: validateEmail, errorId: 'error-profile-email' },
             { id: 'account-current-password', validator: v => v.length > 0, errorId: 'error-account-current-password' },
             { id: 'account-new-password', validator: v => v.length >= 6, errorId: 'error-account-new-password' }
         ];

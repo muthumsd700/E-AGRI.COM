@@ -12,6 +12,7 @@ const orderRoutes = require('./routes/orders');
 const paymentRoutes = require('./routes/payment');
 const consumerRoutes = require('./routes/consumers');
 const recommendationRoutes = require('./routes/recommendations');
+const farmerRoutes = require('./routes/farmers');
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/consumers', consumerRoutes);
 app.use('/api/recommendations', recommendationRoutes);
+app.use('/api/farmers', farmerRoutes);
 
 // simple health check endpoint (useful to verify server is up)
 app.get('/api/health', (req, res) => {

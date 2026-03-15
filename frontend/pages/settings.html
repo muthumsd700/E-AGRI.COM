@@ -251,6 +251,11 @@
                                     <input type="tel" id="profile-phone" class="input" pattern="[0-9]{10}" placeholder="10-digit phone number" required>
                                     <span id="error-profile-phone" class="field-error-msg"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg> Please enter a valid 10-digit number.</span>
                                 </div>
+                                <div>
+                                    <label for="profile-email" class="block text-sm font-medium text-text-primary mb-2">Email Address</label>
+                                    <input type="email" id="profile-email" class="input" required placeholder="Enter your email">
+                                    <span id="error-profile-email" class="field-error-msg"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg> Please enter a valid email.</span>
+                                </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" data-role-only="farmer">
                                     <div>
                                         <label for="profile-experience" class="block text-sm font-medium text-text-primary mb-2">Experience</label>
@@ -631,17 +636,19 @@
                             <h3 class="font-semibold text-text-primary mb-4" data-i18n="payment_add">Add Payment Method</h3>
                             <form id="form-payment" class="space-y-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-text-primary mb-2" data-i18n="payment_type">Type</label>
-                                    <div class="flex gap-4">
-                                        <label class="flex items-center gap-2 cursor-pointer">
-                                            <input type="radio" name="payment-type" value="upi" class="text-primary" checked>
-                                            <span data-i18n="payment_upi">UPI ID</span>
-                                        </label>
-                                        <label class="flex items-center gap-2 cursor-pointer">
-                                            <input type="radio" name="payment-type" value="card" class="text-primary">
-                                            <span data-i18n="payment_card">Debit/Credit Card</span>
-                                        </label>
-                                    </div>
+                                    <fieldset>
+                                        <legend class="block text-sm font-medium text-text-primary mb-2" data-i18n="payment_type">Type</legend>
+                                        <div class="flex gap-4">
+                                            <label class="flex items-center gap-2 cursor-pointer">
+                                                <input type="radio" id="payment-type-upi" name="payment-type" value="upi" class="text-primary" checked>
+                                                <span data-i18n="payment_upi">UPI ID</span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer">
+                                                <input type="radio" id="payment-type-card" name="payment-type" value="card" class="text-primary">
+                                                <span data-i18n="payment_card">Debit/Credit Card</span>
+                                            </label>
+                                        </div>
+                                    </fieldset>
                                 </div>
                                 <div id="payment-upi-fields">
                                     <label for="payment-upi" class="block text-sm font-medium text-text-primary mb-2">UPI ID</label>

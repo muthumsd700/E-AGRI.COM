@@ -60,6 +60,50 @@
       #sidebar-desktop { display:none; }
     }
     #sidebar-desktop { background:#fff; border-radius:1rem; padding:1.25rem; height:fit-content; box-shadow:0 2px 8px rgba(0,0,0,.06); position:sticky; top:88px; }
+    
+    /* ── Forest Green Theme ── */
+    :root {
+      --forest-green: #1B4332;
+      --premium-cream: #FDFBF7;
+    }
+    .text-forest { color: var(--forest-green); }
+    .bg-forest { background-color: var(--forest-green); }
+    .product-card-premium {
+      background: var(--premium-cream) !important;
+      border: none !important;
+      border-radius: 2rem !important;
+      transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .product-card-premium:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(27, 67, 50, 0.1) !important;
+    }
+    .product-image-premium {
+      border-radius: 24px;
+      margin: 12px;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      width: calc(100% - 24px);
+    }
+    .btn-cart-premium {
+      background: var(--forest-green);
+      color: white;
+      border-radius: 9999px;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 700;
+      transition: opacity 0.2s;
+      margin-top: auto;
+    }
+    .btn-cart-premium:hover {
+      opacity: 0.9;
+    }
   </style>
 </head>
 <body class="bg-background">
@@ -215,7 +259,7 @@
   'use strict';
 
   /* ══ CONSTANTS ══════════════════════════════════════════════════════ */
-  const API  = window.EAGRI_API_BASE || window.location.origin;
+  const API  = window.EAGRI_API_BASE || ((window.location.protocol === 'file:' || window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) ? 'http://localhost:5000' : window.location.origin);
   const FB   = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"><rect width="400" height="400" fill="%23f3f4f6"/><path d="M150 150h100v100H150z" fill="%23d1d5db"/><path d="M100 250l50-50 50 50 50-50 50 50" fill="none" stroke="%239ca3af" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="250" cy="150" r="20" fill="%239ca3af"/></svg>';
   const PER_PAGE = 12;
   const WISH_KEY = 'eagri_wishlist';
@@ -233,10 +277,27 @@
   function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function getWishlist() { return readLS(WISH_KEY, []); }
   function isWished(id) { return getWishlist().includes(id); }
-  function toggleWish(id) {
+  async function toggleWish(id) {
+    const token = window.EAgri?.getAuthToken ? window.EAgri.getAuthToken() : '';
+    const user  = window.EAgri?.getUser ? window.EAgri.getUser() : null;
+    
+    // Local state toggle
     let w = getWishlist();
-    w.includes(id) ? (w = w.filter(x=>x!==id)) : w.push(id);
+    const isW = w.includes(id);
+    isW ? (w = w.filter(x=>x!==id)) : w.push(id);
     writeLS(WISH_KEY, w);
+
+    if (token && user && user.role === 'consumer') {
+      try {
+        const method = isW ? 'DELETE' : 'POST';
+        await fetch(`${API}/api/consumers/me/wishlist/${id}`, {
+          method,
+          headers: { 'x-auth-token': token }
+        });
+      } catch (err) {
+        console.error('Wishlist sync error:', err);
+      }
+    }
   }
 
   /* ══ RECENTLY VIEWED (REMOVED) ════════════════════════════════════════════════ */
@@ -262,6 +323,9 @@
     if (f.sort)     p.set('sort', f.sort);
     if (f.farmer)   p.set('farmer', f.farmer);
     if (f.location) p.set('location', f.location);
+    if (f.minPrice > 0) p.set('minPrice', f.minPrice);
+    const maxPEl = document.getElementById('max-price');
+    if (maxPEl && f.maxPrice < parseFloat(maxPEl.max)) p.set('maxPrice', f.maxPrice);
     if (currentPage > 1) p.set('page', currentPage);
     const qs = p.toString();
     history.replaceState(null,'', qs ? ('?'+qs) : location.pathname);
@@ -274,6 +338,8 @@
       sort:     p.get('sort')||'',
       farmer:   p.get('farmer')||'',
       location: p.get('location')||'',
+      minPrice: parseFloat(p.get('minPrice'))||0,
+      maxPrice: parseFloat(p.get('maxPrice'))||Infinity,
       page:     parseInt(p.get('page'),10)||1,
     };
   }
@@ -284,25 +350,35 @@
     if (s('sort-by'))         s('sort-by').value         = u.sort;
     if (s('farmer-filter'))   s('farmer-filter').value   = u.farmer;
     if (s('location-filter')) s('location-filter').value = u.location;
+    if (s('min-price')) s('min-price').value = u.minPrice;
+    if (s('max-price') && u.maxPrice !== Infinity) s('max-price').value = u.maxPrice;
     currentPage = u.page || 1;
   }
 
   /* ══ FILTERS BUILD ══════════════════════════════════════════════════ */
   function buildFilterHTML(categories, farmers, locations, maxP) {
+    // Calculate counts
+    const catCounts = {};
+    allProducts.forEach(p => { if(p.category) { catCounts[p.category] = (catCounts[p.category]||0)+1; } });
+    const farmerCounts = {};
+    allProducts.forEach(p => { if(p.farmer) { farmerCounts[p.farmer] = (farmerCounts[p.farmer]||0)+1; } });
+    const locCounts = {};
+    allProducts.forEach(p => { if(p.farmerLocation) { locCounts[p.farmerLocation] = (locCounts[p.farmerLocation]||0)+1; } });
+    
     const catOpts = ['<option value="">All Categories</option>',
-      ...categories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`)].join('');
+      ...categories.map(c=>`<option value="${esc(c)}">${esc(c)} (${catCounts[c]||0})</option>`)].join('');
     const farmerOpts = ['<option value="">All Farmers</option>',
-      ...farmers.map(f=>`<option value="${esc(f)}">${esc(f)}</option>`)].join('');
+      ...farmers.map(f=>`<option value="${esc(f)}">${esc(f)} (${farmerCounts[f]||0})</option>`)].join('');
     const locOpts = ['<option value="">All Locations</option>',
-      ...locations.map(l=>`<option value="${esc(l)}">${esc(l)}</option>`)].join('');
+      ...locations.map(l=>`<option value="${esc(l)}">${esc(l)} (${locCounts[l]||0})</option>`)].join('');
     const safeMax = isFinite(maxP) ? maxP : 2000;
     return `
       <div class="mb-4">
-        <label class="filter-label">Category</label>
+        <label for="cat-filter" class="filter-label">Category</label>
         <select id="cat-filter" class="input w-full text-sm">${catOpts}</select>
       </div>
       <div class="mb-4">
-        <label class="filter-label">Price Range</label>
+        <label for="min-price" class="filter-label">Price Range</label>
         <div class="flex justify-between text-xs text-text-secondary mb-1">
           <span>₹<span id="price-min-lbl">0</span></span>
           <span>₹<span id="price-max-lbl">${safeMax}</span></span>
@@ -314,11 +390,11 @@
         </div>
       </div>
       <div class="mb-4">
-        <label class="filter-label">Farmer</label>
+        <label for="farmer-filter" class="filter-label">Farmer</label>
         <select id="farmer-filter" class="input w-full text-sm">${farmerOpts}</select>
       </div>
       <div class="mb-4">
-        <label class="filter-label">Location</label>
+        <label for="location-filter" class="filter-label">Location</label>
         <select id="location-filter" class="input w-full text-sm">${locOpts}</select>
       </div>`;
   }
@@ -429,7 +505,6 @@
     const grid = document.getElementById('products-grid');
     grid.innerHTML = Array.from({length:n},_=>`
       <div class="skeleton-card p-4">
-        <div class="skeleton w-full h-52 mb-4"></div>
         <div class="skeleton h-5 w-3/4 mb-2"></div>
         <div class="skeleton h-3 w-full mb-1"></div>
         <div class="skeleton h-3 w-2/3 mb-4"></div>
@@ -438,7 +513,7 @@
       </div>`).join('');
   }
 
-  /* ══ RENDER PRODUCTS ════════════════════════════════════════════════ */
+    /* ══ RENDER PRODUCTS ════════════════════════════════════════════════ */
   function render() {
     const grid  = document.getElementById('products-grid');
     const empty = document.getElementById('empty-state');
@@ -463,6 +538,17 @@
 
     if (countBar) countBar.textContent = `Showing ${page.length} of ${total} product${total!==1?'s':''}`;
 
+    // Error state
+    if (window.catalogLoadError) {
+      grid.innerHTML = `<div class="col-span-full text-center py-12">
+        <svg class="w-16 h-16 mx-auto mb-4 text-error opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        <p class="text-error font-medium mb-3">Failed to load products</p>
+        <button onclick="window.catalogLoadError=null;init();" class="btn btn-primary">Try Again</button>
+      </div>`;
+      pagEl.innerHTML = '';
+      return;
+    }
+
     if (!total) {
       grid.innerHTML='';
       empty.classList.remove('hidden');
@@ -476,61 +562,75 @@
       const detUrl  = 'product_details.html?id='+encodeURIComponent(p.id);
       const wished  = isWished(p.id);
       const stars   = renderStars(p.avgRating||0);
-      const badge   = p.badge ? `<div class="absolute bottom-2 right-2 bg-success text-on-success text-xs font-bold px-2 py-0.5 rounded-full">${esc(p.badge)}</div>` : '';
+      const badge   = p.badge ? `<div class="absolute top-5 right-5 bg-success text-on-success text-xs font-bold px-3 py-1 rounded-full z-10">${esc(p.badge)}</div>` : '';
+      
+      // Stock status indicator
+      const stock = p.stock || 0;
+      let stockBadge = '';
+      if (stock === 0) {
+        stockBadge = `<div class="absolute top-5 left-5 bg-error text-white text-xs font-bold px-2 py-1 rounded-full z-10">Out of Stock</div>`;
+      } else if (stock <= 10) {
+        stockBadge = `<div class="absolute top-5 left-5 bg-warning text-white text-xs font-bold px-2 py-1 rounded-full z-10">Only ${stock} left</div>`;
+      }
+      
+      // Stock class for button
+      const stockClass = stock === 0 ? 'opacity-50 cursor-not-allowed' : '';
+      
       return `
-        <div class="card group cursor-pointer product-card relative flex flex-col h-full" data-url="${esc(detUrl)}" data-product-id="${id}" tabindex="0" style="transition:all .3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid var(--border); overflow: hidden;">
-          <div class="relative overflow-hidden flex-shrink-0 aspect-square" style="background: #f9fafb;">
-            <img src="${esc(p.image)}" alt="${esc(p.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" onerror="this.src='${FB}';this.onerror=null;">
+        <div class="product-card-premium group cursor-pointer relative flex flex-col h-full p-5 pt-3" data-url="${esc(detUrl)}" data-product-id="${id}" tabindex="0">
+          <div class="relative overflow-hidden w-full mb-2">
+            <img src="${esc(p.image)}" alt="${esc(p.name)}" class="product-image-premium group-hover:scale-105 transition-transform duration-700" style="margin:0; width:100%;" loading="lazy" onerror="this.src=FB;this.onerror=null;">
             ${badge}
-            <button class="heart-btn${wished?' active':''}" data-id="${id}" aria-label="Wishlist" title="Add to Wishlist">
+            ${stockBadge}
+            <button class="heart-btn !top-3 !left-3${wished?' active':''}" data-id="${id}" aria-label="Wishlist" title="Add to Wishlist">
               <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"/></svg>
             </button>
-            <a href="https://wa.me/?text=${encodeURIComponent('Check out '+p.name+' on E-Agri: '+location.origin+'/pages/'+detUrl)}" target="_blank" rel="noopener" class="share-btn" aria-label="Share on WhatsApp" title="Share on WhatsApp" onclick="event.stopPropagation()">
-              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            </a>
-            <button class="qv-hover-btn" data-qv="${id}">Quick View</button>
+            <button class="qv-hover-btn quick-view-btn" data-id="${id}">Quick View</button>
           </div>
-          <div class="flex-1 flex flex-col p-4">
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-text-tertiary bg-surface-elevated px-1.5 py-0.5 rounded">${esc(p.category)}</span>
-              <div class="flex items-center gap-0.5">${stars}</div>
+          <div class="flex-1 flex flex-col">
+            <h3 class="text-2xl font-bold text-forest mb-2">${esc(p.name)}</h3>
+            <p class="text-text-secondary text-sm mb-4 line-clamp-1">${esc(p.description || p.category || '')}</p>
+            
+            <div class="flex items-baseline gap-1 mb-4">
+              <span class="text-3xl font-black text-forest">₹${esc(p.price)}</span>
+              <span class="text-sm text-text-tertiary font-medium">/kg</span>
             </div>
-            <h3 class="text-sm font-bold text-primary mb-1 line-clamp-2 leading-tight h-10">${esc(p.name)}</h3>
-            <div class="flex items-center gap-1 mb-2">
-              <svg class="w-3 h-3 text-text-tertiary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-              <span class="text-[11px] text-text-secondary truncate">${esc(p.farmer||'Farmer')}</span>
-              ${p.farmerLocation ? `<span class="text-[11px] text-text-tertiary">· ${esc(p.farmerLocation)}</span>` : ''}
+
+            <div class="flex items-center gap-2 mb-6 text-text-secondary">
+              <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span class="text-sm font-medium line-clamp-2">Sold by: ${esc(p.farmer||'Farmer')}${p.farmerLocation ? ', ' + esc(p.farmerLocation) : ''}</span>
             </div>
-            <div class="flex items-baseline gap-1 mb-3">
-              <span class="text-lg font-black text-primary">₹${esc(p.price)}</span>
-              <span class="text-[10px] text-text-tertiary font-medium">/ kg</span>
-              ${(parseInt(p.stock,10)||0) <= 0 
-                ? '<span class="ml-auto text-[10px] text-error font-bold uppercase tracking-tighter">Sold Out</span>' 
-                : `<span class="ml-auto text-[10px] text-success font-bold uppercase tracking-tighter">In Stock</span>`}
+            <div class="mt-auto">
+              <button class="btn-cart-premium w-full add-to-cart-btn ${stockClass}" data-product-id="${id}" ${stock === 0 ? 'disabled' : ''}>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <span>Add to Cart</span>
+              </button>
             </div>
-            <button type="button" class="btn btn-primary w-full add-to-cart-btn text-xs py-2 mt-auto shadow-sm hover:shadow-md transition-shadow" data-product-id="${id}">Add to Cart</button>
           </div>
         </div>`;
     }).join('');
 
     // event: add to cart
     grid.querySelectorAll('.add-to-cart-btn').forEach(btn=>{
-      btn.onclick = e=>{ e.preventDefault(); e.stopPropagation(); addToCart(btn.dataset.productId); };
+      btn.addEventListener('click', e => {
+        e.preventDefault(); 
+        e.stopPropagation(); 
+        if (btn.disabled) return;
+        addToCart(btn.dataset.productId); 
+      });
     });
     // event: wishlist
     grid.querySelectorAll('.heart-btn').forEach(btn=>{
       btn.onclick = e=>{ e.preventDefault(); e.stopPropagation(); toggleWish(btn.dataset.id); btn.classList.toggle('active'); };
     });
     // event: quick view
-    grid.querySelectorAll('[data-qv]').forEach(btn=>{
-      btn.onclick = e=>{ e.preventDefault(); e.stopPropagation(); openQV(btn.dataset.qv); };
+    grid.querySelectorAll('.quick-view-btn').forEach(btn=>{
+      btn.onclick = e=>{ e.preventDefault(); e.stopPropagation(); openQV(btn.dataset.id); };
     });
     // event: card navigate
-    grid.querySelectorAll('.product-card').forEach(card=>{
+    grid.querySelectorAll('.product-card-premium').forEach(card=>{
       card.onclick = e=>{
-        if (e.target.closest('.add-to-cart-btn,.heart-btn,.share-btn,[data-qv]')) return;
-        const p = allProducts.find(x=>x.id===card.dataset.productId);
-        if (p) addToRecent(p);
+        if (e.target.closest('.add-to-cart-btn,.heart-btn,.share-btn,.quick-view-btn')) return;
         window.location.href = card.dataset.url;
       };
       card.onkeydown = e=>{
@@ -572,14 +672,23 @@
 
   /* ══ ADD TO CART ════════════════════════════════════════════════════ */
   function addToCart(id) {
-    const p = allProducts.find(x=>x.id===id);
-    if (p && window.EAgri) {
-      window.EAgri.addToCart(p,1);
+    if (!window.EAgri) {
+      console.error('window.EAgri is not defined.');
+      return;
+    }
+    const p = allProducts.find(x=>String(x.id)===String(id));
+    if (p) {
+      window.EAgri.addToCart(p, 1);
       if (window.EAgri.toast) window.EAgri.toast('Added to cart!','success');
+    } else {
+      console.warn('Product not found in allProducts:', id);
     }
   }
 
   /* ══ QUICK VIEW ═════════════════════════════════════════════════════ */
+  let qvFocusableEls = [];
+  let qvPreviousActive = null;
+  
   function openQV(id) {
     const p = allProducts.find(x=>x.id===id);
     if (!p) return;
@@ -591,16 +700,12 @@
     const farmHarvest = p.farmingDetails?.harvestDate || '';
     const farmOrganic = p.farmingDetails?.organicCertified || false;
     content.innerHTML = `
-      <div class="w-full sm:w-1/2 bg-gray-50" style="min-height:220px;">
-        <img src="${esc(p.image)}" alt="${esc(p.name)}" class="w-full h-full object-cover" style="max-height:340px;" onerror="this.src='${FB}';this.onerror=null;" loading="lazy">
-      </div>
-      <div class="w-full sm:w-1/2 p-6 flex flex-col justify-between">
+      <div class="w-full p-6 flex flex-col justify-between">
         <div>
           <span class="text-xs font-bold uppercase tracking-wide text-text-secondary">${esc(p.category)}</span>
           <h2 class="text-2xl font-heading font-bold text-primary mt-1 mb-2">${esc(p.name)}</h2>
-          <div class="flex items-center gap-2 mb-3">${renderStars(p.avgRating||0)}<span class="text-sm text-text-secondary">${p.reviewCount||0} reviews</span></div>
-          <p class="text-3xl font-bold text-primary mb-1">₹${esc(p.price)}<span class="text-base font-normal text-text-secondary">/kg</span></p>
-          <p class="text-sm text-text-secondary mb-4">${esc(p.description)}</p>
+          <p class="text-3xl font-bold text-primary mb-1 mt-3">₹${esc(p.price)}<span class="text-base font-normal text-text-secondary">/kg</span></p>
+          <p class="text-sm text-text-secondary mb-4 mt-2">${esc(p.description)}</p>
           <div class="bg-surface-elevated rounded-lg px-3 py-2 mb-4 text-sm space-y-1">
             <p><span class="font-semibold text-text-secondary">Farmer:</span> ${esc(p.farmer)}</p>
             ${p.farmerId ? `<p><span class="font-semibold text-text-secondary">Farmer ID:</span> <code class="text-[11px] bg-surface px-1 rounded">${esc(p.farmerId)}</code></p>` : ''}
@@ -612,21 +717,46 @@
           </div>
         </div>
         <div class="flex gap-3">
-          <button class="btn btn-primary flex-1 qv-atc" data-id="${esc(p.id)}">Add to Cart</button>
-          <a href="product_details.html?id=${encodeURIComponent(p.id)}" class="btn btn-outline flex-shrink-0">View Full</a>
+          <button class="btn btn-primary flex-1 qv-atc bg-forest text-white radius-full" data-id="${esc(p.id)}">Add to Cart</button>
+          <a href="product_details.html?id=${encodeURIComponent(p.id)}" class="btn btn-outline flex-shrink-0 border-forest text-forest radius-full">View Full Details</a>
         </div>
       </div>`;
     modal.classList.add('open');
     document.body.style.overflow='hidden';
+    
+    // Focus management
+    qvPreviousActive = document.activeElement;
+    qvFocusableEls = content.querySelectorAll('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (qvFocusableEls.length) qvFocusableEls[0].focus();
+    
     content.querySelector('.qv-atc')?.addEventListener('click',()=>{ addToCart(p.id); closeQV(); });
   }
+  
   function closeQV() {
     document.getElementById('qv-modal').classList.remove('open');
     document.body.style.overflow='';
+    if (qvPreviousActive) qvPreviousActive.focus();
   }
+  
+  function trapQVFocus(e) {
+    if (!qvFocusableEls.length) return;
+    const first = qvFocusableEls[0];
+    const last = qvFocusableEls[qvFocusableEls.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+  
   document.getElementById('qv-close').addEventListener('click', closeQV);
   document.getElementById('qv-overlay').addEventListener('click', closeQV);
-  document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeQV(); });
+  document.addEventListener('keydown', e=>{ 
+    if(e.key==='Escape') closeQV(); 
+    if(e.key==='Tab' && document.getElementById('qv-modal').classList.contains('open')) trapQVFocus(e);
+  });
 
   /* ══ MOBILE DRAWER ══════════════════════════════════════════════════ */
   function openDrawer() { document.getElementById('filter-drawer').classList.add('open'); document.body.style.overflow='hidden'; }
@@ -683,7 +813,18 @@
     showSkeletons(8);
     // load products
     if (window.EAgri) {
-      try { allProducts = await window.EAgri.getProducts(); } catch(_){ allProducts=[]; }
+      try { 
+        allProducts = await window.EAgri.getProducts(); 
+        if (!allProducts) {
+          window.catalogLoadError = true;
+        }
+      } catch(err){ 
+        console.error('Product load error:', err);
+        window.catalogLoadError = true;
+        allProducts = [];
+      }
+    } else {
+      window.catalogLoadError = true;
     }
     // compute avg rating from reviews if available
     allProducts = allProducts.map(p=>({

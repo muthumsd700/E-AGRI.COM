@@ -38,7 +38,7 @@ router.get('/profile', authMiddleware, async (req, res) => {
 
 router.put('/profile', authMiddleware, async (req, res) => {
     try {
-        const { name, phone, address, addresses, defaultAddressId, profilePhoto, experience, farmSize } = req.body;
+        const { name, phone, email, address, addresses, defaultAddressId, profilePhoto, experience, farmSize } = req.body;
         
         const user = await User.findById(req.user.id);
         if (!user) {
@@ -47,10 +47,20 @@ router.put('/profile', authMiddleware, async (req, res) => {
 
         if (name) user.name = name;
         if (phone) user.phone = phone;
+        if (email) {
+            const existing = await User.findOne({ email });
+            if (existing && existing.id !== user.id) {
+                return res.status(400).json({ message: 'Email already in use' });
+            }
+            user.email = email;
+        }
         if (address) user.address = address;
         if (profilePhoto !== undefined) user.profilePhoto = profilePhoto;
-        if (experience !== undefined && user.role === 'farmer') user.experience = experience;
-        if (farmSize !== undefined && user.role === 'farmer') user.farmSize = farmSize;
+        
+        const userRole = (user.role || '').toLowerCase();
+        if (experience !== undefined && userRole === 'farmer') user.experience = experience;
+        if (farmSize !== undefined && userRole === 'farmer') user.farmSize = farmSize;
+
 
         if (Array.isArray(addresses)) {
             user.addresses = addresses;

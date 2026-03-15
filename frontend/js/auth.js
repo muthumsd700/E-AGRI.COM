@@ -150,6 +150,7 @@
         // rememberMe defaults to false if not provided
         saveSession: function(userObj, token, rememberMe) {
             var data = JSON.stringify({
+                id: userObj.id,
                 name: userObj.name,
                 email: userObj.email,
                 role: userObj.role,

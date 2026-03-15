@@ -52,24 +52,24 @@
                         src=""
                         alt="Farmer profile photo" class="w-20 h-20 rounded-full object-cover border border-border hidden">
                     <div>
-                        <p id="profile-name" class="text-xl font-semibold text-primary"></p>
-                        <p id="profile-location" class="text-text-secondary"></p>
-                        <p id="profile-tagline" class="text-sm text-text-tertiary"></p>
+                        <p id="profile-name" class="text-xl font-semibold text-primary">Loading...</p>
+                        <p id="profile-location" class="text-text-secondary">Loading...</p>
+                        <p id="profile-tagline" class="text-sm text-text-tertiary">Loading...</p>
                     </div>
                 </div>
 
                 <div class="space-y-3 mb-6">
                     <p class="text-sm">
                         <span class="font-medium text-primary">Phone:</span>
-                        <span id="profile-phone"></span>
+                        <span id="profile-phone">Loading...</span>
                     </p>
                     <p class="text-sm">
                         <span class="font-medium text-primary">Experience:</span>
-                        <span id="profile-experience"></span>
+                        <span id="profile-experience">Loading...</span>
                     </p>
                     <p class="text-sm">
                         <span class="font-medium text-primary">Farm Size:</span>
-                        <span id="profile-farm-size"></span>
+                        <span id="profile-farm-size">Loading...</span>
                     </p>
                 </div>
 
@@ -162,40 +162,6 @@
                         No orders yet.
                     </div>
                 </div>
-
-                <div class="card" id="farmer-earnings-section">
-                    <h2 class="text-2xl font-heading font-semibold text-primary mb-4">Profit & Earnings</h2>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                        <div class="bg-surface-elevated rounded-lg p-4 text-center">
-                            <p class="text-xs text-text-secondary uppercase tracking-wider mb-1">Total Orders</p>
-                            <p id="earn-total-orders" class="text-2xl font-bold text-primary">0</p>
-                        </div>
-                        <div class="bg-surface-elevated rounded-lg p-4 text-center">
-                            <p class="text-xs text-text-secondary uppercase tracking-wider mb-1">Total Sales</p>
-                            <p id="earn-total-sales" class="text-2xl font-bold text-primary">0 kg</p>
-                        </div>
-                        <div class="bg-surface-elevated rounded-lg p-4 text-center">
-                            <p class="text-xs text-text-secondary uppercase tracking-wider mb-1">Revenue</p>
-                            <p id="earn-total-revenue" class="text-2xl font-bold text-primary">₹0</p>
-                        </div>
-                        <div class="bg-surface-elevated rounded-lg p-4 text-center">
-                            <p class="text-xs text-text-secondary uppercase tracking-wider mb-1">Est. Profit</p>
-                            <p id="earn-est-profit" class="text-2xl font-bold text-success">₹0</p>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-surface-elevated rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <h4 class="text-lg font-heading font-semibold text-primary">Monthly Revenue</h4>
-                        </div>
-                        <div class="w-full h-64 flex items-center justify-center text-text-secondary">
-                            <svg id="farmer-revenue-chart" class="w-full h-64" viewBox="0 0 800 256" xmlns="http://www.w3.org/2000/svg" role="img"
-                                aria-label="Monthly revenue chart">
-                                <text x="400" y="128" text-anchor="middle" fill="#6B6B6B">Loading chart...</text>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
             </section>
         </div>
 
@@ -229,7 +195,7 @@
                             <input type="checkbox" id="edit-product-availability" class="accent-primary" checked>
                             <span class="text-sm font-medium text-primary">Available</span></label></div>
                     <div>
-                        <label class="text-sm font-medium text-primary">Product Image</label>
+                        <label for="edit-product-file" class="text-sm font-medium text-primary">Product Image</label>
                         <div class="mt-1 flex items-center gap-4">
                             <div id="edit-product-avatar" class="w-16 h-16 rounded-lg bg-surface-elevated flex items-center justify-center overflow-hidden border border-border">
                                 <img id="edit-product-preview" src="" alt="Preview" class="w-full h-full object-cover hidden">
@@ -339,12 +305,6 @@
             try {
                 productsList.innerHTML = '<p class="text-text-secondary col-span-2">Loading products...</p>';
                 const products = window.EAgri ? await window.EAgri.getFarmerProducts() : [];
-                
-                // Sync to localStorage so product catalog can access them when server is down
-                if (products.length > 0) {
-                    localStorage.setItem('farmer_dashboard_products', JSON.stringify(products));
-                }
-                
                 productCount.textContent = products.length + " product" + (products.length === 1 ? "" : "s");
 
                 if (products.length === 0) {
@@ -525,10 +485,14 @@
         /* ===============================
            LOAD PROFILE
         =================================*/
-        async function loadProfile() {
+        function loadProfile() {
             if (!window.EAgri) return;
             try {
-                const profile = await window.EAgri.getFarmerProfile();
+                const user = window.EAgri.getUser() || {};
+                const profile = window.EAgri.getFarmerProfile() || {};
+                
+                const mergedData = { ...profile, ...user };
+
                 const nameEl = document.getElementById('profile-name');
                 const locationEl = document.getElementById('profile-location');
                 const phoneEl = document.getElementById('profile-phone');
@@ -536,14 +500,33 @@
                 const sizeEl = document.getElementById('profile-farm-size');
                 const tagEl = document.getElementById('profile-tagline');
                 const imgEl = document.getElementById('profile-image');
-                if (nameEl) nameEl.textContent = profile.name || 'Farmer';
-                if (locationEl) locationEl.textContent = profile.location || 'India';
-                if (phoneEl) phoneEl.textContent = profile.phone || 'Not provided';
-                if (expEl) expEl.textContent = profile.experience || 'Not specified';
-                if (sizeEl) sizeEl.textContent = profile.farmSize || 'Not specified';
-                if (tagEl) tagEl.textContent = profile.tagline || '';
-                if (imgEl && profile.image && typeof profile.image === 'string') {
-                    imgEl.src = profile.image;
+
+                if (nameEl) nameEl.textContent = mergedData.name || 'Not provided';
+                if (locationEl) locationEl.textContent = mergedData.location || 'Not provided';
+                if (phoneEl) phoneEl.textContent = mergedData.phone || 'Not provided';
+                
+                if (expEl) {
+                    let exp = mergedData.experience;
+                    if (!exp) {
+                        expEl.textContent = 'Not provided';
+                    } else {
+                        expEl.textContent = String(exp).toLowerCase().includes('year') ? exp : exp + ' years';
+                    }
+                }
+                
+                if (sizeEl) {
+                    let size = mergedData.farmSize;
+                    if (!size) {
+                        sizeEl.textContent = 'Not provided';
+                    } else {
+                        sizeEl.textContent = String(size).toLowerCase().includes('acre') ? size : size + ' acres';
+                    }
+                }
+                
+                if (tagEl) tagEl.textContent = mergedData.tagline || 'Farmer';
+
+                if (imgEl && mergedData.image && typeof mergedData.image === 'string') {
+                    imgEl.src = mergedData.image;
                     imgEl.classList.remove('hidden');
                 } else if (imgEl) {
                     imgEl.classList.add('hidden');
@@ -595,12 +578,10 @@
                         <div class="flex flex-wrap items-center gap-3 justify-between pt-2 border-t border-border mt-2">
                             <span class="text-xs px-3 py-1 rounded-full bg-surface-elevated text-text-secondary capitalize">Status: ${status}</span>
                             <div class="flex items-center gap-2">
-                                <select class="input text-sm h-10 order-status-select bg-white border-border">
+                                <select class="input text-sm h-8 order-status-select bg-white border-border">
                                     <option value="pending" ${status === 'pending' ? 'selected' : ''}>Pending</option>
                                     <option value="confirmed" ${status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
-                                    <option value="packed" ${status === 'packed' ? 'selected' : ''}>Packed</option>
                                     <option value="shipped" ${status === 'shipped' ? 'selected' : ''}>Shipped</option>
-                                    <option value="out_for_delivery" ${status === 'out_for_delivery' ? 'selected' : ''}>Out for Delivery</option>
                                     <option value="delivered" ${status === 'delivered' ? 'selected' : ''}>Delivered</option>
                                 </select>
                                 <button type="button" class="btn btn-outline btn-sm h-8 px-3 update-order-status">Update</button>
@@ -624,7 +605,6 @@
                             await window.EAgri.updateOrderStatus(id, status);
                             if (window.EAgri.toast) window.EAgri.toast('Order updated!', 'success');
                             renderFarmerOrders();
-                            renderFarmerEarnings(); // Update earnings when order status changes
                         } catch (err) {
                             if (window.EAgri.toast) window.EAgri.toast(err.message, 'error');
                         } finally {
@@ -633,73 +613,12 @@
                         }
                     });
                 });
-            } catch (err) { }
-        }
-
-        /* ===============================
-           RENDER FARMER EARNINGS (async)
-        =================================*/
-        async function renderFarmerEarnings() {
-            if (!window.EAgri || !window.EAgri.getFarmerEarnings) return;
-            try {
-                const data = await window.EAgri.getFarmerEarnings();
-                
-                document.getElementById('earn-total-orders').textContent = data.totalOrders || 0;
-                document.getElementById('earn-total-sales').textContent = (data.totalSales || 0) + ' kg';
-                document.getElementById('earn-total-revenue').textContent = '₹' + (data.revenue || 0).toLocaleString();
-                document.getElementById('earn-est-profit').textContent = '₹' + (data.estimatedProfit || 0).toLocaleString();
-                
-                const svg = document.getElementById('farmer-revenue-chart');
-                if (!svg) return;
-                
-                if (!data.monthlyRevenue || data.monthlyRevenue.length === 0) {
-                    svg.innerHTML = '<text x="400" y="128" text-anchor="middle" fill="#6B6B6B">No revenue data available</text>';
-                    return;
-                }
-                
-                const chartData = data.monthlyRevenue.map(m => m.revenue || 0);
-                const labels = data.monthlyRevenue.map(m => m.month || '');
-                const maxValue = Math.max(...chartData, 1000);
-                
-                const chartHeight = 200;
-                const chartWidth = 720;
-                const barWidth = Math.min(60, chartWidth / Math.max(chartData.length, 1) - 20);
-                const gap = (chartWidth - barWidth * chartData.length) / Math.max(chartData.length - 1, 1);
-                
-                let bars = '';
-                chartData.forEach((value, i) => {
-                    const height = (value / maxValue) * chartHeight;
-                    const x = 60 + i * (barWidth + gap);
-                    const y = 220 - height;
-                    const color = i === chartData.length - 1 ? '#FF9933' : '#2D5016';
-                    bars += `<rect x="${x}" y="${y}" width="${barWidth}" height="${height}" fill="${color}" rx="4" />`;
-                });
-                
-                const step = maxValue > 5000 ? 2000 : 1000;
-                const yValues = [];
-                for (let i = maxValue; i >= 0; i -= step) yValues.push(i);
-                if (yValues[yValues.length - 1] !== 0) yValues.push(0);
-                
-                const yLabels = yValues.map((val, i) => {
-                    const yPos = 25 + (i * ((200 - 25) / Math.max(yValues.length - 1, 1)));
-                    return `<text x="40" y="${yPos}" font-size="12" fill="#6B6B6B" text-anchor="end">₹${val >= 1000 ? (val/1000)+'k' : val}</text>`;
-                }).join('');
-                
-                const xLabels = labels.map((m, i) => 
-                    `<text x="${60 + i * (barWidth + gap) + barWidth/2}" y="245" font-size="12" fill="#6B6B6B" text-anchor="middle">${m.substring(0, 3)}</text>`
-                ).join('');
-                
-                svg.innerHTML = `
-                    <line x1="60" y1="20" x2="60" y2="220" stroke="#E8E4D6" stroke-width="1" />
-                    <line x1="60" y1="220" x2="780" y2="220" stroke="#E8E4D6" stroke-width="2" />
-                    ${yLabels}
-                    ${bars}
-                    ${xLabels}
-                `;
             } catch (err) {
-                console.error("Failed to load generic revenue:", err);
+                console.error('Failed to render orders', err);
+                listEl.innerHTML = '<p class="text-error">Error loading orders.</p>';
             }
         }
+
         /* ===============================
            INITIAL LOAD
         =================================*/
@@ -707,11 +626,5 @@
             loadProfile();
             renderProducts();
             renderFarmerOrders();
-            renderFarmerEarnings();
-            
-            // Sync with other tabs
-            window.addEventListener('storage', (e) => {
-                if (e.key === 'eagriOrders') renderFarmerOrders();
-            });
         }
     </script>

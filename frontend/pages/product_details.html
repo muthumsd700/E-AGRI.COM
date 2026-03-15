@@ -30,9 +30,22 @@
         .review-form textarea{width:100%;min-height:100px;padding:12px;border:2px solid var(--border);border-radius:12px;resize:vertical;font-family:inherit;font-size:.95rem;background:var(--surface)}
         .review-form textarea:focus{outline:none;border-color:var(--primary)}
         /* Product image fallback */
-        .product-img-wrap{position:relative;overflow:hidden;border-radius:16px;background:#f3f4f6}
+        .product-img-wrap{position:relative;overflow:hidden;border-radius:24px;background:#f3f4f6}
         .product-img-wrap img{width:100%;height:500px;object-fit:cover;transition:transform .3s}
         .product-img-wrap:hover img{transform:scale(1.02)}
+        
+        /* ── Forest Green Theme ── */
+        :root {
+            --forest-green: #1B4332;
+            --premium-cream: #FDFBF7;
+        }
+        .text-forest { color: var(--forest-green); }
+        .bg-forest { background-color: var(--forest-green); }
+        .text-primary { color: var(--forest-green); }
+        .btn-primary { background-color: var(--forest-green); border-color: var(--forest-green); border-radius: 9999px; }
+        .btn-primary:hover { opacity: 0.9; }
+        .bg-primary\/5 { background-color: rgba(27, 67, 50, 0.05); }
+        .border-primary\/20 { border-color: rgba(27, 67, 50, 0.2); }
     </style>
 </head>
 <body class="bg-background">
@@ -201,6 +214,10 @@
                             <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                             Add to Cart
                         </button>
+                        <button id="buy-now-btn" class="btn btn-outline flex-1 text-lg h-14 shadow-lg hover:shadow-xl transform hover:-translate-y-1" style="border-color:var(--forest-green);color:var(--forest-green);font-weight:700;">
+                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            Buy Now
+                        </button>
                         <button id="wishlist-btn" class="wishlist-btn btn btn-outline h-14 px-6" aria-label="Add to wishlist">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                         </button>
@@ -283,17 +300,19 @@
                 <h3 class="text-xl font-heading font-semibold text-primary mb-4">Write Your Review</h3>
                 <div class="review-form">
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-text-primary mb-2">Your Rating</label>
-                        <div id="star-rating-input" class="flex gap-1">
-                            <button class="star-btn" data-rating="1">★</button>
-                            <button class="star-btn" data-rating="2">★</button>
-                            <button class="star-btn" data-rating="3">★</button>
-                            <button class="star-btn" data-rating="4">★</button>
-                            <button class="star-btn" data-rating="5">★</button>
-                        </div>
+                        <fieldset>
+                            <legend class="block text-sm font-medium text-text-primary mb-2">Your Rating</legend>
+                            <div id="star-rating-input" class="flex gap-1">
+                                <button type="button" class="star-btn" data-rating="1" aria-label="1 Star">★</button>
+                                <button type="button" class="star-btn" data-rating="2" aria-label="2 Stars">★</button>
+                                <button type="button" class="star-btn" data-rating="3" aria-label="3 Stars">★</button>
+                                <button type="button" class="star-btn" data-rating="4" aria-label="4 Stars">★</button>
+                                <button type="button" class="star-btn" data-rating="5" aria-label="5 Stars">★</button>
+                            </div>
+                        </fieldset>
                     </div>
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-text-primary mb-2">Your Review</label>
+                        <label for="review-comment" class="block text-sm font-medium text-text-primary mb-2">Your Review</label>
                         <textarea id="review-comment" placeholder="Share your experience with this product..."></textarea>
                     </div>
                     <div class="flex gap-3">

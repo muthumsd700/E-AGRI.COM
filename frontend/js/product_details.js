@@ -128,97 +128,64 @@ class EnhancedProductDetails {
     }
 
     async fetchProduct() {
+        const API_BASE = window.EAgriUtils ? window.EAgriUtils.getApiBase() :
+                       ((window.location.protocol === 'file:' || window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) ? 'http://localhost:5000' : '');
         try {
-            // Try to fetch from backend API first
-            const API_BASE = window.EAgriUtils ? window.EAgriUtils.getApiBase() : 
-                           (window.location.origin.includes('localhost') ? 'http://localhost:5000' : '');
+            // Fetch single product from backend (populated with farmer info)
             const response = await fetch(`${API_BASE}/api/products/${this.productId}`);
             if (response.ok) {
-                const product = await response.json();
-                return product;
+                const data = await response.json();
+                // API returns { success, product } for single product endpoint
+                return data.product || data;
             }
         } catch (error) {
             console.warn('API fetch failed, trying localStorage:', error);
         }
-        
+
         // Fallback to localStorage (from farmer dashboard)
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                const products = JSON.parse(localStorage.getItem('eagriProducts') || '[]');
-                const product = products.find(p => p.id == this.productId);
-                
-                if (product) {
-                    resolve(product);
-                } else {
-                    // Fallback to sample product
-                    resolve(this.getSampleProduct());
-                }
-            }, 800);
-        });
+        const products = JSON.parse(localStorage.getItem('eagriProducts') || '[]');
+        const product = products.find(p => p.id == this.productId || p._id == this.productId);
+        return product || this.getSampleProduct();
     }
 
     async fetchProductReviews() {
+        const API_BASE = window.EAgriUtils ? window.EAgriUtils.getApiBase() :
+                       ((window.location.protocol === 'file:' || window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) ? 'http://localhost:5000' : '');
+        // Show loading state in reviews section
+        const reviewsList = document.getElementById('reviews-list');
+        if (reviewsList) {
+            reviewsList.innerHTML = `
+                <div class="col-span-full flex justify-center py-8">
+                    <div class="flex flex-col items-center gap-3 text-text-secondary">
+                        <div class="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+                        <span>Loading reviews...</span>
+                    </div>
+                </div>`;
+        }
         try {
-            // If product has reviews from MongoDB, use them
-            if (this.product.reviews && this.product.reviews.length > 0) {
-                return this.product.reviews.map(review => ({
-                    id: review._id || review.id,
-                    userName: review.userName,
-                    rating: review.rating,
-                    comment: review.comment,
-                    date: review.createdAt,
-                    verified: true,
-                    helpful: Math.floor(Math.random() * 50) + 5
-                }));
+            const response = await fetch(`${API_BASE}/api/products/${this.productId}/reviews`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    // Store aggregate data for use in renderRatingSummary
+                    this.avgRating = data.avgRating;
+                    this.totalReviews = data.totalReviews;
+                    return data.reviews.map(review => ({
+                        id: review._id,
+                        userName: review.userName,
+                        rating: review.rating,
+                        comment: review.comment,
+                        date: review.createdAt,
+                        verified: true,
+                        helpful: 0
+                    }));
+                }
             }
         } catch (error) {
-            console.warn('Reviews from MongoDB not available, using sample reviews:', error);
+            console.warn('Reviews API fetch failed:', error);
         }
-        
-        // Fallback to sample reviews
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                // Enhanced reviews data
-                resolve([
-                    {
-                        id: 1,
-                        userName: "Priya Sharma",
-                        rating: 5,
-                        comment: "Excellent quality tomatoes! Very fresh and organic. The taste is amazing compared to market vegetables. Packaging was also very good.",
-                        date: "2024-03-10",
-                        verified: true,
-                        helpful: 24
-                    },
-                    {
-                        id: 2,
-                        userName: "Rahul Kumar",
-                        rating: 4,
-                        comment: "Good quality product. Delivery was on time and packaging was excellent. Will order again.",
-                        date: "2024-03-08",
-                        verified: true,
-                        helpful: 15
-                    },
-                    {
-                        id: 3,
-                        userName: "Anita Patel",
-                        rating: 5,
-                        comment: "Best organic vegetables I've ever bought! The freshness is unmatched. Definitely worth the price.",
-                        date: "2024-03-05",
-                        verified: false,
-                        helpful: 8
-                    },
-                    {
-                        id: 4,
-                        userName: "Vikram Singh",
-                        rating: 4,
-                        comment: "Good product but delivery took 3 days. Quality is great though.",
-                        date: "2024-03-02",
-                        verified: true,
-                        helpful: 6
-                    }
-                ]);
-            }, 600);
-        });
+        // Return empty array on error — do not pollute with fake data
+        return [];
     }
 
     async fetchFarmingDetails() {
@@ -246,16 +213,25 @@ class EnhancedProductDetails {
         try {
             // Try to fetch all products from backend API
             const API_BASE = window.EAgriUtils ? window.EAgriUtils.getApiBase() : 
-                           (window.location.origin.includes('localhost') ? 'http://localhost:5000' : '');
+                           ((window.location.protocol === 'file:' || window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) ? 'http://localhost:5000' : '');
             const response = await fetch(`${API_BASE}/api/products`);
             if (response.ok) {
-                const allProducts = await response.json();
-                const related = allProducts
-                    .filter(p => p.category === this.product?.category && p._id !== this.productId)
-                    .slice(0, 4);
+                const data = await response.json();
+                // API returns { success, products } OR just the array
+                const allProducts = Array.isArray(data) ? data : (data.products || []);
                 
-                if (related.length > 0) {
-                    return related;
+                if (Array.isArray(allProducts)) {
+                    const related = allProducts
+                        .filter(p => {
+                            const pId = p._id || p.id;
+                            const currentId = this.productId;
+                            return p.category === this.product?.category && pId != currentId;
+                        })
+                        .slice(0, 4);
+                    
+                    if (related.length > 0) {
+                        return related;
+                    }
                 }
             }
         } catch (error) {
@@ -265,17 +241,26 @@ class EnhancedProductDetails {
         // Fallback to localStorage
         return new Promise((resolve) => {
             setTimeout(() => {
-                const allProducts = JSON.parse(localStorage.getItem('eagriProducts') || '[]');
-                const related = allProducts
-                    .filter(p => p.category === this.product?.category && p.id != this.productId)
-                    .slice(0, 4);
+                const storageData = localStorage.getItem('eagriProducts');
+                const allProducts = JSON.parse(storageData || '[]');
                 
-                if (related.length === 0) {
-                    // Fallback to sample related products
-                    resolve(this.getSampleRelatedProducts());
-                } else {
-                    resolve(related);
+                if (Array.isArray(allProducts)) {
+                    const related = allProducts
+                        .filter(p => {
+                            const pId = p.id || p._id;
+                            const currentId = this.productId;
+                            return p.category === this.product?.category && pId != currentId;
+                        })
+                        .slice(0, 4);
+                    
+                    if (related.length > 0) {
+                        resolve(related);
+                        return;
+                    }
                 }
+                
+                // Fallback to sample related products
+                resolve(this.getSampleRelatedProducts());
             }, 700);
         });
     }
@@ -740,11 +725,14 @@ class EnhancedProductDetails {
     renderRatingSummary() {
         const starsDisplay = document.getElementById('stars-display');
         const reviewCountLabel = document.getElementById('review-count-label');
-        
-        if (this.reviews.length > 0) {
-            const avgRating = this.calculateAverageRating();
-            starsDisplay.innerHTML = this.renderStars(avgRating, true);
-            reviewCountLabel.textContent = `${this.reviews.length} review${this.reviews.length > 1 ? 's' : ''}`;
+
+        // Prefer server-computed values, fall back to client-side calculation
+        const count = this.totalReviews !== undefined ? this.totalReviews : this.reviews.length;
+        const avg = this.avgRating !== undefined ? this.avgRating : this.calculateAverageRating();
+
+        if (count > 0) {
+            starsDisplay.innerHTML = this.renderStars(avg, true);
+            reviewCountLabel.textContent = `${count} review${count > 1 ? 's' : ''} · avg ${avg}★`;
         } else {
             starsDisplay.innerHTML = this.renderStars(0, true);
             reviewCountLabel.textContent = 'No reviews yet';
@@ -781,6 +769,8 @@ class EnhancedProductDetails {
     renderFarmerInfo() {
         if (!this.product) return;
 
+        // Show loading skeleton in farmer section
+        const farmerPhoto = document.getElementById('farmer-photo');
         const farmerName = document.getElementById('farmer-name');
         const farmerLocation = document.getElementById('farmer-location');
         const farmerTagline = document.getElementById('farmer-tagline');
@@ -788,24 +778,62 @@ class EnhancedProductDetails {
         const farmSize = document.getElementById('farmer-farm-size');
         const customersServed = document.getElementById('farmer-customers');
 
-        // Handle farmer data from MongoDB (populated) or localStorage
-        const farmerNameValue = this.product.farmerName || 
-                               (this.product.farmer && this.product.farmer.name) || 
-                               this.product.farmer || 
-                               'Local Farmer';
-        
-        const farmerLocationValue = this.product.farmingDetails?.location || 
-                                  this.product.location || 
-                                  'India';
+        // Show skeleton loaders
+        [farmerName, farmerLocation, farmerTagline, farmerExperience, farmSize, customersServed].forEach(el => {
+            if (el) el.textContent = '...';
+        });
 
-        farmerName.textContent = farmerNameValue;
-        farmerLocation.textContent = farmerLocationValue;
-        farmerTagline.textContent = `Passionate ${this.product.farmingDetails?.method || this.product.farmingMethod || 'conventional'} farmer committed to providing the freshest produce directly to consumers.`;
-        
-        // Enhanced farmer statistics
-        farmerExperience.textContent = Math.floor(Math.random() * 20) + 5;
-        farmSize.textContent = `${Math.floor(Math.random() * 50) + 10} acres`;
-        customersServed.textContent = Math.floor(Math.random() * 500) + 100;
+        // Get farmerId from the product (could be populated object or bare ID)
+        const farmerId = this.product.farmerId?._id || this.product.farmerId;
+
+        if (!farmerId) {
+            this._renderFarmerFallback(this.product);
+            return;
+        }
+
+        const API_BASE = window.EAgriUtils ? window.EAgriUtils.getApiBase() :
+                       ((window.location.protocol === 'file:' || window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) ? 'http://localhost:5000' : '');
+
+        fetch(`${API_BASE}/api/farmers/${farmerId}`)
+            .then(res => res.ok ? res.json() : Promise.reject(res.status))
+            .then(data => {
+                if (!data.success) throw new Error('Farmer fetch failed');
+                const farmer = data.farmer;
+
+                if (farmerName) farmerName.textContent = farmer.name || 'Local Farmer';
+                if (farmerLocation) farmerLocation.textContent = farmer.location || this.product.location || 'India';
+                if (farmerTagline) farmerTagline.textContent = `Passionate farmer committed to providing the freshest produce directly to consumers.`;
+                if (farmerExperience) farmerExperience.textContent = farmer.experience ? `${farmer.experience} yrs` : '—';
+                if (farmSize) farmSize.textContent = farmer.farmSize || '—';
+                if (customersServed) customersServed.textContent = '500+';
+
+                // Update profile photo
+                if (farmer.profilePhoto && farmerPhoto) {
+                    farmerPhoto.innerHTML = `<img src="${farmer.profilePhoto}" alt="${farmer.name}" class="w-full h-full object-cover rounded-full" onerror="this.parentElement.innerHTML='<svg class=\'w-16 h-16 text-primary/40\' fill=\'currentColor\' viewBox=\'0 0 20 20\'><path fill-rule=\'evenodd\' d=\'M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z\' clip-rule=\'evenodd\'/></svg>'"`;
+                }
+            })
+            .catch(err => {
+                console.warn('Could not load farmer info:', err);
+                this._renderFarmerFallback(this.product);
+            });
+    }
+
+    _renderFarmerFallback(product) {
+        // Fallback: use data already embedded in the populated product
+        const embedded = product.farmerId;
+        const farmerName = document.getElementById('farmer-name');
+        const farmerLocation = document.getElementById('farmer-location');
+        const farmerTagline = document.getElementById('farmer-tagline');
+        const farmerExperience = document.getElementById('farmer-experience');
+        const farmSize = document.getElementById('farmer-farm-size');
+        const customersServed = document.getElementById('farmer-customers');
+
+        if (farmerName) farmerName.textContent = embedded?.name || product.farmerName || 'Local Farmer';
+        if (farmerLocation) farmerLocation.textContent = product.location || 'India';
+        if (farmerTagline) farmerTagline.textContent = 'Farmer committed to providing the freshest produce directly to consumers.';
+        if (farmerExperience) farmerExperience.textContent = embedded?.experience || '—';
+        if (farmSize) farmSize.textContent = embedded?.farmSize || '—';
+        if (customersServed) customersServed.textContent = '500+';
     }
 
     renderFarmingDetails() {
@@ -1237,23 +1265,35 @@ class EnhancedProductDetails {
         }
 
         try {
-            const review = {
-                id: Date.now(),
-                userName: this.currentUser.name,
+            const reviewData = {
                 rating: this.selectedRating,
-                comment: comment,
-                date: new Date().toISOString().split('T')[0],
-                verified: true,
-                helpful: 0
+                comment: comment
             };
 
-            // Simulate API call
-            await this.postReviewAPI(review);
-
-            // Add to local reviews
-            this.reviews.unshift(review);
-            this.renderReviews();
-            this.renderRatingSummary();
+            const response = await this.postReviewAPI(reviewData);
+            
+            if (response && response.review) {
+                const newReview = {
+                    id: response.review._id,
+                    userName: response.review.userName,
+                    rating: response.review.rating,
+                    comment: response.review.comment,
+                    date: response.review.createdAt,
+                    verified: true,
+                    helpful: 0
+                };
+                
+                // Add to local reviews
+                this.reviews.unshift(newReview);
+                if (this.totalReviews !== undefined) {
+                    this.totalReviews += 1;
+                }
+                const sum = this.reviews.reduce((acc, r) => acc + r.rating, 0);
+                this.avgRating = parseFloat((sum / this.reviews.length).toFixed(1));
+                
+                this.renderReviews();
+                this.renderRatingSummary();
+            }
 
             // Hide form
             document.getElementById('review-form-container').style.display = 'none';
@@ -1263,28 +1303,73 @@ class EnhancedProductDetails {
             this.showNotification('Review submitted successfully!', 'success');
         } catch (error) {
             console.error('Error submitting review:', error);
-            this.showNotification('Error submitting review', 'error');
+            this.showNotification(error.message || 'Error submitting review', 'error');
         }
     }
 
     async postReviewAPI(review) {
-        // Simulate API call - replace with real endpoint
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                console.log('Review API call:', review);
-                resolve();
-            }, 500);
+        const API_BASE = window.EAgriUtils ? window.EAgriUtils.getApiBase() :
+                       ((window.location.protocol === 'file:' || window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) ? 'http://localhost:5000' : '');
+        
+        const userDataStr = localStorage.getItem('eagriUser') || sessionStorage.getItem('eagriUser');
+        let token = null;
+        if (userDataStr) {
+            try {
+                token = JSON.parse(userDataStr).token;
+            } catch(e) {}
+        }
+
+        const response = await fetch(`${API_BASE}/api/products/${this.productId}/reviews`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { 'x-auth-token': token } : {})
+            },
+            body: JSON.stringify({
+                rating: review.rating,
+                comment: review.comment
+            })
         });
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.message || 'Failed to submit review');
+        }
+        return response.json();
+    }
+
+    // BUY NOW
+    async buyNow() {
+        if (!this.currentUser) {
+            this.showNotification('Please login to buy now', 'info');
+            return;
+        }
+        if (!this.product || (this.product.stock !== undefined ? this.product.stock : this.product.quantity) === 0) {
+            this.showNotification('Product is out of stock', 'error');
+            return;
+        }
+        try {
+            await this.addToCart();
+            // Small delay so the user sees the cart-added notification before redirect
+            setTimeout(() => {
+                window.location.href = 'shopping_cart.html';
+            }, 600);
+        } catch (error) {
+            console.error('Buy Now error:', error);
+            this.showNotification('Something went wrong. Please try again.', 'error');
+        }
     }
 
     // EVENT LISTENERS
     setupEventListeners() {
         // Wishlist button
         document.getElementById('wishlist-btn')?.addEventListener('click', () => this.toggleWishlist());
-        
+
         // Add to cart button
         document.getElementById('add-to-cart-btn')?.addEventListener('click', () => this.addToCart());
-        
+
+        // Buy Now button
+        document.getElementById('buy-now-btn')?.addEventListener('click', () => this.buyNow());
+
         // Review form
         this.setupReviewForm();
 

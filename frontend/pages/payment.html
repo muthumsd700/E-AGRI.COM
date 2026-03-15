@@ -55,7 +55,7 @@
                             <img src="https://img.icons8.com/color/48/000000/bank-building.png" alt="Bank" class="w-8 h-8">
                         </div>
                         <div class="payment-option-body px-4 pb-6 pt-2 border-t border-border">
-                            <label class="block text-sm font-medium text-text-secondary mb-2">Select your Bank</label>
+                            <label for="bank-select" class="block text-sm font-medium text-text-secondary mb-2">Select your Bank</label>
                             <select id="bank-select" class="input w-full md:w-2/3 mb-4">
                                 <option value="" disabled selected>Choose a Bank...</option>
                                 <option value="SBI">State Bank of India</option>
@@ -85,7 +85,7 @@
                         <div class="payment-option-body px-4 pb-6 pt-2 border-t border-border">
                             <form id="card-form" onsubmit="event.preventDefault(); processPayment('card');" class="max-w-md space-y-4 pt-2">
                                 <div>
-                                    <label class="block text-sm font-medium text-text-secondary mb-1">Card Number</label>
+                                    <label for="card-number" class="block text-sm font-medium text-text-secondary mb-1">Card Number</label>
                                     <div class="relative">
                                         <input type="text" id="card-number" class="input w-full pl-10 tracking-widest" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" required>
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -99,16 +99,16 @@
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-text-secondary mb-1">Valid Thru</label>
+                                        <label for="card-expiry" class="block text-sm font-medium text-text-secondary mb-1">Valid Thru</label>
                                         <input type="text" id="card-expiry" class="input w-full text-center tracking-widest" placeholder="MM/YY" maxlength="5" required>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-text-secondary mb-1">CVV</label>
+                                        <label for="card-cvv" class="block text-sm font-medium text-text-secondary mb-1">CVV</label>
                                         <input type="password" id="card-cvv" class="input w-full text-center tracking-widest" placeholder="•••" maxlength="4" required>
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-text-secondary mb-1">Name on Card</label>
+                                    <label for="card-name" class="block text-sm font-medium text-text-secondary mb-1">Name on Card</label>
                                     <input type="text" id="card-name" class="input w-full uppercase" placeholder="JOHN DOE" required>
                                 </div>
                                 <div class="flex items-center gap-2 mt-2">
@@ -134,7 +134,7 @@
                             <img src="https://img.icons8.com/color/48/000000/bhim-upi.png" class="w-10 h-10" alt="UPI">
                         </div>
                         <div class="payment-option-body px-4 pb-6 pt-2 border-t border-border">
-                            <label class="block text-sm font-medium text-text-secondary mb-2">Enter your UPI ID</label>
+                            <label for="upi-id" class="block text-sm font-medium text-text-secondary mb-2">Enter your UPI ID</label>
                             <div class="flexflex-col sm:flex-row gap-4 max-w-md">
                                 <input type="text" id="upi-id" class="input w-full mb-4 sm:mb-0" placeholder="username@upi">
                                 <button class="btn btn-primary w-full sm:w-auto whitespace-nowrap" onclick="processPayment('upi')">Verify & Pay</button>

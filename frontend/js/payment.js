@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCardFormatting();
 });
 
-function loadOrderSummary() {
+async function loadOrderSummary() {
     // If there is an existing cart and app.js is loaded
     if (window.EAgri && window.EAgri.getCart) {
         const cart = window.EAgri.getCart();
@@ -38,10 +38,14 @@ function loadOrderSummary() {
         document.getElementById('pay-btn-amount').textContent = '₹' + finalOrderAmount;
 
         // Try getting address
-        const cp = window.EAgri.getConsumerProfile();
-        if (cp && cp.address) {
-            document.getElementById('summary-address').textContent = cp.address;
-        } else {
+        try {
+            const cp = await window.EAgri.getConsumerProfile();
+            if (cp && cp.address) {
+                document.getElementById('summary-address').textContent = cp.address;
+            } else {
+                document.getElementById('summary-address').textContent = 'Default Address';
+            }
+        } catch (err) {
             document.getElementById('summary-address').textContent = 'Default Address';
         }
     } else {
@@ -292,7 +296,7 @@ async function completeOrderPlacement(method) {
         // 1. Get cart and address
         if (window.EAgri) {
             const cartItems = window.EAgri.getCart();
-            const cp = window.EAgri.getConsumerProfile();
+            const cp = await window.EAgri.getConsumerProfile();
             const address = cp.address || 'Standard Delivery';
 
             // 2. Persist to MongoDB

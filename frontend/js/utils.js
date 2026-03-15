@@ -4,7 +4,7 @@
  */
 
 // API Base URL detection - same logic as app.js
-const API_BASE = window.location.origin.includes('localhost') ? 'http://localhost:5000' : '';
+const API_BASE = (window.location.protocol === 'file:' || window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) ? 'http://localhost:5000' : '';
 
 /**
  * Get the API base URL for backend requests
@@ -49,7 +49,7 @@ async function apiRequest(endpoint, options = {}) {
  */
 function getAuthToken() {
     try {
-        const raw = localStorage.getItem('eagriUser');
+        const raw = localStorage.getItem('eagriUser') || sessionStorage.getItem('eagriUser');
         if (!raw) return '';
         const user = JSON.parse(raw);
         return (user && user.token) ? user.token : '';

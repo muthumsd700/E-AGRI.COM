@@ -1,15 +1,16 @@
 {
-  "short_name": "e-agri-commerce-platform",
-  "name": "e-agri-commerce-platform",
+  "short_name": "E-Agri",
+  "name": "E-Agri Commerce Platform",
+  "description": "Connecting Indian farmers directly with consumers for fresh agricultural produce.",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#2D5016",
+  "background_color": "#f8fafc"
 }
