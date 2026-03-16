@@ -58,6 +58,26 @@
     }
     @media(max-width:1023px){
       #sidebar-desktop { display:none; }
+      .product-card-premium {
+        min-height: 480px;
+      }
+    }
+    
+    @media(max-width:640px){
+      .product-card-premium {
+        min-height: 440px;
+      }
+      .product-title {
+        font-size: 1.125rem;
+        min-height: 2.2rem;
+      }
+      .product-description {
+        font-size: 0.8rem;
+        min-height: 2.4rem;
+      }
+      .product-price {
+        font-size: 1.25rem;
+      }
     }
     #sidebar-desktop { background:#fff; border-radius:1rem; padding:1.25rem; height:fit-content; box-shadow:0 2px 8px rgba(0,0,0,.06); position:sticky; top:88px; }
     
@@ -76,6 +96,7 @@
       display: flex;
       flex-direction: column;
       height: 100%;
+      min-height: 520px;
     }
     .product-card-premium:hover {
       transform: translateY(-5px);
@@ -87,6 +108,7 @@
       aspect-ratio: 1/1;
       object-fit: cover;
       width: calc(100% - 24px);
+      height: 200px;
     }
     .btn-cart-premium {
       background: var(--forest-green);
@@ -100,6 +122,62 @@
       font-weight: 700;
       transition: opacity 0.2s;
       margin-top: auto;
+    }
+    
+    /* Product content structure for consistent alignment */
+    .product-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0 12px 12px;
+    }
+    
+    .product-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--forest-green);
+      margin-bottom: 8px;
+      line-height: 1.3;
+      min-height: 2.6rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .product-description {
+      color: #6b7280;
+      font-size: 0.875rem;
+      line-height: 1.4;
+      margin-bottom: 12px;
+      min-height: 2.8rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .product-price {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--forest-green);
+      margin-bottom: 8px;
+    }
+    
+    .product-farmer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #6b7280;
+      font-size: 0.875rem;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+    
+    .product-actions {
+      margin-top: auto;
+      flex-shrink: 0;
     }
     .btn-cart-premium:hover {
       opacity: 0.9;
@@ -579,7 +657,7 @@
       return `
         <div class="product-card-premium group cursor-pointer relative flex flex-col h-full p-5 pt-3" data-url="${esc(detUrl)}" data-product-id="${id}" tabindex="0">
           <div class="relative overflow-hidden w-full mb-2">
-            <img src="${esc(p.image)}" alt="${esc(p.name)}" class="product-image-premium group-hover:scale-105 transition-transform duration-700" style="margin:0; width:100%;" loading="lazy" onerror="this.src=FB;this.onerror=null;">
+            <img src="${esc(p.image)}" alt="${esc(correctProductName(p.name))}" class="product-image-premium group-hover:scale-105 transition-transform duration-700" loading="lazy" onerror="this.src=FB;this.onerror=null;">
             ${badge}
             ${stockBadge}
             <button class="heart-btn !top-3 !left-3${wished?' active':''}" data-id="${id}" aria-label="Wishlist" title="Add to Wishlist">
@@ -587,20 +665,21 @@
             </button>
             <button class="qv-hover-btn quick-view-btn" data-id="${id}">Quick View</button>
           </div>
-          <div class="flex-1 flex flex-col">
-            <h3 class="text-2xl font-bold text-forest mb-2">${esc(p.name)}</h3>
-            <p class="text-text-secondary text-sm mb-4 line-clamp-1">${esc(p.description || p.category || '')}</p>
+          <div class="product-content">
+            <h3 class="product-title">${esc(correctProductName(p.name))}</h3>
+            <p class="product-description">${esc(p.description || p.category || '')}</p>
             
-            <div class="flex items-baseline gap-1 mb-4">
-              <span class="text-3xl font-black text-forest">₹${esc(p.price)}</span>
+            <div class="product-price">
+              ₹${esc(p.price)}
               <span class="text-sm text-text-tertiary font-medium">/kg</span>
             </div>
 
-            <div class="flex items-center gap-2 mb-6 text-text-secondary">
+            <div class="product-farmer">
               <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-              <span class="text-sm font-medium line-clamp-2">Sold by: ${esc(p.farmer||'Farmer')}${p.farmerLocation ? ', ' + esc(p.farmerLocation) : ''}</span>
+              <span class="text-sm font-medium">Sold by: ${esc(p.farmer||'Farmer')}${p.farmerLocation ? ', ' + esc(p.farmerLocation) : ''}</span>
             </div>
-            <div class="mt-auto">
+            
+            <div class="product-actions">
               <button class="btn-cart-premium w-full add-to-cart-btn ${stockClass}" data-product-id="${id}" ${stock === 0 ? 'disabled' : ''}>
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                 <span>Add to Cart</span>
@@ -639,6 +718,48 @@
     });
 
     renderPagination(totalPages);
+  }
+
+  function correctProductName(name) {
+    if (!name) return name;
+    const corrections = {
+      'Tomatomes': 'Tomatoes',
+      'Potatos': 'Potatoes',
+      'Cabbages': 'Cabbage',
+      'Carrots': 'Carrot',
+      'Onions': 'Onion',
+      'Garlics': 'Garlic',
+      'Gingers': 'Ginger',
+      'Chillis': 'Chilies',
+      'Corianders': 'Coriander',
+      'Spinaches': 'Spinach',
+      'Lettuces': 'Lettuce',
+      'Broccolis': 'Broccoli',
+      'Cauliflowers': 'Cauliflower',
+      'Capsicums': 'Capsicum',
+      'Cucumbers': 'Cucumber',
+      'Brinjals': 'Brinjal',
+      'Ladysfingers': 'Ladyfinger',
+      'Pumpkins': 'Pumpkin',
+      'Bottlegourds': 'Bottle Gourd',
+      'Ridgegourds': 'Ridge Gourd',
+      'Bittergourds': 'Bitter Gourd',
+      'Drumsticks': 'Drumstick'
+    };
+    
+    // Check for exact matches first
+    if (corrections[name]) {
+      return corrections[name];
+    }
+    
+    // Check for plural forms that should be singular
+    for (const [incorrect, correct] of Object.entries(corrections)) {
+      if (name.toLowerCase().includes(incorrect.toLowerCase())) {
+        return name.replace(new RegExp(incorrect, 'gi'), correct);
+      }
+    }
+    
+    return name;
   }
 
   function renderStars(avg) {
@@ -703,7 +824,7 @@
       <div class="w-full p-6 flex flex-col justify-between">
         <div>
           <span class="text-xs font-bold uppercase tracking-wide text-text-secondary">${esc(p.category)}</span>
-          <h2 class="text-2xl font-heading font-bold text-primary mt-1 mb-2">${esc(p.name)}</h2>
+          <h2 class="text-2xl font-heading font-bold text-primary mt-1 mb-2">${esc(correctProductName(p.name))}</h2>
           <p class="text-3xl font-bold text-primary mb-1 mt-3">₹${esc(p.price)}<span class="text-base font-normal text-text-secondary">/kg</span></p>
           <p class="text-sm text-text-secondary mb-4 mt-2">${esc(p.description)}</p>
           <div class="bg-surface-elevated rounded-lg px-3 py-2 mb-4 text-sm space-y-1">

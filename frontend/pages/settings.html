@@ -284,14 +284,15 @@
                         <div class="card card-compact">
                             <h3 class="font-semibold text-text-primary mb-4">Change Password</h3>
                             <form id="form-account-password" class="space-y-4">
+                                <input type="text" name="username" autocomplete="username" class="sr-only" aria-hidden="true" tabindex="-1">
                                 <div>
                                     <label for="account-current-password" class="block text-sm font-medium text-text-primary mb-2">Current Password</label>
-                                    <input type="password" id="account-current-password" class="input" required placeholder="••••••••">
+                                    <input type="password" id="account-current-password" class="input" required placeholder="••••••••" autocomplete="current-password">
                                     <span id="error-account-current-password" class="field-error-msg"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg> Please enter your current password.</span>
                                 </div>
                                 <div>
                                     <label for="account-new-password" class="block text-sm font-medium text-text-primary mb-2">New Password</label>
-                                    <input type="password" id="account-new-password" class="input" required minlength="6" placeholder="At least 6 characters">
+                                    <input type="password" id="account-new-password" class="input" required minlength="6" placeholder="At least 6 characters" autocomplete="new-password">
 
                                     <!-- Password Strength Bar -->
                                     <div id="pw-strength-wrap">
@@ -303,7 +304,7 @@
                                 </div>
                                 <div>
                                     <label for="account-confirm-password" class="block text-sm font-medium text-text-primary mb-2">Confirm New Password</label>
-                                    <input type="password" id="account-confirm-password" class="input" required minlength="6" placeholder="Repeat new password">
+                                    <input type="password" id="account-confirm-password" class="input" required minlength="6" placeholder="Repeat new password" autocomplete="new-password">
                                     <span id="error-account-confirm-password" class="field-error-msg"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg> Passwords do not match.</span>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Update Password</button>
@@ -593,12 +594,12 @@
                             <div id="otp-section" class="mt-6 pt-6 border-t border-border hidden">
                                 <p class="text-sm font-medium text-text-primary mb-3">Enter the 6-digit code sent to your phone/email</p>
                                 <div class="otp-inputs mb-4">
-                                    <input type="text" class="otp-digit" maxlength="1" pattern="\d">
-                                    <input type="text" class="otp-digit" maxlength="1" pattern="\d">
-                                    <input type="text" class="otp-digit" maxlength="1" pattern="\d">
-                                    <input type="text" class="otp-digit" maxlength="1" pattern="\d">
-                                    <input type="text" class="otp-digit" maxlength="1" pattern="\d">
-                                    <input type="text" class="otp-digit" maxlength="1" pattern="\d">
+                                    <input type="text" id="otp-digit-1" name="otpDigit1" class="otp-digit" maxlength="1" pattern="\d">
+                                    <input type="text" id="otp-digit-2" name="otpDigit2" class="otp-digit" maxlength="1" pattern="\d">
+                                    <input type="text" id="otp-digit-3" name="otpDigit3" class="otp-digit" maxlength="1" pattern="\d">
+                                    <input type="text" id="otp-digit-4" name="otpDigit4" class="otp-digit" maxlength="1" pattern="\d">
+                                    <input type="text" id="otp-digit-5" name="otpDigit5" class="otp-digit" maxlength="1" pattern="\d">
+                                    <input type="text" id="otp-digit-6" name="otpDigit6" class="otp-digit" maxlength="1" pattern="\d">
                                 </div>
                                 <div class="flex gap-3">
                                     <button type="button" id="btn-verify-otp" class="btn btn-primary btn-sm">Verify & Enable</button>

@@ -24,6 +24,7 @@ class EnhancedProductDetails {
         this.showLoadingState();
         this.loadCurrentUser();
         this.setupEventListeners();
+        this.updateCartCount();
         this.loadProductData();
         this.initializeImageGallery();
         this.initializeQuantityPriceCalculator();
@@ -37,6 +38,18 @@ class EnhancedProductDetails {
         const params = new URLSearchParams(window.location.search);
         const id = params.get('id');
         return id; // Return the ID as-is - it could be MongoDB ObjectId or regular ID
+    }
+
+    getApiBase() {
+        const utils = window.EAgriUtils;
+        if (utils && typeof utils.getApiBase === 'function') return utils.getApiBase();
+
+        const isLocal =
+            window.location.protocol === 'file:' ||
+            window.location.origin.includes('localhost') ||
+            window.location.origin.includes('127.0.0.1');
+
+        return isLocal ? 'http://localhost:5000' : '';
     }
 
     // LOADING STATES
@@ -61,7 +74,7 @@ class EnhancedProductDetails {
     // USER AUTHENTICATION
     loadCurrentUser() {
         try {
-            const userData = localStorage.getItem('eagriUser');
+            const userData = localStorage.getItem('eagriUser') || sessionStorage.getItem('eagriUser');
             if (userData) {
                 this.currentUser = JSON.parse(userData);
                 this.updateAuthUI();
@@ -128,8 +141,7 @@ class EnhancedProductDetails {
     }
 
     async fetchProduct() {
-        const API_BASE = window.EAgriUtils ? window.EAgriUtils.getApiBase() :
-                       ((window.location.protocol === 'file:' || window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) ? 'http://localhost:5000' : '');
+        const API_BASE = this.getApiBase();
         try {
             // Fetch single product from backend (populated with farmer info)
             const response = await fetch(`${API_BASE}/api/products/${this.productId}`);
@@ -137,20 +149,38 @@ class EnhancedProductDetails {
                 const data = await response.json();
                 // API returns { success, product } for single product endpoint
                 return data.product || data;
+            } else if (response.status === 404) {
+                console.warn(`Product ${this.productId} not found on server. Triggering auto-cleanup...`);
+                this._removeProductFromLocalStorage(this.productId);
+            }
+ else {
+                throw new Error(`API returned ${response.status}`);
             }
         } catch (error) {
-            console.warn('API fetch failed, trying localStorage:', error);
+            console.warn('API fetch failed or not found, trying localStorage:', error.message);
         }
 
-        // Fallback to localStorage (from farmer dashboard)
-        const products = JSON.parse(localStorage.getItem('eagriProducts') || '[]');
-        const product = products.find(p => p.id == this.productId || p._id == this.productId);
-        return product || this.getSampleProduct();
+        // Fallback to localStorage (from farmer dashboard or local cache)
+        let products = [];
+        try {
+            products = JSON.parse(localStorage.getItem('eagriFarmerProducts') || '[]');
+        } catch (_) {
+            products = [];
+        }
+        const product = Array.isArray(products)
+            ? products.find(p => p.id == this.productId || p._id == this.productId || String(p.id) === String(this.productId))
+            : null;
+        
+        if (product) {
+            console.log('Found product in local storage:', product.name);
+            return product;
+        }
+
+        return this.getSampleProduct();
     }
 
     async fetchProductReviews() {
-        const API_BASE = window.EAgriUtils ? window.EAgriUtils.getApiBase() :
-                       ((window.location.protocol === 'file:' || window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) ? 'http://localhost:5000' : '');
+        const API_BASE = this.getApiBase();
         // Show loading state in reviews section
         const reviewsList = document.getElementById('reviews-list');
         if (reviewsList) {
@@ -212,8 +242,7 @@ class EnhancedProductDetails {
     async fetchRelatedProducts() {
         try {
             // Try to fetch all products from backend API
-            const API_BASE = window.EAgriUtils ? window.EAgriUtils.getApiBase() : 
-                           ((window.location.protocol === 'file:' || window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) ? 'http://localhost:5000' : '');
+            const API_BASE = this.getApiBase();
             const response = await fetch(`${API_BASE}/api/products`);
             if (response.ok) {
                 const data = await response.json();
@@ -241,8 +270,13 @@ class EnhancedProductDetails {
         // Fallback to localStorage
         return new Promise((resolve) => {
             setTimeout(() => {
-                const storageData = localStorage.getItem('eagriProducts');
-                const allProducts = JSON.parse(storageData || '[]');
+                const storageData = localStorage.getItem('eagriFarmerProducts');
+                let allProducts = [];
+                try {
+                    allProducts = JSON.parse(storageData || '[]');
+                } catch (_) {
+                    allProducts = [];
+                }
                 
                 if (Array.isArray(allProducts)) {
                     const related = allProducts
@@ -469,12 +503,14 @@ class EnhancedProductDetails {
 
         // Insert before footer
         const footer = document.querySelector('footer');
+        if (!footer?.parentNode) return;
         footer.parentNode.insertBefore(shippingSection, footer);
     }
 
     checkDelivery() {
         const pincodeInput = document.getElementById('pincode-input');
         const resultDiv = document.getElementById('delivery-result');
+        if (!pincodeInput || !resultDiv) return;
         const pincode = pincodeInput.value.trim();
 
         if (!pincode || pincode.length !== 6 || !/^\d+$/.test(pincode)) {
@@ -587,6 +623,7 @@ class EnhancedProductDetails {
 
         // Insert before footer
         const footer = document.querySelector('footer');
+        if (!footer?.parentNode) return;
         footer.parentNode.insertBefore(faqSection, footer);
     }
 
@@ -660,12 +697,14 @@ class EnhancedProductDetails {
 
         // Insert before footer
         const footer = document.querySelector('footer');
+        if (!footer?.parentNode) return;
         footer.parentNode.insertBefore(nutritionSection, footer);
     }
 
     toggleNutrition() {
         const content = document.getElementById('nutrition-content');
         const icon = document.getElementById('nutrition-toggle-icon');
+        if (!content || !icon) return;
         
         content.classList.toggle('hidden');
         icon.classList.toggle('rotate-180');
@@ -784,18 +823,24 @@ class EnhancedProductDetails {
         });
 
         // Get farmerId from the product (could be populated object or bare ID)
-        const farmerId = this.product.farmerId?._id || this.product.farmerId;
+        const farmerId = this.product.farmerId?._id || this.product.farmerId || this.product.farmer;
+        
+        // Basic validation: MongoDB IDs are 24-character hex strings
+        const isValidId = (id) => typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
 
-        if (!farmerId) {
+        if (!farmerId || !isValidId(farmerId)) {
+            if (farmerId) console.log('Non-standard farmerId format, using fallback.');
             this._renderFarmerFallback(this.product);
             return;
         }
 
-        const API_BASE = window.EAgriUtils ? window.EAgriUtils.getApiBase() :
-                       ((window.location.protocol === 'file:' || window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) ? 'http://localhost:5000' : '');
+        const API_BASE = this.getApiBase();
 
         fetch(`${API_BASE}/api/farmers/${farmerId}`)
-            .then(res => res.ok ? res.json() : Promise.reject(res.status))
+            .then(res => {
+                if (res.status === 404) throw new Error('404');
+                return res.ok ? res.json() : Promise.reject(res.status);
+            })
             .then(data => {
                 if (!data.success) throw new Error('Farmer fetch failed');
                 const farmer = data.farmer;
@@ -813,7 +858,11 @@ class EnhancedProductDetails {
                 }
             })
             .catch(err => {
-                console.warn('Could not load farmer info:', err);
+                if (err.message === '404') {
+                    console.warn(`Farmer info for ${farmerId} not found on server, using fallback.`);
+                } else {
+                    console.warn('Could not load farmer info:', err);
+                }
                 this._renderFarmerFallback(this.product);
             });
     }
@@ -877,6 +926,8 @@ class EnhancedProductDetails {
         const reviewsSubtitle = document.getElementById('reviews-subtitle');
         const writeReviewBtn = document.getElementById('write-review-btn');
 
+        if (!reviewsList || !reviewsSubtitle || !writeReviewBtn) return;
+
         if (this.reviews.length === 0) {
             reviewsSubtitle.textContent = 'Be the first to review this product';
             reviewsList.innerHTML = '<p class="text-text-secondary col-span-full text-center">No reviews yet. Be the first to share your experience!</p>';
@@ -905,7 +956,7 @@ class EnhancedProductDetails {
                         <div class="flex items-center justify-between">
                             <p class="text-text-tertiary text-sm">${this.formatDate(review.date)}</p>
                             <div class="flex items-center gap-3">
-                                <button onclick="productDetails.markReviewHelpful(${review.id})" class="text-sm text-text-secondary hover:text-primary">
+                                <button onclick="productDetails.markReviewHelpful('${review.id}')" class="text-sm text-text-secondary hover:text-primary">
                                     👍 Helpful (${review.helpful || 0})
                                 </button>
                             </div>
@@ -942,6 +993,7 @@ class EnhancedProductDetails {
 
         // Insert before footer
         const footer = document.querySelector('footer');
+        if (!footer?.parentNode) return;
         footer.parentNode.insertBefore(relatedSection, footer);
     }
 
@@ -1101,7 +1153,7 @@ class EnhancedProductDetails {
         if (!this.currentUser) return;
 
         const wishlistBtn = document.getElementById('wishlist-btn');
-        const wishlist = JSON.parse(localStorage.getItem('eagriWishlist') || '[]');
+        const wishlist = JSON.parse(localStorage.getItem('eagri_wishlist') || '[]');
         const isInWishlist = wishlist.includes(this.productId);
 
         if (isInWishlist) {
@@ -1120,7 +1172,7 @@ class EnhancedProductDetails {
         }
 
         try {
-            const wishlist = JSON.parse(localStorage.getItem('eagriWishlist') || '[]');
+            const wishlist = JSON.parse(localStorage.getItem('eagri_wishlist') || '[]');
             const index = wishlist.indexOf(this.productId);
 
             if (index > -1) {
@@ -1134,7 +1186,7 @@ class EnhancedProductDetails {
                 await this.postToWishlistAPI();
             }
 
-            localStorage.setItem('eagriWishlist', JSON.stringify(wishlist));
+            localStorage.setItem('eagri_wishlist', JSON.stringify(wishlist));
             this.updateWishlistButton();
         } catch (error) {
             console.error('Error updating wishlist:', error);
@@ -1154,44 +1206,65 @@ class EnhancedProductDetails {
 
     // SHOPPING CART
     async addToCart() {
-        if (!this.currentUser) {
-            this.showNotification('Please login to add items to cart', 'info');
-            return;
+        if (!this.product) {
+            this.showNotification('Product is not available', 'error');
+            return false;
         }
 
-        if (!this.product || this.product.quantity === 0) {
+        const stock = this.product.stock !== undefined ? this.product.stock : (this.product.quantity || 0);
+        if (stock === 0) {
             this.showNotification('Product is out of stock', 'error');
-            return;
+            return false;
         }
 
         try {
-            const cart = JSON.parse(localStorage.getItem('eagriCart') || '[]');
-            const existingItem = cart.find(item => item.productId === this.productId);
+            const qty = Math.max(1, parseInt(this.selectedQuantity, 10) || 1);
+            const cartProduct = {
+                id: this.product._id || this.product.id || this.productId,
+                name: this.product.name || 'Product',
+                price: parseFloat(this.product.price) || 0,
+                stock: parseInt(stock, 10) || 0,
+                image: (Array.isArray(this.productImages) && this.productImages[0]) ? this.productImages[0] : (this.product.image || ''),
+                farmer: this.product.farmerName || this.product.farmer || (this.product.farmerId && this.product.farmerId.name) || 'Farmer',
+                farmerId: this.product.farmerId ? (this.product.farmerId._id || this.product.farmerId.id || this.product.farmerId) : ''
+            };
 
-            if (existingItem) {
-                existingItem.quantity += this.selectedQuantity;
+            // Use app.js cart APIs so shopping_cart.html can render correctly.
+            if (window.EAgri && typeof window.EAgri.addToCart === 'function') {
+                const ok = window.EAgri.addToCart(cartProduct, qty);
+                if (!ok) throw new Error('Unable to add item to cart');
+                if (typeof window.EAgri.initCartBadges === 'function') window.EAgri.initCartBadges();
             } else {
-                cart.push({
-                    productId: this.productId,
-                    quantity: this.selectedQuantity,
-                    addedAt: new Date().toISOString()
-                });
+                // Fallback: persist in the same shape app.js expects ({ id, ... })
+                const cart = JSON.parse(localStorage.getItem('eagri_cart') || '[]');
+                const existingItem = cart.find(item => item.id === cartProduct.id);
+                if (existingItem) existingItem.quantity = (existingItem.quantity || 0) + qty;
+                else cart.push({ ...cartProduct, quantity: qty });
+                localStorage.setItem('eagri_cart', JSON.stringify(cart));
             }
 
-            localStorage.setItem('eagriCart', JSON.stringify(cart));
             this.updateCartCount();
-            this.showNotification(`Added ${this.selectedQuantity}kg to cart`, 'success');
+            this.showNotification(`Added ${qty}kg to cart`, 'success');
+            return true;
         } catch (error) {
             console.error('Error adding to cart:', error);
             this.showNotification('Error adding to cart', 'error');
+            return false;
         }
     }
 
     updateCartCount() {
-        const cart = JSON.parse(localStorage.getItem('eagriCart') || '[]');
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        
-        document.querySelectorAll('#cart-count-desktop').forEach(el => {
+        let totalItems = 0;
+        try {
+            if (window.EAgri && typeof window.EAgri.getCartCount === 'function') {
+                totalItems = window.EAgri.getCartCount();
+            } else {
+                const cart = JSON.parse(localStorage.getItem('eagri_cart') || '[]');
+                totalItems = Array.isArray(cart) ? cart.reduce((sum, item) => sum + (item.quantity || 0), 0) : 0;
+            }
+        } catch (_) {}
+
+        document.querySelectorAll('#cart-count-desktop, #cart-count-mobile, [data-cart-count]').forEach(el => {
             el.textContent = totalItems;
         });
     }
@@ -1203,6 +1276,8 @@ class EnhancedProductDetails {
         const cancelReviewBtn = document.getElementById('cancel-review-btn');
         const submitReviewBtn = document.getElementById('submit-review-btn');
         const starButtons = document.querySelectorAll('#star-rating-input .star-btn');
+
+        if (!writeReviewBtn || !reviewFormContainer || !cancelReviewBtn || !submitReviewBtn) return;
 
         writeReviewBtn.addEventListener('click', () => {
             if (!this.currentUser) {
@@ -1308,8 +1383,7 @@ class EnhancedProductDetails {
     }
 
     async postReviewAPI(review) {
-        const API_BASE = window.EAgriUtils ? window.EAgriUtils.getApiBase() :
-                       ((window.location.protocol === 'file:' || window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) ? 'http://localhost:5000' : '');
+        const API_BASE = this.getApiBase();
         
         const userDataStr = localStorage.getItem('eagriUser') || sessionStorage.getItem('eagriUser');
         let token = null;
@@ -1339,16 +1413,13 @@ class EnhancedProductDetails {
 
     // BUY NOW
     async buyNow() {
-        if (!this.currentUser) {
-            this.showNotification('Please login to buy now', 'info');
-            return;
-        }
         if (!this.product || (this.product.stock !== undefined ? this.product.stock : this.product.quantity) === 0) {
             this.showNotification('Product is out of stock', 'error');
             return;
         }
         try {
-            await this.addToCart();
+            const ok = await this.addToCart();
+            if (!ok) return;
             // Small delay so the user sees the cart-added notification before redirect
             setTimeout(() => {
                 window.location.href = 'shopping_cart.html';
@@ -1384,6 +1455,8 @@ class EnhancedProductDetails {
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
 
+        if (!mobileMenuBtn || !mobileMenu) return;
+
         mobileMenuBtn.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
@@ -1400,6 +1473,7 @@ class EnhancedProductDetails {
         document.querySelectorAll('.auth-logout-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 localStorage.removeItem('eagriUser');
+                sessionStorage.removeItem('eagriUser');
                 this.currentUser = null;
                 this.updateAuthUI();
                 this.showNotification('Logged out successfully', 'success');
@@ -1451,6 +1525,7 @@ class EnhancedProductDetails {
 
     updateProductBadge() {
         const badge = document.getElementById('product-badge');
+        if (!badge) return;
         const farmingData = this.product.farmingDetails || {};
         const isOrganic = farmingData.organicCertified || 
                          this.product.farmingMethod === 'organic' ||
@@ -1544,6 +1619,34 @@ class EnhancedProductDetails {
         setTimeout(() => {
             notification.remove();
         }, 3000);
+    }
+
+    _removeProductFromLocalStorage(productId) {
+        try {
+            const keys = ['eagriFarmerProducts', 'eagri_farmer_products'];
+            keys.forEach(key => {
+                const data = localStorage.getItem(key);
+                if (!data) return;
+                
+                let products = JSON.parse(data);
+                if (!Array.isArray(products)) return;
+                
+                const originalLength = products.length;
+                products = products.filter(p => 
+                    p.id != productId && 
+                    p._id != productId && 
+                    String(p.id) !== String(productId) &&
+                    p.productId != productId
+                );
+                
+                if (products.length !== originalLength) {
+                    localStorage.setItem(key, JSON.stringify(products));
+                    console.log(`🧹 Auto-Cleanup: Removed missing product ${productId} from ${key}`);
+                }
+            });
+        } catch (error) {
+            console.error('Error during auto-cleanup:', error);
+        }
     }
 }
 
